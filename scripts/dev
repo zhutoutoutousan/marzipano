@@ -15,22 +15,20 @@
 # limitations under the License.
 
 set -e -v
-cd "`dirname $0`/.."
+cd "$(dirname "$0")/.."
 
-PATH=./scripts:./node_modules/.bin:$PATH
+PATH=scripts:node_modules/.bin:$PATH
 
-SRC=src
-BUILD=build
+rm -rf build
+mkdir -p build
 
-mkdir -p $BUILD
-
-make-swf $BUILD/marzipano.swf
+make-swf build/marzipano.swf dev
 
 watchify -v -d \
   --noparse=node_modules/**/*.js \
   -s Marzipano \
-  -o $BUILD/marzipano.js \
-  $SRC/index.js &
+  -o build/marzipano.js \
+  src/index.js &
 
 lrhs -b -w src/**/*.js,demos/**/*.js,demos/**/*.css,demos/**/*.html,build/* &
 

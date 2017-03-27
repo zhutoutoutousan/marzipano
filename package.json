@@ -14,12 +14,11 @@
     "url": "https://github.com/google/marzipano/issues"
   },
   "scripts": {
+    "test": "testem",
     "dev": "scripts/dev",
-    "test": "./node_modules/.bin/testem",
-    "build": "scripts/build",
     "release": "scripts/release",
-    "demo": "scripts/run-browser-demo demo",
-    "make-docs": "jsdoc -c jsdoc-conf.json"
+    "deploy": "scripts/deploy",
+    "prepublishOnly": "scripts/prepublish"
   },
   "dependencies": {
     "bowser": "^1.3.0",

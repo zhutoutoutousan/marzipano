@@ -21,12 +21,13 @@ var execSync = require('child_process').execSync;
 var fs = require('fs');
 
 // Regex for npm package version.
-var npmRegex = /^([0-9]+(\.[0-9]+)+)$/;
+var npmRegex = /^(\d+(?:\.\d+)+)$/;
 
-// Regex for git --describe output. See git-describe(1).
-// The 1st matching sub-expression is the most recent tag.
-// The 5th matching sub-expression is the abbreviated object name for the last commit.
-var gitRegex = /^v([0-9]+(\.[0-9]+)+)(-[0-9]+-(g([0-9a-f]+)))?$/;
+// Regex for git --describe --tags --dirty output. See git-describe(1).
+// The 1st subexpression match is the most recent tagged version.
+// The 2nd subexpression match exists if either commits were made since the most
+// recent tagged version, or there are staged and/or unstaged changes.
+var gitRegex = /^v(\d+(?:\.\d+)+)((?:-\d+-g([\da-f]+))?(?:-dirty)?)?$/;
 
 // Return npm package version declared by package.json.
 function getNpmVersion() {
@@ -35,7 +36,7 @@ function getNpmVersion() {
 
 // Return the output of git --describe for the current HEAD.
 function getGitVersion() {
-  return execSync("git describe --tags HEAD", { encoding: 'utf-8' }).trim();
+  return execSync("git describe --tags --dirty", { encoding: 'utf-8' }).trim();
 }
 
 function getVersion() {
@@ -59,9 +60,9 @@ function getVersion() {
     throw new Error("Version mismatch: npm says " + npmMatch[1] + " but git says " + gitMatch[1]);
   }
 
-  if (gitMatch[5]) {
+  if (gitMatch[2]) {
     // Development version.
-    return npmMatch[1] + '+' + gitMatch[5];
+    return npmMatch[1] + '-dev';
   } else {
     // Release version.
     return npmMatch[1];

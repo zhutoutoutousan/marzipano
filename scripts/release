@@ -17,22 +17,31 @@
 set -e -v
 cd "`dirname $0`/.."
 
-PATH=./scripts:./node_modules/.bin:$PATH
+PATH=scripts:node_modules/.bin:$PATH
 
-SRC=src
-DIST=dist
-VERSION=`get-version`
-PREAMBLE=`sed s/VERSION_STRING/$VERSION/ $SRC/preamble.js`
+VERSION=$(scripts/version)
+PREAMBLE=$(sed 's/VERSION_STRING/$VERSION/' src/preamble.js)
+MANIFEST="{ \"version\": \"$VERSION\", \"file\": \"marzipano-$VERSION.zip\" }"
 
-mkdir -p $DIST
+rm -rf dist
+mkdir -p dist
 
-make-swf $DIST/marzipano.swf
+make-swf dist/marzipano.swf "$VERSION"
 
 browserify \
   --noparse=node_modules/**/*.js \
   -s Marzipano \
-  -o $DIST/marzipano.js \
-  $SRC/index.js
+  -o dist/marzipano.js \
+  src/index.js
 
-uglifyjs $DIST/marzipano.js -o $DIST/marzipano.js \
+uglifyjs dist/marzipano.js -o dist/marzipano.js \
   -m -c warnings=false --preamble "$PREAMBLE"
+
+jsdoc -c jsdoc-conf.json
+
+cp LICENSE dist/LICENSE.txt
+
+echo "$MANIFEST" > dist/latest.json
+
+zip -j dist/marzipano-$VERSION.zip \
+  dist/marzipano.js dist/marzipano.swf dist/LICENSE.txt

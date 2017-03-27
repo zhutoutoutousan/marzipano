@@ -4,19 +4,45 @@ A 360° media viewer for the modern web.
 
 This is not an official Google product.
 
-Read the full documentation at http://www.marzipano.net/docs.html.
+Check out our website at http://www.marzipano.net/,
+including the [demos](http://www.marzipano.net/demos.html)
+and the [documentation](http://www.marzipano.net/docs.html).
+
+### User guide
+
+You can include Marzipano in your project in two different ways:
+
+* Obtain the `marzipano.js` and `marzipano.swf` files from the latest release
+  at http://www.marzipano.net and copy them into your project.
+
+* Install Marzipano as a dependency using the `npm` package manager and
+  `require` it as a module.
 
 ### Developer guide
 
-This is an `npm`-based project. A Node.js installation is required for development.
+This is an `npm`-based project.
+A [http://www.nodejs.org](Node.js) installation is required for development.
+You also need a Java compiler to build the SWF file with the Flash renderers.
 
-Run `npm install` to install the dependencies.
+Run `npm install` to install the dependencies. If you haven't in a while,
+bring them up to date with `npm update`.
 
-Run `npm run dev` to automatically recompile the viewer in development mode.
-Browse `http://localhost:8080` to check out the demos.
+Run `npm run dev` to serve this directory at `http://localhost:8080`.
+While this script is running, the demos are live-reloaded whenever the source
+files are edited.
 
-Run `npm run test` to run the test suite.
+Run `npm run test` to serve the browser-based test suite at `http://localhost:7357`.
+While this script is running, the test suite is live-reloaded whenever the
+source or test files are edited.
 
-Run `npm run make-docs` to compile the documentation.
+### Maintainer guide
 
-Run `npm run build` to make a new build.
+Before preparing a release, make sure there are no uncommitted changes.
+Create a new commit to bump the version number in `package.json` and tag it
+with `git tag vX.Y.Z`.
+
+Run `npm run release` to prepare a new release.
+
+Run `npm run deploy` to deploy the release to the website.
+
+Run `npm publish` to publish the release to the npm registry.

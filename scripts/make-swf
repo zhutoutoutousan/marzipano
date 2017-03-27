@@ -15,12 +15,14 @@
 # limitations under the License.
 
 set -e
-cd "`dirname $0`/.."
+cd "$(dirname "$0")/.."
 
-PATH=./scripts:./node_modules/.bin:$PATH
+PATH=node_modules/.bin:$PATH
 
-VERSION=`get-version`
-TITLE="Marzipano v$VERSION"
+if [[ -z "$1" || -z "$2" ]]; then
+  echo "Usage: make-swf <path> <version>"
+  exit 1
+fi
 
 mxmlc -target-player=10.1 -static-link-runtime-shared-libraries \
-  -title "$TITLE" -output $1 src/renderers/FlashCommon.as
+  -title "Marzipano $2" -output "$1" src/renderers/FlashCommon.as
