@@ -17,19 +17,6 @@
 set -e -v
 cd "$(dirname "$0")/.."
 
-VERSION=$(scripts/version)
-
-# Check that the release script was run.
-if [[ ! -f "dist/marzipano/$VERSION.zip" ]]; then
-  echo You must create a release before deploying.
-  exit 1
-fi
-
-# Check that this is a release version.
-if [[ ! scripts/prepublish ]]; then
-  echo The current version cannot be deployed.
-fi
-
 # Deploy the Javascript and SWF files to be used by the demos.
 gsutil cp dist/marzipano.js gs://www.marzipano.net/build/marzipano.js
 gsutil cp dist/marzipano.swf gs://www.marzipano.net/build/marzipano.swf
