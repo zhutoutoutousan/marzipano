@@ -68,7 +68,7 @@ var fovLimitEpsilon = 0.000000001;
  * When `params.roll < 0`, the view rotates clockwise.
  * When `params.roll > 0`, the view rotates counter-clockwise.
  *
- * @param {number} [params.fov=π/4] the horizontal field of view, in the
+ * @param {number} [params.fov=π/4] the vertical field of view, in the
  * [0, π] range.
  *
  * @param {Function} limiter the view limiting function.
