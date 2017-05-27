@@ -17,6 +17,7 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
+var waitForCall = require('../../waitForCall');
 
 var cancelize = require('../../../src/util/cancelize');
 
@@ -38,22 +39,20 @@ suite('cancelize', function() {
     var spy = sinon.spy();
     var cancel = fn(2, spy);
     cancel(error);
-    setTimeout(function() {
-      assert(spy.calledOnce);
+    waitForCall(spy, function() {
       assert(spy.calledWith(error));
       done();
-    }, 10);
+    });
   });
 
   test('no cancel', function(done) {
     var fn = cancelize(twice);
     var spy = sinon.spy();
     fn(2, spy);
-    setTimeout(function() {
-      assert(spy.calledOnce);
+    waitForCall(spy, function() {
       assert(spy.calledWith(null, 4));
       done();
-    }, 10);
+    });
   });
 
 });

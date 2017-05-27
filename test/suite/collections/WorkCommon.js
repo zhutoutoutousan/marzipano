@@ -19,6 +19,7 @@
 
 var assert = require('../../assert');
 var sinon = require('sinon');
+var waitForCall = require('../../waitForCall');
 
 var defer = require('../../../src/util/defer');
 var cancelize = require('../../../src/util/cancelize');
@@ -45,20 +46,20 @@ function runTests(name, cls) {
       var q = new cls();
       var spy = sinon.spy();
       q.push(returnSync(1), spy);
-      setTimeout(function() {
+      waitForCall(spy, function() {
         assert(spy.calledWith(1));
         done();
-      }, 20);
+      });
     });
 
     test('one async', function(done) {
       var q = new cls();
       var spy = sinon.spy();
       q.push(returnAsync(1), spy);
-      setTimeout(function() {
+      waitForCall(spy, function() {
         assert(spy.calledWith(1));
         done();
-      }, 20);
+      });
     });
 
     test('two sync', function(done) {
@@ -67,11 +68,11 @@ function runTests(name, cls) {
       var spy2 = sinon.spy();
       q.push(returnSync(1), spy1);
       q.push(returnSync(2), spy2);
-      setTimeout(function() {
+      waitForCall(spy1, spy2, function() {
         assert(spy1.calledWith(1));
         assert(spy2.calledWith(2));
         done();
-      }, 20);
+      });
     });
 
     test('two async', function(done) {
@@ -80,11 +81,11 @@ function runTests(name, cls) {
       var spy2 = sinon.spy();
       q.push(returnAsync(1), spy1);
       q.push(returnAsync(2), spy2);
-      setTimeout(function() {
+      waitForCall(spy1, spy2, function() {
         assert(spy1.calledWith(1));
         assert(spy2.calledWith(2));
         done();
-      }, 20);
+      });
     });
 
     test('one sync, one async', function(done) {
@@ -93,11 +94,11 @@ function runTests(name, cls) {
       var spy2 = sinon.spy();
       q.push(returnSync(1), spy1);
       q.push(returnAsync(2), spy2);
-      setTimeout(function() {
+      waitForCall(spy1, spy2, function() {
         assert(spy1.calledWith(1));
         assert(spy2.calledWith(2));
         done();
-      }, 20);
+      });
     });
 
     test('one async, one sync', function(done) {
@@ -106,11 +107,11 @@ function runTests(name, cls) {
       var spy2 = sinon.spy();
       q.push(returnAsync(1), spy1);
       q.push(returnSync(2), spy2);
-      setTimeout(function() {
+      waitForCall(spy1, spy2, function() {
         assert(spy1.calledWith(1));
         assert(spy2.calledWith(2));
         done();
-      }, 20);
+      });
     });
 
     test('cancel', function(done) {
@@ -118,10 +119,10 @@ function runTests(name, cls) {
       var spy = sinon.spy();
       var cancel = q.push(returnAsync(1), spy);
       cancel('err');
-      setTimeout(function() {
+      waitForCall(spy, function() {
         assert(spy.calledWith('err'));
         done();
-      }, 20);
+      });
     });
 
     test('pause and resume', function(done) {
@@ -132,10 +133,10 @@ function runTests(name, cls) {
       setTimeout(function() {
         assert(spy.notCalled);
         q.resume();
-        setTimeout(function() {
+        waitForCall(spy, function() {
           assert(spy.calledWith(1));
           done();
-        }, 20);
+        });
       }, 20);
     });
   });

@@ -17,6 +17,7 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
+var waitForCall = require('../../waitForCall');
 
 var delay = require('../../../src/util/delay');
 
@@ -28,18 +29,18 @@ suite('delay', function() {
     var spy = sinon.spy();
     var cancel = delay(4, spy);
     cancel(error);
-    setTimeout(function() {
+    waitForCall(spy, function() {
       assert(spy.calledOnce);
       assert(spy.calledWith(error));
-    }, 10);
+    });
   });
 
   test('no cancel', function() {
     var spy = sinon.spy();
     delay(4, spy);
-    setTimeout(function() {
+    waitForCall(spy, function() {
       assert(spy.calledOnce);
-    }, 10);
+    });
   });
 
 });

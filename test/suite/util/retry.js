@@ -17,6 +17,7 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
+var waitForCall = require('../../waitForCall');
 
 var retry = require('../../../src/util/retry');
 var defer = require('../../../src/util/defer');
@@ -41,48 +42,48 @@ function flaky(nfail) {
 suite('retry', function() {
 
   test('zero failures', function(done) {
-    var doneSpy = sinon.spy();
+    var spy = sinon.spy();
     var fn = retry(cancelize(flaky(0)));
-    fn(2, doneSpy);
-    setTimeout(function() {
-      assert(doneSpy.calledOnce);
-      assert(doneSpy.calledWith(null, 4));
+    fn(2, spy);
+    waitForCall(spy, function() {
+      assert(spy.calledOnce);
+      assert(spy.calledWith(null, 4));
       done();
-    }, 50);
+    });
   });
 
   test('one failure', function(done) {
-    var doneSpy = sinon.spy();
+    var spy = sinon.spy();
     var fn = retry(cancelize(flaky(1)));
-    fn(2, doneSpy);
-    setTimeout(function() {
-      assert(doneSpy.calledOnce);
-      assert(doneSpy.calledWith(null, 4));
+    fn(2, spy);
+    waitForCall(spy, function() {
+      assert(spy.calledOnce);
+      assert(spy.calledWith(null, 4));
       done();
-    }, 50);
+    });
   });
 
   test('two failures', function(done) {
-    var doneSpy = sinon.spy();
+    var spy = sinon.spy();
     var fn = retry(cancelize(flaky(2)));
-    fn(2, doneSpy);
-    setTimeout(function() {
-      assert(doneSpy.calledOnce);
-      assert(doneSpy.calledWith(null, 4));
+    fn(2, spy);
+    waitForCall(spy, function() {
+      assert(spy.calledOnce);
+      assert(spy.calledWith(null, 4));
       done();
-    }, 50);
+    });
   });
 
   test('cancel', function(done) {
-    var doneSpy = sinon.spy();
+    var spy = sinon.spy();
     var fn = retry(cancelize(flaky(0)));
-    var cancel = fn(2, doneSpy);
+    var cancel = fn(2, spy);
     cancel(error);
-    setTimeout(function() {
-      assert(doneSpy.calledOnce);
-      assert(doneSpy.calledWith(error));
+    waitForCall(spy, function() {
+      assert(spy.calledOnce);
+      assert(spy.calledWith(error));
       done();
-    }, 50);
+    });
   });
 
 });
