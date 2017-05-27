@@ -750,16 +750,12 @@ RectilinearView.prototype.coordinatesToScreen = function(coords, result) {
   rotateVector(ray, ray, -yaw, -pitch, -roll);
   vec4.transformMat4(ray, ray, this.projection());
 
-  // Calculate perspective divide.
-  for (var i = 0; i < 3; i++) {
-    ray[i] /= ray[3];
-  }
-
-  if (ray[2] >= 0) {
+  // w in clip space equals -z in camera space.
+  if (ray[3] >= 0) {
     // Point is in front of camera.
-    // Convert to viewport coordinates and return.
-    result.x = width * (ray[0] + 1) / 2;
-    result.y = height * (1 - ray[1]) / 2;
+    // Convert to viewport coordinates.
+    result.x = width * (ray[0] / ray[3] + 1) / 2;
+    result.y = height * (1 - ray[1] / ray[3]) / 2;
   } else {
     // Point is behind camera.
     result.x = null;
