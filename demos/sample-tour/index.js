@@ -71,17 +71,16 @@
   var viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
   // Create scenes.
-  var scenes = data.scenes.map(function(sceneData) {
-    var urlPrefix = "//www.marzipano.net/media";
+  var scenes = data.scenes.map(function(data) {
     var source = Marzipano.ImageUrlSource.fromString(
-      urlPrefix + "/" + sceneData.id + "/{z}/{f}/{y}/{x}.jpg",
-      { cubeMapPreviewUrl: urlPrefix + "/" + sceneData.id + "/preview.jpg" });
-    var geometry = new Marzipano.CubeGeometry(sceneData.levels);
+      "tiles/" + data.id + "/{z}/{f}/{y}/{x}.jpg",
+      { cubeMapPreviewUrl: "tiles/" + data.id + "/preview.jpg" });
+    var geometry = new Marzipano.CubeGeometry(data.levels);
 
-    var limiter = Marzipano.RectilinearView.limit.traditional(sceneData.faceSize, 100*Math.PI/180, 120*Math.PI/180);
-    var view = new Marzipano.RectilinearView(sceneData.initialViewParameters, limiter);
+    var limiter = Marzipano.RectilinearView.limit.traditional(data.faceSize, 100*Math.PI/180, 120*Math.PI/180);
+    var view = new Marzipano.RectilinearView(data.initialViewParameters, limiter);
 
-    var marzipanoScene = viewer.createScene({
+    var scene = viewer.createScene({
       source: source,
       geometry: geometry,
       view: view,
@@ -89,20 +88,21 @@
     });
 
     // Create link hotspots.
-    sceneData.linkHotspots.forEach(function(hotspot) {
+    data.linkHotspots.forEach(function(hotspot) {
       var element = createLinkHotspotElement(hotspot);
-      marzipanoScene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
+      scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
     });
 
     // Create info hotspots.
-    sceneData.infoHotspots.forEach(function(hotspot) {
+    data.infoHotspots.forEach(function(hotspot) {
       var element = createInfoHotspotElement(hotspot);
-      marzipanoScene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
+      scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
     });
 
     return {
-      data: sceneData,
-      marzipanoObject: marzipanoScene
+      data: data,
+      scene: scene,
+      view: view
     };
   });
 
@@ -114,6 +114,8 @@
   if (data.settings.autorotateEnabled) {
     autorotateToggleElement.classList.add('enabled');
   }
+
+  // Set handler for autorotate toggle.
   autorotateToggleElement.addEventListener('click', toggleAutorotate);
 
   // Set up fullscreen mode, if supported.
@@ -158,8 +160,8 @@
 
   // Associate view controls with elements.
   var controls = viewer.controls();
-  controls.registerMethod('upElement',    new Marzipano.ElementPressControlMethod(viewUpElement,     'y',  velocity, friction), true);
-  controls.registerMethod('downElement',  new Marzipano.ElementPressControlMethod(viewDownElement,   'y', -velocity, friction), true);
+  controls.registerMethod('upElement',    new Marzipano.ElementPressControlMethod(viewUpElement,     'y', -velocity, friction), true);
+  controls.registerMethod('downElement',  new Marzipano.ElementPressControlMethod(viewDownElement,   'y',  velocity, friction), true);
   controls.registerMethod('leftElement',  new Marzipano.ElementPressControlMethod(viewLeftElement,   'x', -velocity, friction), true);
   controls.registerMethod('rightElement', new Marzipano.ElementPressControlMethod(viewRightElement,  'x',  velocity, friction), true);
   controls.registerMethod('inElement',    new Marzipano.ElementPressControlMethod(viewInElement,  'zoom', -velocity, friction), true);
@@ -171,7 +173,8 @@
 
   function switchScene(scene) {
     stopAutorotate();
-    scene.marzipanoObject.switchTo();
+    scene.view.setParameters(scene.data.initialViewParameters);
+    scene.scene.switchTo();
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
