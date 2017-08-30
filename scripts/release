@@ -20,7 +20,7 @@ cd "`dirname $0`/.."
 PATH=scripts:node_modules/.bin:$PATH
 
 VERSION=$(scripts/version)
-PREAMBLE=$(sed 's/VERSION_STRING/$VERSION/' src/preamble.js)
+PREAMBLE=$(sed s/VERSION_STRING/$VERSION/ src/preamble.js)
 MANIFEST="{ \"version\": \"$VERSION\", \"file\": \"marzipano-$VERSION.zip\" }"
 
 rm -rf dist
