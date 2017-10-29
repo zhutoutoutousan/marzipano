@@ -50,6 +50,8 @@ function Controls(opts) {
   // How many control methods are enabled and in the active state.
   this._activeCount = 0;
 
+  this.updatedViews_ = [];
+
   this._attachedRenderLoop = null;
 }
 
@@ -388,9 +390,17 @@ Controls.prototype._updateViewsWithControls = function() {
     this._attachedRenderLoop.renderOnNextFrame();
   }
 
+  // Update each view at most once, even when shared by multiple layers.
+  // The number of views is expected to be small, so use an array to keep track.
+  this.updatedViews_.length = 0;
+
   var layers = this._attachedRenderLoop.stage().listLayers();
   for (var i = 0; i < layers.length; i++) {
-    layers[i].view().updateWithControlParameters(controlData.offsets);
+    var view = layers[i].view();
+    if (this.updatedViews_.indexOf(view) < 0) {
+      layers[i].view().updateWithControlParameters(controlData.offsets);
+      this.updatedViews_.push(view);
+    }
   }
 };
 
