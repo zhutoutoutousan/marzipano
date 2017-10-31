@@ -309,10 +309,13 @@ WebGlTexture.prototype.refresh = function(tile, asset) {
       gl.deleteTexture(texture);
     }
 
-    // Create a new texture and paint it.
+    // The texture must be premultiplied by alpha to ensure correct blending of
+    // semitransparent textures. For details, see:
+    // http://www.realtimerendering.com/blog/gpus-prefer-premultiplication/
     texture = this._texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
 
   } else {
@@ -327,6 +330,7 @@ WebGlTexture.prototype.refresh = function(tile, asset) {
     texture = this._texture;
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
     if(stage._useTexSubImage2D) {
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, element);

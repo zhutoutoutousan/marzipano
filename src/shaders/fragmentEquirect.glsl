@@ -44,5 +44,5 @@ void main(void) {
   t = t * uTextureHeight + uTextureY;
 
   vec4 color = texture2D(uSampler, vec2(s, t)) * uColorMatrix + uColorOffset;
-  gl_FragColor = vec4(color.rgb * color.a * uOpacity, color.a * uOpacity);
+  gl_FragColor = vec4(color.rgba * uOpacity);
 }
