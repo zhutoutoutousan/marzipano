@@ -75,16 +75,12 @@ function initWebGlContext(canvas, opts) {
  * @param {Object} opts
  * @param {Boolean} [opts.preserveDrawingBuffer=false]
  * @param {boolean} [opts.generateMipmaps=false] Use mipmaps on textures.
- * @param {String[]} [opts.blendFunc=['ONE','ONE_MINUS_SRC_ALPHA']] The two
- * WebGL [blending functions][blendFunc].
  *
- * Note that [`premultipliedAlpha`][premultipliedAlpha] is `true` , as Internet
- * Explorer 11 does not seem to support `premultipliedAlpha` `false`. The
- * shaders multiply the resulting colors values by the alpha value.
- *
- * [blendFunc]: https://msdn.microsoft.com/en-us/library/dn302371.aspx
- * [premultipliedAlpha]: https://www.khronos.org/registry/webgl/specs/1.0/#PREMULTIPLIED_ALPHA
-*/
+ * The `alpha` and `premultipliedAlpha` WebGL context attributes are set to
+ * their default true value, which means semitransparent content can be
+ * rendered and will be composited with the page. See:
+ * https://www.khronos.org/registry/webgl/specs/1.0/#WEBGLCONTEXTATTRIBUTES
+ */
 function WebGlStage(opts) {
   opts = opts || {};
 
@@ -101,7 +97,6 @@ function WebGlStage(opts) {
   setFullSize(this._domElement);
 
   this._gl = initWebGlContext(this._domElement, opts);
-  this._blendFuncStrings = opts.blendFunc || ['ONE','ONE_MINUS_SRC_ALPHA'];
 
   this._handleContextLoss = function() {
     self.emit('webglcontextlost');
@@ -227,9 +222,10 @@ WebGlStage.prototype.startFrame = function() {
   // Enable depth testing.
   gl.enable(gl.DEPTH_TEST);
 
-  // Enable blending.
+  // Enable blending. ONE and ONE_MINUS_SRC_ALPHA are the right choices for
+  // premultiplied textures.
   gl.enable(gl.BLEND);
-  gl.blendFunc(gl[this._blendFuncStrings[0]], gl[this._blendFuncStrings[1]]);
+  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
 };
 
