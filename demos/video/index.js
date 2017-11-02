@@ -17,8 +17,7 @@
 
 // Create viewer.
 // Video requires WebGL support.
-// Disable texSubImage2D in favor of texImage2D for increased performance.
-var viewerOpts = { stageType: 'webgl', useTexSubImage2D: false };
+var viewerOpts = { stageType: 'webgl' };
 var viewer = new Marzipano.Viewer(document.getElementById('pano'), viewerOpts);
 
 // Create asset and source.

@@ -17,6 +17,7 @@
 
 var Stage = require('./Stage');
 var webGlSupported = require('../support/WebGl');
+var browser = require('bowser');
 var Map = require('../collections/Map');
 var loadImageHtml = require('./loadImageHtml');
 var inherits = require('../util/inherits');
@@ -28,6 +29,16 @@ var setPixelSize = require('../util/dom').setPixelSize;
 var setFullSize = require('../util/dom').setFullSize;
 
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.webGl;
+
+
+// Browser-specific workarounds.
+var browserQuirks = {
+  // Whether to use texImage2D instead of texSubImage2D when repainting an
+  // existing texture from a video element. On most browsers texSubImage2D is
+  // faster, but on Chrome the performance degrades significantly. See:
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=612542
+  videoUseTexImage2D: browser.chrome
+};
 
 
 function initWebGlContext(canvas, opts) {
@@ -83,8 +94,6 @@ function WebGlStage(opts) {
 
   this._generateMipmaps = opts.generateMipmaps != null ?
     opts.generateMipmaps : false;
-  this._useTexSubImage2D = opts.useTexSubImage2D != null ?
-    opts.useTexSubImage2D : true;
 
   this._domElement = document.createElement('canvas');
 
@@ -321,22 +330,18 @@ WebGlTexture.prototype.refresh = function(tile, asset) {
   } else {
 
     // If the texture dimensions remain the same, repaint the existing texture.
-    // We use texSubImage2D instead of texImage2D because it is usually faster
-    // when repainting an existing texture. Beware that on some browser/GPU
-    // combinations, the reverse seems to be true (texSubImage2D is slower).
-    // This has been observed on Chrome 43 running on an Intel HD Graphics 4000
-    // GPU. The bug seems to have been fixed on Chrome 45.
+    // Repainting with texSubImage2D is usually faster than with texImage2D,
+    // except in the case noted in browserQuirks.
 
     texture = this._texture;
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
-    if(stage._useTexSubImage2D) {
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, element);
-    }
-    else {
+    if (element instanceof HTMLVideoElement && browserQuirks.videoUseTexImage2D) {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
+    } else {
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, element);
     }
 
   }
