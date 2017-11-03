@@ -24,6 +24,7 @@ var inherits = require('../util/inherits');
 var defer = require('../util/defer');
 var pixelRatio = require('../util/pixelRatio');
 var hash = require('../util/hash');
+var ispot = require('../util/ispot');
 var setAbsolute = require('../util/dom').setAbsolute;
 var setPixelSize = require('../util/dom').setPixelSize;
 var setFullSize = require('../util/dom').setFullSize;
@@ -74,12 +75,17 @@ function initWebGlContext(canvas, opts) {
  * @extends Stage
  * @param {Object} opts
  * @param {Boolean} [opts.preserveDrawingBuffer=false]
- * @param {boolean} [opts.generateMipmaps=false] Use mipmaps on textures.
+ * @param {boolean} [opts.generateMipmaps=false] Generate texture mipmaps.
  *
  * The `alpha` and `premultipliedAlpha` WebGL context attributes are set to
  * their default true value, which means semitransparent content can be
  * rendered and will be composited with the page. See:
  * https://www.khronos.org/registry/webgl/specs/1.0/#WEBGLCONTEXTATTRIBUTES
+ *
+ * Mipmaps may improved rendering quality, at the cost of increased memory
+ * consumption. Due to technical limitations, they will only be generated for
+ * textures whose dimensions are a power of two. See:
+ * https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
  */
 function WebGlStage(opts) {
   opts = opts || {};
@@ -342,10 +348,9 @@ WebGlTexture.prototype.refresh = function(tile, asset) {
 
   }
 
-  // Generate mipmap if the corresponding stage option is set.
-  // Note that WebGl does not support mipmaps for NPOT textures.
-  // See: https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
-  if (stage._generateMipmaps) {
+  // Generate mipmap if the corresponding stage option is set and the texture
+  // dimensions are powers of two.
+  if (stage._generateMipmaps && ispot(width) && ispot(height)) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     gl.generateMipmap(gl.TEXTURE_2D);
