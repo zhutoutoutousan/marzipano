@@ -219,6 +219,36 @@ eventEmitter(TextureStoreItem);
 
 
 /**
+ * Signals that a texture has been loaded.
+ * @event TextureStore#textureLoad
+ * @param {Tile} tile The tile for which the texture was loaded.
+ */
+
+/**
+ * Signals that a texture has been unloaded.
+ * @event TextureStore#textureLoad
+ * @param {Tile} tile The tile for which the texture was unloaded.
+ */
+
+/**
+ * Signals that a texture has been invalidated.
+ * @event TextureStore#textureInvalid
+ * @param {Tile} tile The tile for which the texture was invalidated.
+ */
+
+/**
+ * Signals that loading a texture has been cancelled.
+ * @event TextureStore#textureCancel
+ * @param {Tile} tile The tile for which the texture loading was cancelled.
+ */
+
+/**
+ * Signals that loading a texture has failed.
+ * @event TextureStore#textureError
+ * @param {Tile} tile The tile for which the texture loading has failed.
+ */
+
+/**
  * @class
  * @classdesc
  * A TextureStore maintains a cache of textures used to render a {@link Layer}.
