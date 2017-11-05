@@ -520,7 +520,7 @@ Viewer.prototype.breakIdleMovement = function() {
 
 
 Viewer.prototype._resetIdleTimer = function() {
-  this._idleTimer.reset();
+  this._idleTimer.start();
 };
 
 

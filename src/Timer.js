@@ -24,6 +24,24 @@ var defaultOptions = {
 };
 
 
+/**
+ * Signals a timeout.
+ * @event Timer#timeout
+ */
+
+
+/**
+ * @class
+ * @classdesc A Timer provides a mechanism to receive an event after a timeout.
+ *
+ * A timer has a set duration, and is either started or stopped at a given time.
+ * The timer is initially stopped. When the timer is started, a timeout event is
+ * scheduled to fire once the set duration elapses. When the timer is stopped,
+ * the scheduled timeout event is cancelled. When a timeout event fires, the
+ * timer returns to the stopped state.
+ *
+ * @param {number} [opts.duration=Infinity] Timeout in milliseconds.
+ */
 function Timer(opts) {
 
   opts = defaults(opts || {}, defaultOptions);
@@ -41,6 +59,10 @@ function Timer(opts) {
 eventEmitter(Timer);
 
 
+/**
+ * Starts the timer. If the timer is already started, this has the effect of
+ * stopping and starting again (i.e. resetting the timer).
+ */
 Timer.prototype.start = function() {
   this._startTime = clock();
   if (this._handle == null && this._duration < Infinity) {
@@ -49,11 +71,18 @@ Timer.prototype.start = function() {
 };
 
 
+/**
+ * Returns whether the timer is in the started state.
+ * @return {boolean}
+ */
 Timer.prototype.started = function() {
   return this._startTime != null;
 };
 
 
+/**
+ * Stops the timer.
+ */
 Timer.prototype.stop = function() {
   this._startTime = null;
   if (this._handle != null) {
@@ -63,13 +92,14 @@ Timer.prototype.stop = function() {
 };
 
 
-Timer.prototype.reset = function() {
-  this.start();
+Timer.prototype._setup = function(interval) {
+  this._handle = setTimeout(this._check, interval);
 };
 
 
-Timer.prototype._setup = function(interval) {
-  this._handle = setTimeout(this._check, interval);
+Timer.prototype._teardown = function() {
+  clearTimeout(this._handle);
+  this._handle = null;
 };
 
 
@@ -78,7 +108,7 @@ Timer.prototype._check = function() {
   var elapsed = currentTime - this._startTime;
   var remaining = this._duration - elapsed;
 
-  this._handle = null;
+  this._teardown();
 
   if (remaining <= 0) {
     this.emit('timeout');
@@ -89,23 +119,26 @@ Timer.prototype._check = function() {
 };
 
 
+/**
+ * Returns the currently set duration.
+ */
 Timer.prototype.duration = function() {
   return this._duration;
 };
 
 
+/**
+ * Sets the duration. If the timer is already started, the timeout event is
+ * rescheduled to occur once the new duration has elapsed since the last call
+ * to start. In particular, if an amount of time larger than the new duration
+ * has already elapsed, the timeout event fires immediately.
+ * @param {number}
+ */
 Timer.prototype.setDuration = function(duration) {
-
   this._duration = duration;
-
   if (this._startTime != null) {
-    if (this._handle != null) {
-      clearTimeout(this._handle);
-      this._handle = null;
-    }
     this._check();
   }
-
 };
 
 
