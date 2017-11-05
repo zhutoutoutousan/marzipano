@@ -17,7 +17,6 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
-var async = require('async');
 
 var eventEmitter = require('minimal-event-emitter');
 var defer = require('../../src/util/defer');
@@ -364,30 +363,28 @@ suite('TextureStore', function() {
     });
 
     test('older tile is displaced by newer tile', function(done) {
-
       var store = makeTextureStore({
         previouslyVisibleCacheSize: 1
       });
-
       var tiles = [ new MockTile(), new MockTile(), new MockTile() ];
-
-      var markAndWaitForLoad = function(tile, done) {
-        store.startFrame();
-        store.markTile(tile);
-        store.endFrame();
-        store.addEventListener('textureLoad', function(event, loadedTile) {
-          if (loadedTile === tile) {
-            done();
-          }
-        });
+      var markAndWaitForLoad = function(i) {
+        if (i === tiles.length) {
+          assert.notOk(store.query(tiles[0]).previouslyVisible);
+          assert.ok(store.query(tiles[1]).previouslyVisible);
+          done();
+        } else {
+          var tile = tiles[i];
+          store.startFrame();
+          store.markTile(tile);
+          store.endFrame();
+          store.addEventListener('textureLoad', function(event, loadedTile) {
+            if (loadedTile === tile) {
+              markAndWaitForLoad(i+1);
+            }
+          });
+        }
       };
-
-      async.eachSeries(tiles, markAndWaitForLoad, function() {
-        assert.notOk(store.query(tiles[0]).previouslyVisible);
-        assert.ok(store.query(tiles[1]).previouslyVisible);
-        done();
-      });
-
+      markAndWaitForLoad(0);
     });
 
   });
