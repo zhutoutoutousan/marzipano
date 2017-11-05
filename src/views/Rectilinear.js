@@ -51,7 +51,7 @@ var fovLimitEpsilon = 0.000000001;
 
 /**
  * @class
- * @classdesc A view implementiong a rectilinear projection for 360° images.
+ * @classdesc A view implementing a rectilinear projection for 360° images.
  * @implements View
  *
  * @param {Object} params the initial view parameters.
