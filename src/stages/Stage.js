@@ -34,6 +34,11 @@ function reverseTileCmp(t1, t2) {
   return -t1.cmp(t2);
 }
 
+/**
+ * Signals that the contents of the stage have been invalidated and must be
+ * rendered again.
+ * @event Stage#renderInvalid
+ */
 
 /**
  * @interface

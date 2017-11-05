@@ -17,12 +17,25 @@
 
 var eventEmitter = require('minimal-event-emitter');
 
+/**
+ * Signals that {@link Stage#render} is about to be called.
+ * @event RenderLoop#beforeRender
+ */
+
+/**
+ * Signals that {@link Stage#render} has just been called.
+ * @event RenderLoop#afterRender
+ */
 
 /**
  * @class
- * @classdesc A RenderLoop causes a {@link Stage} to be rendered on the next
- *            frame when it reports that its contents are invalid. The loop
- *            may be manually started/stopped and begins in the stopped state.
+ * @classdesc A RenderLoop wraps a {@link Stage} and calls {@link Stage#render}
+ * on the next frame whenever it fires {@link Stage#renderInvalid}. It may be
+ * started and stopped, and is initially in the stopped state, in which no call
+ * to {@link Stage#render} occurs.
+ *
+ * @listens Stage#renderInvalid
+ *
  * @param {Stage} stage
  */
 function RenderLoop(stage) {
@@ -76,7 +89,7 @@ RenderLoop.prototype.destroy = function() {
 
 
 /**
- * Get the underlying stage.
+ * Returns the underlying stage.
  * @return {Stage}
  */
 RenderLoop.prototype.stage = function() {
@@ -85,7 +98,7 @@ RenderLoop.prototype.stage = function() {
 
 
 /**
- * Start the render loop.
+ * Starts the render loop.
  */
 RenderLoop.prototype.start = function() {
   this._running = true;
@@ -94,7 +107,7 @@ RenderLoop.prototype.start = function() {
 
 
 /**
- * Stop the render loop.
+ * Stops the render loop.
  */
 RenderLoop.prototype.stop = function() {
   if (this._requestHandle) {
@@ -106,8 +119,8 @@ RenderLoop.prototype.stop = function() {
 
 
 /**
- * Request a render on the next frame, even if the stage contents remain valid.
- * Does nothing if the loop is stopped.
+ * Forces the stage to render on the next frame, even if its contents remain
+ * valid. Does nothing if the loop is stopped.
  */
 RenderLoop.prototype.renderOnNextFrame = function() {
   if (this._running && !this._requestHandle) {
