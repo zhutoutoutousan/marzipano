@@ -13,7 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* Extra stuff to be used by JSDoc. This code is never executed */
+
+// This file contains no executable code, only documentation.
+
+/**
+ * @interface Rect
+ * @classdesc Represents a rectangular region.
+ * @property {number} x The horizontal offset.
+ * @property {number} y The vertical offset.
+ * @property {number} width The width.
+ * @property {number} width The height.
+ */
 
 /**
  * @interface View
