@@ -43,11 +43,11 @@ function reverseTileCmp(t1, t2) {
 /**
  * @interface
  * @classdesc A Stage is a container with the ability to render a stack of
- * {@Layer layers}.
+ * {@link Layer layers}.
  *
  * This is a superclass containing logic that is common to all implementations;
  * it should never be instantiated directly. Instead, use one of the
- * subclasses: {@link WebGlStage}, {@link CssStage}, {@link FlashStage}.
+ * subclasses: {@link WebGlStage}, {@link CssStage} or {@link FlashStage}.
  */
 function Stage(opts) {
 
@@ -106,6 +106,19 @@ Stage.prototype.destroy = function() {
 };
 
 
+/**
+ * Registers a {@link Renderer} for the given {@link Geometry} and {@link View}
+ * type.
+ *
+ * The {@link registerDefaultRenderers} utility function may be used to
+ * register all known renderers for a stage type into that stage. Most users
+ * will not need to register renderers, as {@link Viewer} does it for them.
+ *
+ * @param {string} geometryType The geometry type, as given by
+ *     {@link Geometry#type}.
+ * @param {string} viewType The view type, as given by {@link View#type}.
+ * @param {*} Renderer The renderer class.
+ */
 Stage.prototype.registerRenderer = function(geometryType, viewType, Renderer) {
   return this._rendererRegistry.set(geometryType, viewType, Renderer);
 };
@@ -184,7 +197,7 @@ Stage.prototype.emitRenderInvalid = function() {
 /**
  * Add a {@link Layer} into the stage.
  * @param {Layer} layer
- * @throws Throws an error if the layer already belongs to the stage.
+ * @throws An error if the layer already belongs to the stage.
  */
 Stage.prototype.addLayer = function(layer) {
   if (this._layers.indexOf(layer) >= 0) {
@@ -209,7 +222,7 @@ Stage.prototype.addLayer = function(layer) {
 /**
  * Remove a {@link Layer} from the stage.
  * @param {Layer} layer
- * @throws Throws an error if the layer does not belong to the stage.
+ * @throws An error if the layer does not belong to the stage.
  */
 Stage.prototype.removeLayer = function(layer) {
   var index = this._layers.indexOf(layer);
@@ -268,8 +281,8 @@ Stage.prototype.hasLayer = function(layer) {
  * Move a {@link Layer} to the given position in the stack.
  * @param {Layer} layer
  * @param {Number} i
- * @throws Throws an error if the layer does not belong to the stage or the
- *         new position is invalid.
+ * @throws An error if the layer does not belong to the stage or the new
+ *     position is invalid.
  */
 Stage.prototype.moveLayer = function(layer, i) {
   if (i < 0 || i >= this._layers.length) {
@@ -533,5 +546,15 @@ Stage.prototype.createTexture = function(tile, asset, done) {
 
 };
 
+/**
+ * Returns the stage type, used to determine the appropriate renderer for a
+ * given geometry and view.
+ *
+ * See also {@link Stage#registerRenderer}.
+ *
+ * @function
+ * @name Stage#type
+ * @returns {string}
+ */
 
 module.exports = Stage;
