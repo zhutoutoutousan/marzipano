@@ -27,8 +27,11 @@
 
 /**
  * @interface View
- * @classdesc Represents a projection and camera direction used to render the
- * media.
+ * @classdesc Defines the camera direction, aperture and projection used to
+ * render media.
+ *
+ * This is an abstract interface; the concrete implementations are
+ * {@link RectilinearView} and {@link FlatView}.
  */
 
 /**
