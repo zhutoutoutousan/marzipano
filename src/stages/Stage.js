@@ -195,7 +195,7 @@ Stage.prototype.emitRenderInvalid = function() {
 
 
 /**
- * Add a {@link Layer} into the stage.
+ * Add a {@link Layer layer} into the stage.
  * @param {Layer} layer
  * @throws An error if the layer already belongs to the stage.
  */
@@ -258,7 +258,8 @@ Stage.prototype.removeAllLayers = function() {
 
 
 /**
- * Return a list of all {@link Layer layers} contained in the stage.
+ * Returns a list of all {@link Layer layers} belonging to the stage. The
+ * returned list is in display order, background to foreground.
  * @return {Layer[]}
  */
 Stage.prototype.listLayers = function() {
@@ -268,7 +269,7 @@ Stage.prototype.listLayers = function() {
 
 
 /**
- * Return whether the stage contains a {@link Layer}.
+ * Return whether the stage contains a {@link Layer layer}.
  * @param {Layer} layer
  * @return {boolean}
  */
@@ -278,7 +279,7 @@ Stage.prototype.hasLayer = function(layer) {
 
 
 /**
- * Move a {@link Layer} to the given position in the stack.
+ * Move a {@link Layer layer} to the given position in the stack.
  * @param {Layer} layer
  * @param {Number} i
  * @throws An error if the layer does not belong to the stage or the new
