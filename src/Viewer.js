@@ -337,8 +337,6 @@ Viewer.prototype.domElement = function() {
  * @return {Scene}
  */
 Viewer.prototype.createScene = function(opts) {
-  // TODO: set textureStore size to 0 for video scenes somehow?
-
   opts = opts || {};
 
   var stage = this._stage;
