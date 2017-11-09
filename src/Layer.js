@@ -82,7 +82,6 @@ Layer.prototype.destroy = function() {
     this._textureStoreChangeHandler);
   this._textureStore.removeEventListener('textureInvalid',
     this._textureStoreChangeHandler);
-  this._stage.removeEventListener('resize', this._handleStageResize);
   this._stage = null;
   this._source = null;
   this._geometry = null;
