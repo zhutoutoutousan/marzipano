@@ -77,9 +77,9 @@ eventEmitter(Scene);
 
 
 /**
- * Destructor. Client code should call {@link Viewer#destroyScene} instead.
+ * Destructor. Clients should call {@link Viewer#destroyScene} instead.
  */
-Scene.prototype._destroy = function() {
+Scene.prototype.destroy = function() {
   this._view.removeEventListener('change', this._viewChangeHandler);
   this._viewer.removeEventListener('sceneChange', this._updateHotspotContainerHandler);
 

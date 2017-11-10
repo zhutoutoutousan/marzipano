@@ -416,7 +416,7 @@ Viewer.prototype.destroyScene = function(scene) {
     textureStore.destroy();
   });
 
-  scene._destroy();
+  scene.destroy();
 
 };
 
