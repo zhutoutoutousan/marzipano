@@ -43,8 +43,12 @@ function Scene(viewer, layers) {
   this._layers = layers;
   this._view = layers[0].view(); // TODO: Enforce that all layers in a scene share the same view.
 
-  // Hotspot container -- for first layer only
-  this._hotspotContainer = new HotspotContainer(viewer._controlContainer, viewer._stage, this._view, viewer._renderLoop, { rect: layers[0].effects().rect });
+  // Hotspot container. Assume it occupies a full rect.
+  this._hotspotContainer = new HotspotContainer(
+    viewer._controlContainer,
+    viewer.stage(),
+    this._view,
+    viewer.renderLoop());
 
   // The current movement.
   this._movement = null;
@@ -60,7 +64,6 @@ function Scene(viewer, layers) {
   // Show or hide hotspots when scene changes.
   this._updateHotspotContainerHandler = this._updateHotspotContainer.bind(this);
   this._viewer.addEventListener('sceneChange', this._updateHotspotContainerHandler);
-  this._layers[0].addEventListener('effectsChange', this._updateHotspotContainerHandler);
 
   // Emit event when view changes.
   this._viewChangeHandler = this.emit.bind(this, 'viewChange');
@@ -79,7 +82,6 @@ eventEmitter(Scene);
 Scene.prototype._destroy = function() {
   this._view.removeEventListener('change', this._viewChangeHandler);
   this._viewer.removeEventListener('sceneChange', this._updateHotspotContainerHandler);
-  this._layers[0].removeEventListener('effectsChange', this._updateHotspotContainerHandler);
 
   if (this._movement) {
     this.stopMovement();
@@ -325,12 +327,9 @@ Scene.prototype._updateMovement = function() {
 
 
 Scene.prototype._updateHotspotContainer = function() {
-  this._hotspotContainer.setRect(this._layers[0].effects().rect);
-
-  if(this.visible()) {
+  if (this.visible()) {
     this._hotspotContainer.show();
-  }
-  else {
+  } else {
     this._hotspotContainer.hide();
   }
 };
