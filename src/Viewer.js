@@ -323,44 +323,59 @@ Viewer.prototype.domElement = function() {
 
 
 /**
- * Create a new {@link Scene scene}.
+ * Creates a new {@link Scene scene} with a single layer and adds it to the
+ * viewer.
+ *
+ * The currently displayed scene does not change. To switch to the scene, call
+ * {@link Viewer#switchScene}.
+ *
  * @param {Object} opts
- * @param {Source} opts.source The underlying {@link Source}.
- * @param {Geometry} opts.geometry The underlying +{@link Geometry}.
- * @param {View} opts.view The underlying {@link View}.
- * @param {boolean} opts.pinFirstLevel Pin the first level to provide a
- *        last-resort fallback at the cost of memory consumption.
- * @param {Object} opts.textureStore Options to pass to the {@link TextureStore}
- *        constructor.
- * @param {Object} opts.layerOpts Options to pass to the {@link Layer}
- *        constructor.
+ * @param {View} opts.view The scene's underlying {@link View}.
+ * @param {Source} opts.source The layer's underlying {@link Source}.
+ * @param {Geometry} opts.geometry The layer's underlying {@link Geometry}.
+ * @param {boolean} [opts.pinFirstLevel=false] Whether to pin the first level to
+ *     provide a fallback of last resort, at the cost of memory consumption.
+ * @param {Object} [opts.textureStoreOpts={}] Options to pass to the
+ *     {@link TextureStore} constructor.
+ * @param {Object} [opts.layerOpts={}] Options to pass to the {@link Layer}
+ *     constructor.
  * @return {Scene}
  */
 Viewer.prototype.createScene = function(opts) {
   opts = opts || {};
 
-  var stage = this._stage;
-  var layers = [];
+  var scene = this.createEmptyScene({ view: opts.view });
 
-  // Multilayer options now passed as Array of opts, wrapping in Array in case for single layer argument for backward compatibility
-  if (type(opts) !== 'array') opts = Array(opts);
-
-  opts.forEach(function(opts) {
-
-    var source = opts.source;
-    var geometry = opts.geometry;
-    var view = opts.view;
-    var textureStore = new TextureStore(geometry, source, stage, opts.textureStore);
-    var layer = new Layer(stage, source, geometry, view, textureStore, opts.layerOpts);
-
-    layers.push(layer);
-
-    if (opts.pinFirstLevel) {
-      layer.pinFirstLevel();
-    }
+  var layer = scene.createLayer({
+    source: opts.source,
+    geometry: opts.geometry,
+    pinFirstLevel: opts.pinFirstLevel,
+    textureStoreOpts: opts.textureStoreOpts,
+    layerOpts: opts.layerOpts
   });
 
-  var scene = new Scene(this, layers);
+  return scene;
+};
+
+
+/**
+ * Creates a new {@link Scene scene} with no layers and adds it to the viewer.
+ *
+ * Layers may be added to the scene by calling {@link Scene#createLayer}.
+ * However, if the scene has a single layer, it is simpler to call
+ * {@link Viewer#createScene} instead of this method.
+ *
+ * The currently displayed scene does not change. To switch to the scene, call
+ * {@link Viewer#switchScene}.
+ *
+ * @param {Object} opts Scene creation options.
+ * @param {View} opts.view The scene's underlying {@link View}.
+ * @return {Scene}
+ */
+Viewer.prototype.createEmptyScene = function(opts) {
+  opts = opts || {};
+
+  var scene = new Scene(this, opts.view);
   this._scenes.push(scene);
 
   return scene;
@@ -595,7 +610,8 @@ Viewer.prototype.switchScene = function(newScene, opts, done) {
     throw new Error('No such scene in viewer');
   }
 
-  // Consistency check -- updated for multiple layers
+  // Consistency check.
+  // TODO: Fix check for scenes with zero layers.
   var layerList = stage.listLayers();
   if (oldScene && oldScene.listLayers()[oldScene.listLayers().length - 1] !== layerList[layerList.length - 1]) {
     throw new Error('Stage not in sync with viewer');

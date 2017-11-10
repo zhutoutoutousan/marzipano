@@ -31,17 +31,21 @@ var defaults = require('./util/defaults');
 
 /**
  * @class
- * @classdesc A @link{Scene} is a {@link Layer} with associated {@link View}
- *            and {@link Effects} that may be rendered inside a {@link Viewer}.
- *            Client code should call {@link Viewer#createScene} instead of
- *            invoking the constructor directly.
- * @param {Viewer} viewer
- * @param {Array<Layer>} layers
+ * @classdesc
+ * A {@link Scene} is a stack of {@link Layer layers} sharing the same
+ * {@link View view} and {@link HotspotContainer hotspot container}. It belongs
+ * to the {@link Viewer viewer} inside which it is displayed.
+ *
+ * Clients should call {@link Viewer#createScene} instead of invoking the
+ * constructor directly.
+ *
+ * @param {Viewer} viewer The viewer this scene belongs to.
+ * @param {View} view The scene's underlying view.
  */
-function Scene(viewer, layers) {
+function Scene(viewer, view) {
   this._viewer = viewer;
-  this._layers = layers;
-  this._view = layers[0].view(); // TODO: Enforce that all layers in a scene share the same view.
+  this._view = view;
+  this._layers = [];
 
   // Hotspot container. Assume it occupies a full rect.
   this._hotspotContainer = new HotspotContainer(
