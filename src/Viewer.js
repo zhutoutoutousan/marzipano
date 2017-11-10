@@ -408,16 +408,7 @@ Viewer.prototype.destroyScene = function(scene) {
   }
   this._scenes.splice(i, 1);
 
-  var layers = scene._layers;
-
-  layers.forEach(function(layer) {
-    var textureStore = layer.textureStore();
-    layer.destroy();
-    textureStore.destroy();
-  });
-
   scene.destroy();
-
 };
 
 

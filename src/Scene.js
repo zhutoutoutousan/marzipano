@@ -15,10 +15,10 @@
  */
 'use strict';
 
-var eventEmitter = require('minimal-event-emitter');
-
+var Layer = require('./Layer');
+var TextureStore = require('./TextureStore');
 var HotspotContainer = require('./HotspotContainer');
-
+var eventEmitter = require('minimal-event-emitter');
 var clock = require('./util/clock');
 var noop = require('./util/noop');
 var type = require('./util/type');
@@ -89,6 +89,8 @@ Scene.prototype.destroy = function() {
 
   this._hotspotContainer.destroy();
 
+  this.destroyAllLayers();
+
   this._movement = null;
   this._viewer = null;
   this._layers = null;
@@ -147,6 +149,74 @@ Scene.prototype.viewer = function() {
  */
 Scene.prototype.visible = function() {
   return this._viewer.scene() === this;
+};
+
+
+/**
+ * Creates a new {@link Layer layer} and adds it into the scene in the
+ * foreground position.
+ *
+ * @param {Object} opts Layer creation options.
+ * @param {Source} opts.source The layer's underlying {@link Source}.
+ * @param {Source} opts.geometry The layer's underlying {@link Geometry}.
+ * @param {boolean} [opts.pinFirstLevel=false] Whether to pin the first level to
+ *     provide a fallback of last resort, at the cost of memory consumption.
+ * @param {Object} [opts.textureStoreOpts={}] Options to pass to the
+ *     {@link TextureStore} constructor.
+ * @param {Object} [opts.layerOpts={}] Options to pass to the {@link Layer}
+ *     constructor.
+ * @return {Layer}
+ */
+Scene.prototype.createLayer = function(opts) {
+  opts = opts || {};
+
+  var textureStoreOpts = opts.textureStoreOpts || {};
+  var layerOpts = opts.layerOpts || {};
+
+  var source = opts.source;
+  var geometry = opts.geometry;
+  var view = this._view;
+  var stage = this._viewer.stage();
+  var textureStore = new TextureStore(geometry, source, stage, textureStoreOpts);
+  var layer = new Layer(stage, source, geometry, view, textureStore, layerOpts);
+
+  this._layers.push(layer);
+
+  if (opts.pinFirstLevel) {
+    layer.pinFirstLevel();
+  }
+
+  // TODO: Update stage layers for active scene.
+
+  return layer;
+};
+
+
+/**
+ * Destroys a {@link Layer layer} and removes it from the scene.
+ * @param {Layer} layer
+ * @throws An error if the layer does not belong to the scene.
+ */
+Scene.prototype.destroyLayer = function(layer) {
+  var i = this._layers.indexOf(layer);
+  if (i < 0) {
+    throw new Error('No such layer in scene');
+  }
+
+  // TODO: Update stage layers for active scene.
+
+  layer.textureStore().destroy();
+  layer.destroy();
+};
+
+
+/**
+ * Destroys all {@link Layer layers} and removes them from the scene.
+ */
+Scene.prototype.destroyAllLayers = function() {
+  while (this._layers.length > 0) {
+    this.destroyLayer(this._layers[0]);
+  }
 };
 
 
