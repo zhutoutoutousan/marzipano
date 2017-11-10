@@ -195,19 +195,51 @@ Stage.prototype.emitRenderInvalid = function() {
 
 
 /**
- * Add a {@link Layer layer} into the stage.
- * @param {Layer} layer
- * @throws An error if the layer already belongs to the stage.
+ * Returns a list of all {@link Layer layers} belonging to the stage. The
+ * returned list is in display order, background to foreground.
+ * @return {Layer[]}
  */
-Stage.prototype.addLayer = function(layer) {
+Stage.prototype.listLayers = function() {
+  // Return a copy to prevent unintended mutation by the caller.
+  return [].concat(this._layers);
+};
+
+
+/**
+ * Return whether a {@link Layer layer} belongs to the stage.
+ * @param {Layer} layer
+ * @return {boolean}
+ */
+Stage.prototype.hasLayer = function(layer) {
+  return this._layers.indexOf(layer) >= 0;
+};
+
+
+/**
+ * Adds a {@link Layer layer} into the stage.
+ * @param {Layer} layer The layer to add.
+ * @param {number|undefined} i The optional position, where 0 ≤ i ≤ n and n is
+ *     the current number of layers. The default is n, which inserts at the
+ *     top of the display stack.
+ * @throws An error if the layer already belongs to the stage or if the position
+ *     is invalid.
+ */
+Stage.prototype.addLayer = function(layer, i) {
   if (this._layers.indexOf(layer) >= 0) {
     throw new Error('Layer already in stage');
   }
 
+  if (i == null) {
+    i = this._layers.length;
+  }
+  if (i < 0 || i > this._layers.length) {
+    throw new Error('Invalid layer position');
+  }
+
   this._validateLayer(layer);
 
-  this._layers.push(layer);
-  this._renderers.push(null);
+  this._layers.splice(i, 0, layer);
+  this._renderers.splice(i, 0, null);
 
   // Listeners for render invalid.
   layer.addEventListener('viewChange', this.emitRenderInvalid);
@@ -220,8 +252,36 @@ Stage.prototype.addLayer = function(layer) {
 
 
 /**
- * Remove a {@link Layer} from the stage.
- * @param {Layer} layer
+ * Moves a {@link Layer layer} into a different position in the display stack.
+ * @param {Layer} layer The layer to move.
+ * @param {number} i The position, where 0 ≤ i ≤ n-1 and n is the current number
+ *     of layers.
+ * @throws An error if the layer does not belong to the stage or if the position
+ *     is invalid.
+ */
+Stage.prototype.moveLayer = function(layer, i) {
+  var index = this._layers.indexOf(layer);
+  if (index < 0) {
+    throw new Error('No such layer in stage');
+  }
+
+  if (i < 0 || i >= this._layers.length) {
+    throw new Error('Invalid layer position');
+  }
+
+  layer = this._layers.splice(index, 1)[0];
+  var renderer = this._renderers.splice(index, 1)[0];
+
+  this._layers.splice(i, 0, layer);
+  this._renderers.splice(i, 0, renderer);
+
+  this.emitRenderInvalid();
+};
+
+
+/**
+ * Removes a {@link Layer} from the stage.
+ * @param {Layer} layer The layer to remove.
  * @throws An error if the layer does not belong to the stage.
  */
 Stage.prototype.removeLayer = function(layer) {
@@ -248,60 +308,12 @@ Stage.prototype.removeLayer = function(layer) {
 
 
 /**
- * Remove all {@link Layer layers} from the stage.
+ * Removes all {@link Layer layers} from the stage.
  */
 Stage.prototype.removeAllLayers = function() {
   while (this._layers.length > 0) {
     this.removeLayer(this._layers[0]);
   }
-};
-
-
-/**
- * Returns a list of all {@link Layer layers} belonging to the stage. The
- * returned list is in display order, background to foreground.
- * @return {Layer[]}
- */
-Stage.prototype.listLayers = function() {
-  // Return a copy to prevent unintended mutation by the caller.
-  return [].concat(this._layers);
-};
-
-
-/**
- * Return whether the stage contains a {@link Layer layer}.
- * @param {Layer} layer
- * @return {boolean}
- */
-Stage.prototype.hasLayer = function(layer) {
-  return this._layers.indexOf(layer) >= 0;
-};
-
-
-/**
- * Move a {@link Layer layer} to the given position in the stack.
- * @param {Layer} layer
- * @param {Number} i
- * @throws An error if the layer does not belong to the stage or the new
- *     position is invalid.
- */
-Stage.prototype.moveLayer = function(layer, i) {
-  if (i < 0 || i >= this._layers.length) {
-    throw new Error('Cannot move layer out of bounds');
-  }
-
-  var index = this._layers.indexOf(layer);
-  if (index < 0) {
-    throw new Error('No such layer in stage');
-  }
-
-  layer = this._layers.splice(index, 1)[0];
-  var renderer = this._renderers.splice(index, 1)[0];
-
-  this._layers.splice(i, 0, layer);
-  this._renderers.splice(i, 0, renderer);
-
-  this.emitRenderInvalid();
 };
 
 
