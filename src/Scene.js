@@ -110,7 +110,7 @@ Scene.prototype.destroy = function() {
 
 
 /**
- * Get the scene's @link{HotspotContainer hotspot container}.
+ * Returns the {@link HotspotContainer hotspot container} for the scene.
  * @return {Layer}
  */
 Scene.prototype.hotspotContainer = function() {
@@ -118,7 +118,12 @@ Scene.prototype.hotspotContainer = function() {
 };
 
 /**
- * Get the scene's underlying @link{Layer layer}.
+ * Returns the first of the {@link Layer layers} belonging to the scene, or
+ * null if the scene has no layers.
+ *
+ * This method is equivalent to `Scene#listLayers[0]`. It may be removed in the
+ * future.
+ *
  * @return {Layer}
  */
 Scene.prototype.layer = function() {
@@ -126,8 +131,9 @@ Scene.prototype.layer = function() {
 };
 
 /**
- * Get the scene's underlying @link{Layer layer}.
- * @return {Array<Layer>} layers
+* Returns a list of all {@link Layer layers} belonging to the scene. The
+* returned list is in display order, background to foreground.
+* @return {Layer[]}
  */
 Scene.prototype.listLayers = function() {
   return [].concat(this._layers);
@@ -135,7 +141,7 @@ Scene.prototype.listLayers = function() {
 
 
 /**
- * Get the scene's underlying @link{View view}.
+ * Returns the scene's underlying {@link View view}.
  * @return {View}
  */
 Scene.prototype.view = function() {
@@ -144,7 +150,7 @@ Scene.prototype.view = function() {
 
 
 /**
- * Get the @link{Viewer viewer} the scene belongs to.
+ * Returns the {@link Viewer viewer} the scene belongs to.
  * @return {Viewer}
  */
 Scene.prototype.viewer = function() {
@@ -153,7 +159,7 @@ Scene.prototype.viewer = function() {
 
 
 /**
- * Whether the scene is currently visible.
+ * Returns whether the scene is currently visible.
  * @return {boolean}
  */
 Scene.prototype.visible = function() {
@@ -232,9 +238,12 @@ Scene.prototype.destroyAllLayers = function() {
 
 
 /**
- * Switch to the scene, as would be obtained by calling {@link Viewer#switchScene}.
+ * Switches to the scene.
+ *
+ * This is equivalent to calling {@link Viewer#switchScene} on this scene.
+ *
  * @param {Object} opts Options to pass into {@link Viewer#switchScene}.
- * @param {Object} done Called when the scene switch is complete.
+ * @param {function} done Function to call when the switch is complete.
  */
 Scene.prototype.switchTo = function(opts, done) {
   return this._viewer.switchScene(this, opts, done);
@@ -242,13 +251,18 @@ Scene.prototype.switchTo = function(opts, done) {
 
 
 /**
- * Tween the scene's underlying @link{View view}.
+ * Tweens the scene's underlying {@link View view}.
+ *
  * @param {Object} params Target view parameters.
- * @param {Object} opts
- * @param {Number} [opts.transitionDuration=1000] Tween duration in milliseconds.
- * @param {Number} [opts.closest=true] Whether to take the shortest path when
- * tweening; requires {@link View#normalizeToClosest} to be implemented.
- * @param {Function} done Called when the tween finishes or is interrupted.
+ * @param {Object} opts Transition options.
+ * @param {number} [opts.transitionDuration=1000] Tween duration, in
+ *     milliseconds.
+ * @param {number} [opts.closest=true] Whether to tween through the shortest
+ *    path between the initial and final view parameters. This requires
+ *    {@link View#normalizeToClosest} to be implemented, and does nothing
+ *    otherwise.
+ * @param {function} done Function to call when the tween finishes or is
+ *    interrupted.
  */
 Scene.prototype.lookTo = function(params, opts, done) {
   // TODO: allow controls to interrupt an ongoing tween.
@@ -324,9 +338,11 @@ Scene.prototype.lookTo = function(params, opts, done) {
 
 
 /**
- * Start a movement.
- * @param {Function} fn Movement function.
- * @param {Function} done Called when the movement finishes.
+ * Starts a movement.
+ *
+ * @param {function} fn The movement function.
+ * @param {function} done Function to be called when the movement finishes or is
+ *     interrupted.
  */
 Scene.prototype.startMovement = function(fn, done) {
 
@@ -353,7 +369,7 @@ Scene.prototype.startMovement = function(fn, done) {
 
 
 /**
- * Stop the current movement.
+ * Stops the current movement.
  */
 Scene.prototype.stopMovement = function() {
 
@@ -374,8 +390,8 @@ Scene.prototype.stopMovement = function() {
 
 
 /**
- * Return the current movement.
- * @return {Function}
+ * Returns the current movement.
+ * @return {function}
  */
 Scene.prototype.movement = function() {
   return this._movement;

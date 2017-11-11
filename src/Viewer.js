@@ -60,9 +60,6 @@ var stagePrefList = [
   FlashStage
 ];
 
-// TODO: it might make sense to support multiple scenes to be visible at the
-// same time, which would allow e.g. overlapping effects with transparency.
-
 /**
  * Signals that the current scene has changed.
  * @event Viewer#sceneChange
@@ -76,19 +73,25 @@ var stagePrefList = [
 
 /**
  * @class
- * @classdesc A Viewer is a single-{@link Stage stage} container for multiple
- * {@link Scene scenes}.
- * @param {HTMLElement} domElement the HTML element inside which the viewer
- *        should be initialized.
- * @param {Object} opts
- * @param {(null|'webgl'|'css'|'flash')} opts.stageType stage type to use.
- * @param {Object} opts.controls options to be passed to
- * {@link registerDefaultControls}.
- * @param {Object} opts.stage options to be passed to the {@link Stage}
- * constructor.
+ * @classdesc
+ * A Viewer is a container for multiple {@link Scene scenes} to be displayed
+ * inside a {@link Stage stage} contained in the DOM.
+ *
+ * Scenes may be created by calling {@link Viewer#createScene}. Except during a
+ * scene switch, a single one of them, called the current scene, is visible.
+ * Calling {@link Viewer#switchScene} sets the current scene and switches to it.
+ *
+ * @param {Element} domElement The DOM element to contain the stage.
+ * @param {Object} opts Viewer creation options.
+ * @param {(null|'webgl'|'css'|'flash')} [opts.stageType=null] The type of stage
+ *     to create. The default is to choose the most appropriate type depending
+ *     on the browser capabilities.
+ * @param {Object} opts.controls Options to be passed to
+ *     {@link registerDefaultControls}.
+ * @param {Object} opts.stage Options to be passed to the {@link Stage}
+ *     constructor.
  */
 function Viewer(domElement, opts) {
-
   opts = opts || {};
 
   this._domElement = domElement;
@@ -285,7 +288,7 @@ Viewer.prototype.destroy = function() {
 
 
 /**
- * Update the stage size to fill the containing element.
+ * Updates the stage size to fill the containing element.
  *
  * This method is automatically called when the browser window is resized.
  * Most clients won't need to explicitly call it to keep the size up to date.
@@ -299,7 +302,7 @@ Viewer.prototype.updateSize = function() {
 
 
 /**
- * Return the underlying {@link Stage}.
+ * Returns the underlying {@link Stage stage}.
  * @return {Stage}
  */
 Viewer.prototype.stage = function() {
@@ -308,7 +311,7 @@ Viewer.prototype.stage = function() {
 
 
 /**
- * Return the underlying {@link RenderLoop}.
+ * Returns the underlying {@link RenderLoop render loop}.
  * @return {RenderLoop}
  */
 Viewer.prototype.renderLoop = function() {
@@ -317,7 +320,7 @@ Viewer.prototype.renderLoop = function() {
 
 
 /**
- * Return the underlying {@link Controls}.
+ * Returns the underlying {@link Controls controls}.
  * @return {Controls}
  */
 Viewer.prototype.controls = function() {
@@ -326,7 +329,7 @@ Viewer.prototype.controls = function() {
 
 
 /**
- * Return the underlying DOM element.
+ * Returns the underlying DOM element.
  * @return {Element}
  */
 Viewer.prototype.domElement = function() {
@@ -338,10 +341,10 @@ Viewer.prototype.domElement = function() {
  * Creates a new {@link Scene scene} with a single layer and adds it to the
  * viewer.
  *
- * The currently displayed scene does not change. To switch to the scene, call
+ * The current scene does not change. To switch to the scene, call
  * {@link Viewer#switchScene}.
  *
- * @param {Object} opts
+ * @param {Object} opts Scene creation options.
  * @param {View} opts.view The scene's underlying {@link View}.
  * @param {Source} opts.source The layer's underlying {@link Source}.
  * @param {Geometry} opts.geometry The layer's underlying {@link Geometry}.
@@ -377,7 +380,7 @@ Viewer.prototype.createScene = function(opts) {
  * However, if the scene has a single layer, it is simpler to call
  * {@link Viewer#createScene} instead of this method.
  *
- * The currently displayed scene does not change. To switch to the scene, call
+ * The current scene does not change. To switch to the scene, call
  * {@link Viewer#switchScene}.
  *
  * @param {Object} opts Scene creation options.
@@ -443,7 +446,7 @@ Viewer.prototype._removeLayerFromStage = function(layer) {
 
 
 /**
- * Destroy a {@link Scene}.
+ * Destroys a {@link Scene scene} and removes it from the viewer.
  * @param {Scene} scene
  */
 Viewer.prototype.destroyScene = function(scene) {
@@ -475,7 +478,7 @@ Viewer.prototype.destroyScene = function(scene) {
 
 
 /**
- * Destroy all {@link Scene scenes}.
+ * Destroys all {@link Scene scenes} and removes them from the viewer.
  */
 Viewer.prototype.destroyAllScenes = function() {
   while (this._scenes.length > 0) {
@@ -485,7 +488,7 @@ Viewer.prototype.destroyAllScenes = function() {
 
 
 /**
- * Return whether the viewer contains a {@link Scene scene}.
+ * Returns whether the viewer contains a {@link Scene scene}.
  * @param {Scene} scene
  * @return {boolean}
  */
@@ -495,7 +498,7 @@ Viewer.prototype.hasScene = function(scene) {
 
 
 /**
- * Get a list of all {@link Scene scenes}.
+ * Returns a list of all {@link Scene scenes}.
  * @return {Scene[]}
  */
 Viewer.prototype.listScenes = function() {
@@ -504,8 +507,10 @@ Viewer.prototype.listScenes = function() {
 
 
 /**
- * Get the current {@link Scene scene}, i.e., the last scene for which
- * {@link Viewer#switchScene} was called.
+ * Returns the current {@link Scene scene}, or null if there isn't one.
+ *
+ * To change the current scene, call {@link Viewer#switchScene}.
+ *
  * @return {Scene}
  */
 Viewer.prototype.scene = function() {
@@ -514,8 +519,8 @@ Viewer.prototype.scene = function() {
 
 
 /**
- * Get the {@link View view} for the current {@link Scene scene}, as would be
- * obtained by calling {@link Scene#view}.
+ * Returns the {@link View view} for the current {@link Scene scene}, or null
+ * if there isn't one.
  * @return {View}
  */
 Viewer.prototype.view = function() {
@@ -528,8 +533,13 @@ Viewer.prototype.view = function() {
 
 
 /**
- * Tween the {@link View view} for the current {@link Scene scene}, as would be
- * obtained by calling {@link Scene#lookTo}.
+ * Tweens the {@link View view} for the current {@link Scene scene}.
+ *
+ * This method is equivalent to calling {@link Scene#lookTo} on the current
+ * scene.
+ *
+ * @param {Object} opts Options to pass into {@link Scene#lookTo}.
+ * @param {function} done Function to call when the tween is complete.
  */
 Viewer.prototype.lookTo = function(params, opts, done) {
   // TODO: is it an error to call lookTo when no scene is displayed?
@@ -541,8 +551,14 @@ Viewer.prototype.lookTo = function(params, opts, done) {
 
 
 /**
- * Start a movement, as would be obtained by calling {@link Scene#startMovement}
- * on the current scene.
+ * Starts a movement.
+ *
+ * This method is equivalent to calling {@link Scene#startMovement} on the
+ * current scene.
+ *
+ * @param {function} fn The movement function.
+ * @param {function} done Function to be called when the movement finishes or is
+ *     interrupted.
  */
 Viewer.prototype.startMovement = function(fn, cb) {
   // TODO: is it an error to call startMovement when no scene is displayed?
@@ -554,8 +570,10 @@ Viewer.prototype.startMovement = function(fn, cb) {
 
 
 /**
- * Stop the current movement, as would be obtained by calling
- * {@link Scene#stopMovement} on the current scene.
+ * Stops the current movement.
+ *
+ * This method is equivalent to calling {@link Scene#stopMovement} on the
+ * current scene.
  */
 Viewer.prototype.stopMovement = function() {
   var scene = this._scene;
@@ -566,10 +584,15 @@ Viewer.prototype.stopMovement = function() {
 
 
 /**
- * Schedule an automatic movement to be started when the view remains unchanged
- * for the given timeout period.
- * @param {Number} timeout Timeout period in milliseconds.
- * @param {Function} movement Automatic movement function, or null to disable.
+ * Schedules an idle movement to be automatically started when the view remains
+ * unchanged for the given timeout period.
+ *
+ * Changing the view while the idle movement is active stops the movement and
+ * schedules it to start again after the same timeout period. To disable it
+ * permanently, call with a null movement or an infinite timeout.
+ *
+ * @param {number} timeout Timeout period in milliseconds.
+ * @param {function} movement Automatic movement function, or null to disable.
  */
 Viewer.prototype.setIdleMovement = function(timeout, movement) {
   this._idleTimer.setDuration(timeout);
@@ -578,9 +601,9 @@ Viewer.prototype.setIdleMovement = function(timeout, movement) {
 
 
 /**
-  * Stop the idle movement. It will be started again after the timeout set by
-  * {@link Viewer#setIdleMovement}.
-  */
+ * Stops the idle movement. It will be started again after the timeout set by
+ * {@link Viewer#setIdleMovement}.
+ */
 Viewer.prototype.breakIdleMovement = function() {
   this._leaveIdle();
   this._resetIdleTimer();
@@ -626,7 +649,8 @@ function defaultTransitionUpdate(val, newScene, oldScene) {
 
 
 /**
- * Switches to another {@link Scene scene} with a fade transition.
+ * Switches to another {@link Scene scene} with a fade transition. This scene
+ * becomes the current one.
  *
  * If a transition is already taking place, it is interrupted before the new one
  * starts.
