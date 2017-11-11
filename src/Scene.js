@@ -219,6 +219,8 @@ Scene.prototype.destroyLayer = function(layer) {
     throw new Error('No such layer in scene');
   }
 
+  this._layers.splice(i, 1);
+
   // Signal that the layers have changed.
   this.emit('layerChange');
 
