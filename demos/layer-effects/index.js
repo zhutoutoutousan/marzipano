@@ -100,7 +100,14 @@ function importLayer(file) {
       canvas: canvas
     });
   });
+}
 
+// Discard an existing layer.
+function discardLayer(item) {
+  if (confirm('Remove this layer?')) {
+    scene.destroyLayer(item.layer);
+    layers.remove(item);
+  }
 }
 
 // Create an observable object with the layer effects.
@@ -225,6 +232,7 @@ scene.switchTo();
 
 var viewModel = {
   layers: layers,
+  discardLayer: discardLayer,
   maxDimensions: maxDimensions
 };
 
