@@ -521,8 +521,7 @@ Viewer.prototype.scene = function() {
 Viewer.prototype.view = function() {
   var scene = this._scene;
   if (scene) {
-    // assuming all the layers share the same view, refering to the view of the first layer
-    return scene.listLayers()[0].view();
+    return scene.view();
   }
   return null;
 };
