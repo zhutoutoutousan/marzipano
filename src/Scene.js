@@ -30,6 +30,11 @@ var defaults = require('./util/defaults');
  */
 
 /**
+ * Signals that the scene's layers have changed.
+ * @event Scene#layerChange
+ */
+
+/**
  * @class
  * @classdesc
  * A {@link Scene} is a stack of {@link Layer layers} sharing the same
@@ -190,7 +195,8 @@ Scene.prototype.createLayer = function(opts) {
     layer.pinFirstLevel();
   }
 
-  // TODO: Update stage layers for active scene.
+  // Signal that the layers have changed.
+  this.emit('layerChange');
 
   return layer;
 };
@@ -207,7 +213,8 @@ Scene.prototype.destroyLayer = function(layer) {
     throw new Error('No such layer in scene');
   }
 
-  // TODO: Update stage layers for active scene.
+  // Signal that the layers have changed.
+  this.emit('layerChange');
 
   layer.textureStore().destroy();
   layer.destroy();

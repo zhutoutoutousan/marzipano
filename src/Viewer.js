@@ -189,11 +189,20 @@ function Viewer(domElement, opts) {
   // The currently visible scene.
   this._scene = null;
 
+  // The number of stage layers belonging to the currently visible scene.
+  // This is necessary to update the layers correctly when they are added or
+  // removed during a scene transition.
+  this._sceneLayerCount = 0;
+
   // The current transition.
   this._cancelCurrentTween = null;
 
-  // The event listener fired when the current view changes.
-  // This is attached to the correct view whenever the current scene changes.
+  // The event listener fired when the current scene layers change.
+  // This is attached to the correct scene whenever the current scene changes.
+  this._layerChangeHandler = this._updateSceneLayers.bind(this);
+
+  // The event listener fired when the current scene view changes.
+  // This is attached to the correct scene whenever the current scene changes.
   this._viewChangeHandler = this.emit.bind(this, 'viewChange');
 
   // Setup the idle timer.
@@ -232,8 +241,10 @@ Viewer.prototype.destroy = function() {
   this._size = null;
 
   if (this._scene) {
-    this._scene.view().removeEventListener('change', this._viewChangeHandler);
+    this._scene.removeEventListener('layerChange', this._layerChangeHandler);
+    this._scene.removeEventListener('viewChange', this._viewChangeHandler);
   }
+  this._layerChangeHandler = null;
   this._viewChangeHandler = null;
 
   for (var methodName in this._controlMethods) {
@@ -247,6 +258,7 @@ Viewer.prototype.destroy = function() {
 
   this._scenes = null;
   this._scene = null;
+  this._sceneLayerCount = null;
 
   // The Flash renderer must be torn down before the element is removed from
   // the DOM, so all scenes must have been destroyed before this point.
@@ -382,23 +394,51 @@ Viewer.prototype.createEmptyScene = function(opts) {
 };
 
 
-Viewer.prototype._addLayers = function(layers) {
-  var self = this;
-  layers.forEach(function(layer) {
-    // Pin the first level to serve as a last-resort fallback.
-    layer.pinFirstLevel();
-    self._stage.addLayer(layer);
-  });
+Viewer.prototype._updateSceneLayers = function() {
+  var stage = this._stage;
+  var scene = this._scene;
+
+  var stageLayerList = stage.listLayers();
+  var sceneLayerList = scene.listLayers();
+
+  var oldLayerCount = this._sceneLayerCount;
+  var newLayerCount = sceneLayerList.length;
+
+  // Currently, only the top layer can be added or removed from the scene, and
+  // we get a separate event for each one.
+  if (Math.abs(oldLayerCount - newLayerCount) !== 1) {
+    throw new Error('Stage and scene out of sync');
+  }
+  if (oldLayerCount > newLayerCount) {
+    // The top layer was removed.
+    this._removeLayerFromStage(stageLayerList[oldLayerCount - 1]);
+  }
+  if (oldLayerCount < newLayerCount) {
+    // The top layer was added.
+    this._addLayerToStage(sceneLayerList[newLayerCount - 1]);
+  }
+
+  // TODO: When in the middle of a scene transition, call the transition update
+  // function immediately to prevent an added layer from flashing with the wrong
+  // opacity.
+
+  this._sceneLayerCount = newLayerCount;
 };
 
 
-Viewer.prototype._removeLayers = function(layers) {
-  var self = this;
-  layers.forEach(function(layer) {
-    layer.unpinFirstLevel();
-    self._stage.removeLayer(layer);
-    layer.textureStore().clearNotPinned();
-  });
+Viewer.prototype._addLayerToStage = function(layer) {
+  // Pin the first level to ensure a fallback while the layer is visible.
+  // Note that this is distinct from the `pinFirstLevel` option passed to
+  // createScene(), which pins the layer even when it's not visible.
+  layer.pinFirstLevel();
+  this._stage.addLayer(layer);
+};
+
+
+Viewer.prototype._removeLayerFromStage = function(layer) {
+  this._stage.removeLayer(layer);
+  layer.unpinFirstLevel();
+  layer.textureStore().clearNotPinned();
 };
 
 
@@ -412,15 +452,22 @@ Viewer.prototype.destroyScene = function(scene) {
     throw new Error('No such scene in viewer');
   }
 
-  this._removeLayers(scene._layers);
-
   if (this._scene === scene) {
-    this._scene = null;
-    if(this._cancelCurrentTween) {
+    // If the currently visible scene is destroyed, display an empty stage.
+    var layers = scene.listLayers();
+    for (var i = 0; i < layers.length; i++) {
+      this.removeLayerFromStage(layers[i]);
+    }
+
+    if (this._cancelCurrentTween) {
       this._cancelCurrentTween();
       this._cancelCurrentTween = null;
     }
+
+    this._scene = null;
+    this._sceneLayerCount = 0;
   }
+
   this._scenes.splice(i, 1);
 
   scene.destroy();
@@ -580,19 +627,27 @@ function defaultTransitionUpdate(val, newScene, oldScene) {
 
 
 /**
- * Switch to another {@link Scene scene} with a fade transition.
+ * Switches to another {@link Scene scene} with a fade transition.
+ *
+ * If a transition is already taking place, it is interrupted before the new one
+ * starts.
+ *
  * @param {Scene} newScene The scene to switch to.
- * @param {Object} opts
- * @param {Number} [opts.transitionDuration=1000]
- *        Transition duration in milliseconds.
- * @param {Number} [opts.transitionUpdate=defaultTransitionUpdate]
- *        Transition function with signature `f(t, newScene, oldScene)`.
- *        The function is called on each frame with `t` increasing from 0 to 1.
- *        An initial call with `t=0` and a final call with `t=1` are guaranteed.
- *        The default function sets the scene opacity to `t`.
- * @param {Function} done Called when the transition finishes or is interrupted.
+ * @param {Object} opts Transition options.
+ * @param {number} [opts.transitionDuration=1000] Transition duration, in
+ *     milliseconds.
+ * @param {number} [opts.transitionUpdate=defaultTransitionUpdate]
+ *     Transition update function, with signature `f(t, newScene, oldScene)`.
+ *     This function is called on each frame with `t` increasing from 0 to 1.
+ *     An initial call with `t=0` and a final call with `t=1` are guaranteed.
+ *     The default function sets the opacity of the new scene to `t`.
+ * @param {function} done Function to call when the transition finishes or is
+ *     interrupted. If the new scene is equal to the old one, no transition
+ *     takes place, but this function is still called.
  */
 Viewer.prototype.switchScene = function(newScene, opts, done) {
+  var self = this;
+
   opts = opts || {};
   done = done || noop;
 
@@ -610,59 +665,73 @@ Viewer.prototype.switchScene = function(newScene, opts, done) {
     throw new Error('No such scene in viewer');
   }
 
-  // Consistency check.
-  // TODO: Fix check for scenes with zero layers.
-  var layerList = stage.listLayers();
-  if (oldScene && oldScene.listLayers()[oldScene.listLayers().length - 1] !== layerList[layerList.length - 1]) {
-    throw new Error('Stage not in sync with viewer');
-  }
-
-  // Cancel ongoing transition, if any.
+  // Cancel an already ongoing transition. This ensures that the stage contains
+  // layers from exactly one scene before the transition begins.
   if (this._cancelCurrentTween) {
     this._cancelCurrentTween();
     this._cancelCurrentTween = null;
   }
 
+  var oldSceneLayers = oldScene ? oldScene.listLayers() : [];
+  var newSceneLayers = newScene.listLayers();
+  var stageLayers = stage.listLayers();
 
-  // Setup the transition
-  var duration = opts.transitionDuration != null ? opts.transitionDuration : defaultSwitchDuration;
-  var update = opts.transitionUpdate != null ? opts.transitionUpdate : defaultTransitionUpdate;
+  // Check that the stage contains exactly as many layers as the current scene,
+  // and that the top layer is the right one. If this test fails, either there
+  // is a bug or the user tried to modify the stage concurrently.
+  if (oldScene && ((stageLayers.length !== oldSceneLayers.length) ||
+      (stageLayers.length > 1 && stageLayers[0] != oldSceneLayers[0]))) {
+    throw new Error('Stage not in sync with viewer');
+  }
 
-  var self = this;
+  // Get the transition parameters.
+  var duration = opts.transitionDuration != null ?
+      opts.transitionDuration : defaultSwitchDuration;
+  var update = opts.transitionUpdate != null ?
+      opts.transitionUpdate : defaultTransitionUpdate;
 
-  // Start by adding the new layers
-  self._addLayers(newScene.listLayers());
+  // Add new scene layers into the stage before starting the transition.
+  var newSceneLayers = newScene.listLayers();
+  for (var i = 0; i < newSceneLayers.length; i++) {
+    this._addLayerToStage(newSceneLayers[i]);
+  }
 
-  // Call provided update function
+  // Update function to be called on every frame.
   function tweenUpdate(val) {
     update(val, newScene, oldScene);
   }
 
-  // Remove old layers when tween is complete
+  // Remove old scene layers from the stage after the transition ends.
+  // Note that the old scene layer list is still valid, because stage layers
+  // for the old scene are not updated during the transition.
   function tweenDone() {
-    if(oldScene) {
-      self._removeLayers(oldScene.listLayers());
+    if (oldScene) {
+      for (var i = 0; i < oldSceneLayers.length; i++) {
+        self._removeLayerFromStage(oldSceneLayers[i]);
+      }
     }
-    //Remove tween to ensure objects referenced on callbacks are garbage collected
     self._cancelCurrentTween = null;
     done();
   }
 
+  // Store the cancelable for the transition.
   this._cancelCurrentTween = tween(duration, tweenUpdate, tweenDone);
 
-  // Update current scene.
+  // Update the current scene and scene layer count.
   this._scene = newScene;
+  this._sceneLayerCount = newSceneLayers.length;
 
   // Emit scene and view change events.
   this.emit('sceneChange');
   this.emit('viewChange');
 
-  // Listen to the view change events for the new scene.
+  // Switch event listeners over to the new scene.
   if (oldScene) {
-    oldScene.view().removeEventListener('change', this._viewChangeHandler);
+    oldScene.removeEventListener('layerChange', this._layerChangeHandler);
+    oldScene.removeEventListener('viewChange', this._viewChangeHandler);
   }
-  newScene.view().addEventListener('change', this._viewChangeHandler);
-
+  newScene.addEventListener('layerChange', this._layerChangeHandler);
+  newScene.addEventListener('viewChange', this._viewChangeHandler);
 };
 
 
