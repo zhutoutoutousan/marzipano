@@ -404,37 +404,56 @@ Viewer.prototype._updateSceneLayers = function() {
   var stageLayerList = stage.listLayers();
   var sceneLayerList = scene.listLayers();
 
-  var oldLayerCount = this._sceneLayerCount;
-  var newLayerCount = sceneLayerList.length;
+  // Note that the stage may contain layers from another scene if a transition
+  // is taking place. However, the layers for the current scene are always at
+  // the top.
+  var stageLayerCount = this._sceneLayerCount;
+  var sceneLayerCount = sceneLayerList.length;
 
-  // Currently, only the top layer can be added or removed from the scene, and
-  // we get a separate event for each one.
-  if (Math.abs(oldLayerCount - newLayerCount) !== 1) {
+  // A single layer can be added or removed from the scene at a time.
+  if (Math.abs(stageLayerCount - sceneLayerCount) !== 1) {
     throw new Error('Stage and scene out of sync');
   }
-  if (oldLayerCount > newLayerCount) {
-    // The top layer was removed.
-    this._removeLayerFromStage(stageLayerList[oldLayerCount - 1]);
+
+  if (sceneLayerCount < stageLayerCount) {
+    // A layer was removed.
+    for (var i = 0; i < stageLayerList.length; i++) {
+      var layer = stageLayerList[i];
+      if (sceneLayerList.indexOf(layer) < 0) {
+        this._removeLayerFromStage(layer);
+        break;
+      }
+    }
   }
-  if (oldLayerCount < newLayerCount) {
-    // The top layer was added.
-    this._addLayerToStage(sceneLayerList[newLayerCount - 1]);
+  if (sceneLayerCount > stageLayerCount) {
+    // A layer was added.
+    for (var i = 0; i < sceneLayerList.length; i++) {
+      var layer = sceneLayerList[i];
+      if (stageLayerList.indexOf(layer) < 0) {
+        this._addLayerToStage(layer, i + stageLayerCount - sceneLayerCount + 1);
+      }
+    }
   }
+
+  // TODO: When in the middle of a scene transition, we must also remove from
+  // the stage layers that have been removed from the previous scene. Otherwise,
+  // they remain in the stage in a destroyed state, which will eventually cause
+  // a crash.
 
   // TODO: When in the middle of a scene transition, call the transition update
   // function immediately to prevent an added layer from flashing with the wrong
   // opacity.
 
-  this._sceneLayerCount = newLayerCount;
+  this._sceneLayerCount = sceneLayerCount;
 };
 
 
-Viewer.prototype._addLayerToStage = function(layer) {
+Viewer.prototype._addLayerToStage = function(layer, i) {
   // Pin the first level to ensure a fallback while the layer is visible.
   // Note that this is distinct from the `pinFirstLevel` option passed to
   // createScene(), which pins the layer even when it's not visible.
   layer.pinFirstLevel();
-  this._stage.addLayer(layer);
+  this._stage.addLayer(layer, i);
 };
 
 
