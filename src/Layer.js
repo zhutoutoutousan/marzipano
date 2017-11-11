@@ -140,16 +140,6 @@ Layer.prototype.effects = function() {
 
 
 /**
- * Set the underlying view.
- * @param {View} view
- */
-Layer.prototype.setView = function(view) {
-  this._view = view;
-  this.emit('viewChange', this._view);
-};
-
-
-/**
  * Set the effects.
  * @param {Effects} effects
  */
