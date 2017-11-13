@@ -228,7 +228,7 @@ function layerEffects(layer) {
 }
 
 // Display the initially empty scene.
-scene.switchTo();
+scene.switchTo({ transitionDuration: 0 });
 
 var viewModel = {
   layers: layers,
