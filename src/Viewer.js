@@ -190,12 +190,13 @@ function Viewer(domElement, opts) {
   this._scenes = [];
 
   // The currently visible scene.
-  this._scene = null;
+  // During a scene transition, this is the scene being switched to.
+  this._currentScene = null;
 
-  // The number of stage layers belonging to the currently visible scene.
+  // The scene being switched from during a scene transition.
   // This is necessary to update the layers correctly when they are added or
-  // removed during a scene transition.
-  this._sceneLayerCount = 0;
+  // removed during a transition.
+  this._replacedScene = null;
 
   // The current transition.
   this._cancelCurrentTween = null;
@@ -243,10 +244,16 @@ Viewer.prototype.destroy = function() {
   this._updateSizeListener = null;
   this._size = null;
 
-  if (this._scene) {
-    this._scene.removeEventListener('layerChange', this._layerChangeHandler);
-    this._scene.removeEventListener('viewChange', this._viewChangeHandler);
+  if (this._currentScene) {
+    this._removeSceneEventListeners(this._currentScene);
   }
+  this._currentScene = null;
+
+  if (this._replacedScene) {
+    this._removeSceneEventListeners(this._replacedScene);
+  }
+  this._replacedScene = null;
+
   this._layerChangeHandler = null;
   this._viewChangeHandler = null;
 
@@ -258,10 +265,7 @@ Viewer.prototype.destroy = function() {
   while (this._scenes.length) {
     this.destroyScene(this._scenes[0]);
   }
-
   this._scenes = null;
-  this._scene = null;
-  this._sceneLayerCount = null;
 
   // The Flash renderer must be torn down before the element is removed from
   // the DOM, so all scenes must have been destroyed before this point.
@@ -399,52 +403,49 @@ Viewer.prototype.createEmptyScene = function(opts) {
 
 Viewer.prototype._updateSceneLayers = function() {
   var stage = this._stage;
-  var scene = this._scene;
+  var currentScene = this._currentScene;
+  var replacedScene = this._replacedScene;
 
-  var stageLayerList = stage.listLayers();
-  var sceneLayerList = scene.listLayers();
+  var oldLayers = stage.listLayers();
 
-  // Note that the stage may contain layers from another scene if a transition
-  // is taking place. However, the layers for the current scene are always at
-  // the top.
-  var stageLayerCount = this._sceneLayerCount;
-  var sceneLayerCount = sceneLayerList.length;
+  // The stage contains layers from at most two scenes: the current one, on top,
+  // and the one currently being switched away from, on the bottom.
+  var newLayers = [];
+  if (replacedScene) {
+    newLayers = newLayers.concat(replacedScene.listLayers());
+  }
+  if (currentScene) {
+    newLayers = newLayers.concat(currentScene.listLayers());
+  }
 
   // A single layer can be added or removed from the scene at a time.
-  if (Math.abs(stageLayerCount - sceneLayerCount) !== 1) {
+  if (Math.abs(oldLayers.length - newLayers.length) !== 1) {
     throw new Error('Stage and scene out of sync');
   }
 
-  if (sceneLayerCount < stageLayerCount) {
+  if (newLayers.length < oldLayers.length) {
     // A layer was removed.
-    for (var i = 0; i < stageLayerList.length; i++) {
-      var layer = stageLayerList[i];
-      if (sceneLayerList.indexOf(layer) < 0) {
+    for (var i = 0; i < oldLayers.length; i++) {
+      var layer = oldLayers[i];
+      if (newLayers.indexOf(layer) < 0) {
         this._removeLayerFromStage(layer);
         break;
       }
     }
   }
-  if (sceneLayerCount > stageLayerCount) {
+  if (newLayers.length > oldLayers.length) {
     // A layer was added.
-    for (var i = 0; i < sceneLayerList.length; i++) {
-      var layer = sceneLayerList[i];
-      if (stageLayerList.indexOf(layer) < 0) {
-        this._addLayerToStage(layer, i + stageLayerCount - sceneLayerCount + 1);
+    for (var i = 0; i < newLayers.length; i++) {
+      var layer = newLayers[i];
+      if (oldLayers.indexOf(layer) < 0) {
+        this._addLayerToStage(layer, i);
       }
     }
   }
 
-  // TODO: When in the middle of a scene transition, we must also remove from
-  // the stage layers that have been removed from the previous scene. Otherwise,
-  // they remain in the stage in a destroyed state, which will eventually cause
-  // a crash.
-
   // TODO: When in the middle of a scene transition, call the transition update
   // function immediately to prevent an added layer from flashing with the wrong
   // opacity.
-
-  this._sceneLayerCount = sceneLayerCount;
 };
 
 
@@ -464,6 +465,18 @@ Viewer.prototype._removeLayerFromStage = function(layer) {
 };
 
 
+Viewer.prototype._addSceneEventListeners = function(scene) {
+  scene.addEventListener('layerChange', this._layerChangeHandler);
+  scene.addEventListener('viewChange', this._viewChangeHandler);
+};
+
+
+Viewer.prototype._removeSceneEventListeners = function(scene) {
+  scene.removeEventListener('layerChange', this._layerChangeHandler);
+  scene.removeEventListener('viewChange', this._viewChangeHandler);
+};
+
+
 /**
  * Destroys a {@link Scene scene} and removes it from the viewer.
  * @param {Scene} scene
@@ -474,20 +487,31 @@ Viewer.prototype.destroyScene = function(scene) {
     throw new Error('No such scene in viewer');
   }
 
-  if (this._scene === scene) {
-    // If the currently visible scene is destroyed, display an empty stage.
+  if (this._currentScene === scene) {
+    // The destroyed scene is the current scene.
+    // Remove event listeners, remove layers from stage and cancel transition.
+    this._removeSceneEventListeners(scene);
     var layers = scene.listLayers();
-    for (var i = 0; i < layers.length; i++) {
-      this.removeLayerFromStage(layers[i]);
+    for (var j = 0; j < layers.length; j++) {
+      this._removeLayerFromStage(layers[j]);
     }
-
     if (this._cancelCurrentTween) {
       this._cancelCurrentTween();
       this._cancelCurrentTween = null;
     }
+    this._currentScene = null;
+    this.emit('sceneChange');
+  }
 
-    this._scene = null;
-    this._sceneLayerCount = 0;
+  if (this._replacedScene === scene) {
+    // The destroyed scene is being switched away from.
+    // Remove event listeners and remove layers from stage.
+    this._removeSceneEventListeners(scene);
+    var layers = scene.listLayers();
+    for (var j = 0; j < layers.length; j++) {
+      this._removeLayerFromStage(layers[j]);
+    }
+    this._replacedScene = null;
   }
 
   this._scenes.splice(i, 1);
@@ -533,7 +557,7 @@ Viewer.prototype.listScenes = function() {
  * @return {Scene}
  */
 Viewer.prototype.scene = function() {
-  return this._scene;
+  return this._currentScene;
 };
 
 
@@ -543,7 +567,7 @@ Viewer.prototype.scene = function() {
  * @return {View}
  */
 Viewer.prototype.view = function() {
-  var scene = this._scene;
+  var scene = this._currentScene;
   if (scene) {
     return scene.view();
   }
@@ -581,7 +605,7 @@ Viewer.prototype.lookTo = function(params, opts, done) {
  */
 Viewer.prototype.startMovement = function(fn, cb) {
   // TODO: is it an error to call startMovement when no scene is displayed?
-  var scene = this._scene;
+  var scene = this._currentScene;
   if (scene) {
     scene.startMovement(fn, cb);
   }
@@ -595,7 +619,7 @@ Viewer.prototype.startMovement = function(fn, cb) {
  * current scene.
  */
 Viewer.prototype.stopMovement = function() {
-  var scene = this._scene;
+  var scene = this._currentScene;
   if (scene) {
     scene.stopMovement();
   }
@@ -635,7 +659,7 @@ Viewer.prototype._resetIdleTimer = function() {
 
 
 Viewer.prototype._enterIdle = function() {
-  var scene = this._scene;
+  var scene = this._currentScene;
   var idleMovement = this._idleMovement;
   if (!scene || !idleMovement) {
     return;
@@ -645,7 +669,7 @@ Viewer.prototype._enterIdle = function() {
 
 
 Viewer.prototype._leaveIdle = function() {
-  var scene = this._scene;
+  var scene = this._currentScene;
   if (!scene) {
     return;
   }
@@ -695,7 +719,7 @@ Viewer.prototype.switchScene = function(newScene, opts, done) {
 
   var stage = this._stage;
 
-  var oldScene = this._scene;
+  var oldScene = this._currentScene;
 
   // Do nothing if the target scene is the current one.
   if (oldScene === newScene) {
@@ -743,14 +767,19 @@ Viewer.prototype.switchScene = function(newScene, opts, done) {
     update(val, newScene, oldScene);
   }
 
-  // Remove old scene layers from the stage after the transition ends.
-  // Note that the old scene layer list is still valid, because stage layers
-  // for the old scene are not updated during the transition.
+  // Once the transition is complete, remove old scene layers from the stage and
+  // remove the event listeners. If the old scene was destroyed during the
+  // transition, this has already been taken care of. Otherwise, we still need
+  // to get a fresh copy of the scene's layers, since they might have changed
+  // during the transition.
   function tweenDone() {
-    if (oldScene) {
+    if (self._replacedScene) {
+      self._removeSceneEventListeners(self._replacedScene);
+      oldSceneLayers = self._replacedScene.listLayers();
       for (var i = 0; i < oldSceneLayers.length; i++) {
         self._removeLayerFromStage(oldSceneLayers[i]);
       }
+      self._replacedScene = null;
     }
     self._cancelCurrentTween = null;
     done();
@@ -759,21 +788,19 @@ Viewer.prototype.switchScene = function(newScene, opts, done) {
   // Store the cancelable for the transition.
   this._cancelCurrentTween = tween(duration, tweenUpdate, tweenDone);
 
-  // Update the current scene and scene layer count.
-  this._scene = newScene;
-  this._sceneLayerCount = newSceneLayers.length;
+  // Update the current and replaced scene.
+  this._currentScene = newScene;
+  this._replacedScene = oldScene;
 
   // Emit scene and view change events.
   this.emit('sceneChange');
   this.emit('viewChange');
 
-  // Switch event listeners over to the new scene.
-  if (oldScene) {
-    oldScene.removeEventListener('layerChange', this._layerChangeHandler);
-    oldScene.removeEventListener('viewChange', this._viewChangeHandler);
-  }
-  newScene.addEventListener('layerChange', this._layerChangeHandler);
-  newScene.addEventListener('viewChange', this._viewChangeHandler);
+  // Add event listeners to the new scene.
+  // Note that event listeners can only be removed from the old scene once the
+  // transition is complete, since layers might get added or removed in the
+  // interim.
+  this._addSceneEventListeners(newScene);
 };
 
 
