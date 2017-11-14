@@ -55,6 +55,7 @@ document.body.addEventListener('touchstart', tryStart);
 // Whether playback has started.
 var started = false;
 
+// Try to start playback.
 function tryStart() {
   if (started) {
     return;
@@ -76,10 +77,10 @@ function tryStart() {
 
   waitForReadyState(video, video.HAVE_METADATA, 100, function() {
     waitForReadyState(video, video.HAVE_ENOUGH_DATA, 100, function() {
-      asset.setVideo(new NullVideoElementWrapper(video));
+      asset.setVideo(video);
     });
   });
-});
+}
 
 // Wait for an element to reach the given readyState by polling.
 // The HTML5 video element exposes a `readystatechange` event that could be
@@ -92,22 +93,3 @@ function waitForReadyState(element, readyState, interval, done) {
     }
   }, interval);
 }
-
-// A wrapper for an HTML5 video element to be passed into a SingleAssetSource.
-function NullVideoElementWrapper(videoElement) {
-  this._videoElement = videoElement;
-}
-
-NullVideoElementWrapper.prototype.videoElement = function() {
-  return this._videoElement;
-};
-
-NullVideoElementWrapper.prototype.drawElement = function() {
-  return this._videoElement;
-};
-
-NullVideoElementWrapper.prototype.destroy = function() {
-  this._videoElement.pause();
-  this._videoElement.volume = 0;
-  this._videoElement.removeAttribute('src');
-};
