@@ -586,7 +586,7 @@ Viewer.prototype.view = function() {
  */
 Viewer.prototype.lookTo = function(params, opts, done) {
   // TODO: is it an error to call lookTo when no scene is displayed?
-  var scene = this._scene;
+  var scene = this._currentScene;
   if (scene) {
     scene.lookTo(params, opts, done);
   }
