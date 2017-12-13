@@ -545,6 +545,8 @@ function CubeGeometry(levelPropertiesList) {
 
   this._vec = vec3.create();
 
+  this._viewSize = {};
+
   this._viewParams = {};
 
   this._tileVertices = [
@@ -638,7 +640,7 @@ CubeGeometry.prototype._closestTile = function(params, level) {
 
 
 CubeGeometry.prototype.visibleTiles = function(view, level, result) {
-
+  var viewSize = this._viewSize;
   var viewParams = this._viewParams;
   var tileVertices = this._tileVertices;
   var graphFinder = this._graphFinder;
@@ -652,13 +654,18 @@ CubeGeometry.prototype.visibleTiles = function(view, level, result) {
     return view.intersects(tileVertices);
   }
 
-  var startingTile = this._closestTile(view.parameters(viewParams), level);
+  result = result || [];
 
+  view.size(viewSize);
+  if (viewSize.width === 0 || viewSize.height === 0) {
+    // No tiles are visible if the viewport is empty.
+    return result;
+  }
+
+  var startingTile = this._closestTile(view.parameters(viewParams), level);
   if (!tileVisible(startingTile)) {
     throw new Error('Starting tile is not visible');
   }
-
-  result = result || [];
 
   var tile;
   graphFinder.start(startingTile, tileNeighbors, tileVisible);
@@ -667,7 +674,6 @@ CubeGeometry.prototype.visibleTiles = function(view, level, result) {
   }
 
   return result;
-
 };
 
 
