@@ -28,7 +28,6 @@ uniform float uTextureHeight;
 uniform vec4 uColorOffset;
 uniform mat4 uColorMatrix;
 
-varying vec2 vTextureCoord;
 varying vec4 vRay;
 
 const float PI = 3.14159265358979323846264;

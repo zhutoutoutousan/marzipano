@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 attribute vec3 aVertexPosition;
-attribute vec2 aTextureCoord;
 
 uniform float uDepth;
 uniform mat4 uViewportMatrix;
 uniform mat4 uInvProjMatrix;
 
-varying vec2 vTextureCoord;
 varying vec4 vRay;
 
 void main(void) {
   vRay = uInvProjMatrix * vec4(aVertexPosition.xy, 1.0, 1.0);
   gl_Position = uViewportMatrix * vec4(aVertexPosition.xy, uDepth, 1.0);
-  vTextureCoord = aTextureCoord;
 }

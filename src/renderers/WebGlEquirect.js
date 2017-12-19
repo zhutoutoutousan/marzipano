@@ -34,7 +34,7 @@ var vertexIndices = [0, 1, 2, 0, 2, 3];
 var vertexPositions = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0];
 var textureCoords = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
 
-var attribList = ['aVertexPosition', 'aTextureCoord'];
+var attribList = ['aVertexPosition'];
 var uniformList = [
   'uDepth', 'uOpacity', 'uSampler', 'uInvProjMatrix', 'uViewportMatrix',
   'uColorOffset', 'uColorMatrix', 'uTextureX', 'uTextureY', 'uTextureWidth',
@@ -94,7 +94,6 @@ WebGlEquirectRenderer.prototype.startLayer = function(layer, rect) {
   gl.bindBuffer(gl.ARRAY_BUFFER, constantBuffers.vertexPositions);
   gl.vertexAttribPointer(shaderProgram.aVertexPosition, 3, gl.FLOAT, gl.FALSE, 0, 0);
   gl.bindBuffer(gl.ARRAY_BUFFER, constantBuffers.textureCoords);
-  gl.vertexAttribPointer(shaderProgram.aTextureCoord, 2, gl.FLOAT, gl.FALSE, 0, 0);
 
   // Compute and set the inverse projection matrix.
   mat4.copy(invProjMatrix, layer.view().projection());
