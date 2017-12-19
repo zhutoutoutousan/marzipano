@@ -55,12 +55,18 @@ function createShaderProgram(gl, vertexSrc, fragmentSrc, attribList, uniformList
   for (var i = 0; i < attribList.length; i++) {
     var attrib = attribList[i];
     shaderProgram[attrib] = gl.getAttribLocation(shaderProgram, attrib);
+    if (shaderProgram[attrib] === -1) {
+      throw new Error('Shader program has no ' + attrib + ' attribute');
+    }
     gl.enableVertexAttribArray(shaderProgram[attrib]);
   }
 
   for (var j = 0; j < uniformList.length; j++) {
     var uniform = uniformList[j];
     shaderProgram[uniform] = gl.getUniformLocation(shaderProgram, uniform);
+    if (shaderProgram[uniform] === -1) {
+      throw new Error('Shader program has no ' + uniform + ' uniform');
+    }
   }
 
   return shaderProgram;
