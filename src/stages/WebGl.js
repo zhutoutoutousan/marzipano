@@ -45,7 +45,8 @@ var browserQuirks = {
 function initWebGlContext(canvas, opts) {
   var options = {
     alpha: true,
-    // premultipliedAlpha = true by default when alpha = true
+    premultipliedAlpha: true,
+    antialias: opts && opts.antialias,
     preserveDrawingBuffer: opts && opts.preserveDrawingBuffer
   };
 
@@ -74,17 +75,21 @@ function initWebGlContext(canvas, opts) {
  * @classdesc A {@link Stage} implementation using WebGl.
  * @extends Stage
  * @param {Object} opts
- * @param {Boolean} [opts.preserveDrawingBuffer=false]
- * @param {boolean} [opts.generateMipmaps=false] Generate texture mipmaps.
+ * @param {boolean} [opts.antialias=false]
+ * @param {boolean} [opts.preserveDrawingBuffer=false]
+ * @param {boolean} [opts.generateMipmaps=false]
  *
- * The `alpha` and `premultipliedAlpha` WebGL context attributes are set to
- * their default true value, which means semitransparent content can be
- * rendered and will be composited with the page. See:
+ * The `antialias` and `preserveDrawingBuffer` options control the WebGL
+ * context attributes of the same name. The `alpha` and `premultipliedAlpha`
+ * WebGL context attributes are set to their default true value and cannot
+ * be overriden; this allows semitransparent textures to be composited with
+ * the page. See:
  * https://www.khronos.org/registry/webgl/specs/1.0/#WEBGLCONTEXTATTRIBUTES
  *
- * Mipmaps may improved rendering quality, at the cost of increased memory
- * consumption. Due to technical limitations, they will only be generated for
- * textures whose dimensions are a power of two. See:
+ * The `generateMipmaps` option controls texture mipmap generation. Mipmaps
+ * may improve rendering quality, at the cost of increased memory usage.
+ * Due to technical limitations, they are only generated for textures whose
+ * dimensions are a power of two. See:
  * https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
  */
 function WebGlStage(opts) {
