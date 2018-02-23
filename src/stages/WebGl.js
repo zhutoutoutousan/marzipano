@@ -46,8 +46,8 @@ function initWebGlContext(canvas, opts) {
   var options = {
     alpha: true,
     premultipliedAlpha: true,
-    antialias: opts && opts.antialias,
-    preserveDrawingBuffer: opts && opts.preserveDrawingBuffer
+    antialias: !!(opts && opts.antialias),
+    preserveDrawingBuffer: !!(opts && opts.preserveDrawingBuffer)
   };
 
   if (debug && typeof WebGLDebugUtils !== 'undefined') {
