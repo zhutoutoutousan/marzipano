@@ -16,12 +16,8 @@
 'use strict';
 
 // Create viewer.
-// Anaglyphs are only supported on the WebGl stage. We set the blending
-// function so that the two channels are additively composed on the two
-// layers. The layer for the left eye only has a red channel, while the
-// layer for the right eye will only have blue and green channels.
-var blendFunc = [ 'ONE', 'ONE' ];
-var viewerOpts = { stageType: 'webgl', stage: { blendFunc: blendFunc }};
+// Anaglyphs are only supported on WebGl.
+var viewerOpts = { stageType: 'webgl' };
 var viewer = new Marzipano.Viewer(document.getElementById('pano'), viewerOpts);
 
 // Create geometry.
@@ -46,6 +42,8 @@ var left = createLayer(stage, view, geometry, 'left');
 var right = createLayer(stage, view, geometry, 'right');
 
 // Add layers into the stage.
+// The left image must be rendered on top of the right image.
+// See colorTransformEffects.js for an explanation.
 stage.addLayer(right);
 stage.addLayer(left);
 
@@ -67,13 +65,13 @@ function createLayer(stage, view, geometry, eye) {
   return layer;
 }
 
-// Update the anaglyph type.
+// Update the effects to match the chosen anaglyph type.
 var typeElement = document.getElementById('type');
 function updateEffects() {
   var type = typeElement.value;
   var effects = colorTransformEffects[type]();
-  left.setEffects(effects.red);
-  right.setEffects(effects.blue);
+  left.setEffects(effects.left);
+  right.setEffects(effects.right);
 }
 updateEffects();
 typeElement.addEventListener('change', updateEffects);
