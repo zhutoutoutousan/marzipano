@@ -605,9 +605,10 @@ body.single-scene #sceneList, body.single-scene #sceneListToggle {
   border-bottom-left-radius: 5px;
   overflow-y: auto;
   visibility: hidden;
-  -ms-transform: perspective(200px) rotateX(-90deg);
-  -webkit-transform: perspective(200px) rotateX(-90deg);
-  transform: perspective(200px) rotateX(-90deg);
+  /* rotate(90deg) causes transition flicker on Firefox 58 */
+  -ms-transform: perspective(200px) rotateX(-89.999deg);
+  -webkit-transform: perspective(200px) rotateX(-89.999deg);
+  transform: perspective(200px) rotateX(-89.999deg);
   -ms-transform-origin: 50% 0 0;
   -webkit-transform-origin: 50% 0 0;
   transform-origin: 50% 0 0;
