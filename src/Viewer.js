@@ -42,7 +42,7 @@ var tween = require('./util/tween');
 var noop = require('./util/noop');
 var type = require('./util/type');
 
-var DragCursor = require('./controls/DragCursor');
+var ControlCursor = require('./controls/ControlCursor');
 
 var HammerGestures = require('./controls/HammerGestures');
 
@@ -90,6 +90,9 @@ var stagePrefList = [
  *     {@link registerDefaultControls}.
  * @param {Object} opts.stage Options to be passed to the {@link Stage}
  *     constructor.
+ * @param {Object} opts.cursors Cursor options.
+ * @param {Object} opts.cursors.drag Drag cursor options to be passed to the
+ *     {@link ControlCursor} constructor.
  */
 function Viewer(domElement, opts) {
   opts = opts || {};
@@ -179,9 +182,8 @@ function Viewer(domElement, opts) {
   this._hammerManagerTouch = HammerGestures.get(this._controlContainer, 'touch');
   this._hammerManagerMouse = HammerGestures.get(this._controlContainer, 'mouse');
 
-  // Initialize mouse cursor.
-  opts.cursors = opts.cursors || {};
-  this._dragCursor = new DragCursor(this._controls, 'mouseViewDrag', domElement, opts.cursors.drag);
+  // Initialize drag cursor.
+  this._dragCursor = new ControlCursor(this._controls, 'mouseViewDrag', domElement, opts.cursors && opts.cursors.drag || {});
 
   // Start the render loop.
   this._renderLoop.start();
@@ -256,6 +258,9 @@ Viewer.prototype.destroy = function() {
 
   this._layerChangeHandler = null;
   this._viewChangeHandler = null;
+
+  this._dragCursor.destroy();
+  this._dragCursor = null;
 
   for (var methodName in this._controlMethods) {
     this._controlMethods[methodName].destroy();
