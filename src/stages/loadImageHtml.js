@@ -33,8 +33,15 @@ function loadImageHtml(url, rect, done) {
   var img = new Image();
 
   // Allow cross-domain image loading.
-  // This is required to be able to create WebGL textures from images residing
-  // on a different domain than the HTML document's.
+  // This is required to be able to create WebGL textures from images fetched
+  // from a different domain. Note that setting the crossorigin attribute to
+  // 'anonymous' will trigger a CORS preflight for cross-domain requests, but no
+  // credentials (cookies or HTTP auth) will be sent; to do so, the attribute
+  // would have to be set to 'use-credentials' instead. Unfortunately, this is
+  // not a safe choice, as it causes requests to fail when the response contains
+  // an Access-Control-Allow-Origin header with a wildcard. See the section
+  // "Credentialed requests and wildcards" on:
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
   img.crossOrigin = 'anonymous';
 
   var x = rect && rect.x || 0;
