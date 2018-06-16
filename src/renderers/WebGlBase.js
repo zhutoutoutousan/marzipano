@@ -20,6 +20,8 @@ var createConstantBuffers = WebGlCommon.createConstantBuffers;
 var destroyConstantBuffers = WebGlCommon.destroyConstantBuffers;
 var createShaderProgram = WebGlCommon.createShaderProgram;
 var destroyShaderProgram = WebGlCommon.destroyShaderProgram;
+var enableAttributes = WebGlCommon.enableAttributes;
+var disableAttributes = WebGlCommon.disableAttributes;
 var setViewport = WebGlCommon.setViewport;
 var setupPixelEffectUniforms = WebGlCommon.setupPixelEffectUniforms;
 
@@ -88,6 +90,13 @@ WebGlBaseRenderer.prototype.startLayer = function(layer, rect) {
 
   gl.useProgram(shaderProgram);
 
+  enableAttributes(gl, shaderProgram);
+
+  var numAttributes = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
+  for (var i = 0; i < numAttributes; i++) {
+    gl.enableVertexAttribArray(i);
+  }
+
   setViewport(gl, layer, rect, viewportMatrix);
   gl.uniformMatrix4fv(shaderProgram.uViewportMatrix, false, viewportMatrix);
 
@@ -104,7 +113,11 @@ WebGlBaseRenderer.prototype.startLayer = function(layer, rect) {
 };
 
 
-WebGlBaseRenderer.prototype.endLayer = function() {};
+WebGlBaseRenderer.prototype.endLayer = function() {
+  var gl = this.gl;
+  var shaderProgram = this.shaderProgram;
+  disableAttributes(gl, shaderProgram);
+};
 
 
 WebGlBaseRenderer.prototype.renderTile = function(tile, texture, layer, layerZ) {

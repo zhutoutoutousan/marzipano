@@ -17,10 +17,12 @@
 
 var WebGlCommon = require('./WebGlCommon');
 var createConstantBuffers = WebGlCommon.createConstantBuffers;
-var createShaderProgram = WebGlCommon.createShaderProgram;
-var setViewport = WebGlCommon.setViewport;
 var destroyConstantBuffers = WebGlCommon.destroyConstantBuffers;
+var createShaderProgram = WebGlCommon.createShaderProgram;
 var destroyShaderProgram = WebGlCommon.destroyShaderProgram;
+var enableAttributes = WebGlCommon.enableAttributes;
+var disableAttributes = WebGlCommon.disableAttributes;
+var setViewport = WebGlCommon.setViewport;
 var setupPixelEffectUniforms = WebGlCommon.setupPixelEffectUniforms;
 
 var setDepth = WebGlCommon.setDepth;
@@ -88,6 +90,8 @@ WebGlEquirectRenderer.prototype.startLayer = function(layer, rect) {
 
   gl.useProgram(shaderProgram);
 
+  enableAttributes(gl, shaderProgram);
+
   setViewport(gl, layer, rect, viewportMatrix);
   gl.uniformMatrix4fv(shaderProgram.uViewportMatrix, false, viewportMatrix);
 
@@ -121,7 +125,11 @@ WebGlEquirectRenderer.prototype.startLayer = function(layer, rect) {
 };
 
 
-WebGlEquirectRenderer.prototype.endLayer = function() {};
+WebGlEquirectRenderer.prototype.endLayer = function() {
+  var gl = this.gl;
+  var shaderProgram = this.shaderProgram;
+  disableAttributes(gl, shaderProgram);
+};
 
 
 WebGlEquirectRenderer.prototype.renderTile = function(tile, texture, layer, layerZ) {

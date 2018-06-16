@@ -58,7 +58,6 @@ function createShaderProgram(gl, vertexSrc, fragmentSrc, attribList, uniformList
     if (shaderProgram[attrib] === -1) {
       throw new Error('Shader program has no ' + attrib + ' attribute');
     }
-    gl.enableVertexAttribArray(shaderProgram[attrib]);
   }
 
   for (var j = 0; j < uniformList.length; j++) {
@@ -105,6 +104,22 @@ function destroyConstantBuffers(gl, constantBuffers) {
   gl.deleteBuffer(constantBuffers.vertexIndices);
   gl.deleteBuffer(constantBuffers.vertexPositions);
   gl.deleteBuffer(constantBuffers.textureCoords);
+}
+
+
+function enableAttributes(gl, shaderProgram) {
+  var numAttrs = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
+  for (var i = 0; i < numAttrs; i++) {
+    gl.enableVertexAttribArray(i);
+  }
+}
+
+
+function disableAttributes(gl, shaderProgram) {
+  var numAttrs = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
+  for (var i = 0; i < numAttrs; i++) {
+    gl.disableVertexAttribArray(i);
+  }
 }
 
 
@@ -252,6 +267,8 @@ module.exports = {
   destroyShaderProgram: destroyShaderProgram,
   createConstantBuffers: createConstantBuffers,
   destroyConstantBuffers: destroyConstantBuffers,
+  enableAttributes: enableAttributes,
+  disableAttributes: disableAttributes,
   setTexture: setTexture,
   setDepth: setDepth,
   setViewport: setViewport,
