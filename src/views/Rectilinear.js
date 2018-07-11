@@ -41,12 +41,10 @@ var defaultProjectionCenterX = 0;
 var defaultProjectionCenterY = 0;
 
 // A fov of exactly 0 or π breaks some computations, so we constrain it to the
-// [fovLimitEpsilon, π - fovLimitEpsilon] interval. We use 9 decimal places for
-// the epsilon value since this is the maximum number of significant digits for
-// a 32-bit floating-point number. Note that after a certain zoom level,
-// rendering quality will be affected by the loss of precision in
-// floating-point computations.
-var fovLimitEpsilon = 0.000000001;
+// [fovLimitEpsilon, π - fovLimitEpsilon] interval. We use 6 decimal places for
+// the epsilon value to avoid broken rendering due to loss of precision in
+// floating point computations.
+var fovLimitEpsilon = 0.000001;
 
 
 /**
