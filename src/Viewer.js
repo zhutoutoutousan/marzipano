@@ -147,7 +147,7 @@ function Viewer(domElement, opts) {
   // Prevent bounce scroll effect on iOS.
   // Applied only for iOS, as Android's events must have the default action to allow interaction with hotspots.
   if (browser.ios) {
-    this._controlContainer.addEventListener('touchstart', function(event) {
+    this._controlContainer.addEventListener('touchmove', function(event) {
       event.preventDefault();
     });
   }
