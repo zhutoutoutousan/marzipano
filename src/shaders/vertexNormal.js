@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-attribute vec3 aVertexPosition;
+'use strict';
 
-uniform float uDepth;
-uniform mat4 uViewportMatrix;
-uniform mat4 uInvProjMatrix;
+module.exports = [
+'attribute vec3 aVertexPosition;',
+'attribute vec2 aTextureCoord;',
 
-varying vec4 vRay;
+'uniform float uDepth;',
+'uniform mat4 uViewportMatrix;',
+'uniform mat4 uProjMatrix;',
 
-void main(void) {
-  vRay = uInvProjMatrix * vec4(aVertexPosition.xy, 1.0, 1.0);
-  gl_Position = uViewportMatrix * vec4(aVertexPosition.xy, uDepth, 1.0);
-}
+'varying vec2 vTextureCoord;',
+
+'void main(void) {',
+'  gl_Position = uViewportMatrix * uProjMatrix * vec4(aVertexPosition.xy, 0.0, 1.0);',
+'  gl_Position.z = uDepth * gl_Position.w;',
+'  vTextureCoord = aTextureCoord;',
+'}'
+].join('\n');

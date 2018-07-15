@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-precision highp float;
-#else
-precision mediump float;
-#endif
+'use strict';
 
-uniform sampler2D uSampler;
-uniform float uOpacity;
-uniform vec4 uColorOffset;
-uniform mat4 uColorMatrix;
+module.exports = [
+'#ifdef GL_FRAGMENT_PRECISION_HIGH',
+'precision highp float;',
+'#else',
+'precision mediump float;',
+'#endif',
 
-varying vec2 vTextureCoord;
+'uniform sampler2D uSampler;',
+'uniform float uOpacity;',
+'uniform vec4 uColorOffset;',
+'uniform mat4 uColorMatrix;',
 
-void main(void) {
-  vec4 color = texture2D(uSampler, vTextureCoord) * uColorMatrix + uColorOffset;
-  gl_FragColor = vec4(color.rgba * uOpacity);
-}
+'varying vec2 vTextureCoord;',
+
+'void main(void) {',
+'  vec4 color = texture2D(uSampler, vTextureCoord) * uColorMatrix + uColorOffset;',
+'  gl_FragColor = vec4(color.rgba * uOpacity);',
+'}'
+].join('\n');

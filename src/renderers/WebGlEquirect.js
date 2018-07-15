@@ -28,9 +28,8 @@ var setupPixelEffectUniforms = WebGlCommon.setupPixelEffectUniforms;
 var setDepth = WebGlCommon.setDepth;
 var setTexture = WebGlCommon.setTexture;
 
-var glslify = require('glslify');
-var vertexSrc = glslify('../shaders/vertexEquirect');
-var fragmentSrc = glslify('../shaders/fragmentEquirect');
+var vertexSrc = require('../shaders/vertexEquirect');
+var fragmentSrc = require('../shaders/fragmentEquirect');
 
 var vertexIndices = [0, 1, 2, 0, 2, 3];
 var vertexPositions = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0];
