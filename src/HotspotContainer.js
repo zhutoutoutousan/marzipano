@@ -154,8 +154,11 @@ HotspotContainer.prototype.rect = function() {
 /**
  * Add a hotspot to this container.
  * @param {Element} domElement DOM element to use for the hotspot
- * @param {Object} position View parameters with the hotspot position.
- * For {@link RectilinearView} it should have `{ pitch, yaw }`.
+ * @param {Object} position The hotspot position. Use `{ yaw, pitch }` format
+ * for {@link RectilinearView} sources and `{ x, y }` format for
+ * {@link FlatView} sources.
+ * @param {Object} opts Options in the same format as the `opts` argument to
+ * the {@link Hotspot} constructor.
  *
  * @return {Hotspot}
  */
