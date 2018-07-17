@@ -47,8 +47,9 @@ source or test files are edited.
 ### Maintainer guide
 
 Before preparing a release, make sure there are no uncommitted changes.
-Create a new commit to bump the version number in `package.json` and tag it
-with `git tag vX.Y.Z`.
+
+Create a new commit to bump the version number in `package.json`, tag it
+with `git tag vX.Y.Z`, and publish the tag with `git push --tags`.
 
 Run `npm run release` to prepare a new release.
 
