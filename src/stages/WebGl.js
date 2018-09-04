@@ -21,12 +21,10 @@ var browser = require('bowser');
 var Map = require('../collections/Map');
 var loadImageHtml = require('./loadImageHtml');
 var inherits = require('../util/inherits');
-var defer = require('../util/defer');
 var pixelRatio = require('../util/pixelRatio');
 var hash = require('../util/hash');
 var ispot = require('../util/ispot');
 var setAbsolute = require('../util/dom').setAbsolute;
-var setPixelSize = require('../util/dom').setPixelSize;
 var setFullSize = require('../util/dom').setFullSize;
 
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.webGl;
@@ -245,28 +243,28 @@ WebGlStage.prototype.endFrame = function() {};
 
 
 WebGlStage.prototype.takeSnapshot = function (options) {
-  
+
   // Validate passed argument
   if (typeof options !== 'object' || options == null) {
     options = {};
   }
-  
+
   var quality = options.quality;
-  
+
   // Set default quality if it is not passed
   if (typeof quality == 'undefined') {
     quality = 75;
   }
-  
+
   // Throw if quality is of invlid type or out of bounds
   if (typeof quality !== 'number' || quality < 0 || quality > 100) {
     throw new Error('WebGLStage: Snapshot quality needs to be a number between 0 and 100');
   }
-  
+
   // Canvas method "toDataURL" needs to be called in the same
   // context as where the actual rendering is done. Hence this.
   this.render();
-  
+
   // Return the snapshot
   return this._domElement.toDataURL('image/jpeg',quality/100);
 }

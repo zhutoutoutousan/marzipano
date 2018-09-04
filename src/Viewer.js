@@ -19,11 +19,7 @@ var eventEmitter = require('minimal-event-emitter');
 
 var RenderLoop = require('./RenderLoop');
 var Controls = require('./controls/Controls');
-var Layer = require('./Layer');
-var TextureStore = require('./TextureStore');
-
 var Scene = require('./Scene');
-
 var Timer = require('./Timer');
 
 var WebGlStage = require('./stages/WebGl');
@@ -40,7 +36,6 @@ var setBlocking = require('./util/dom').setBlocking;
 
 var tween = require('./util/tween');
 var noop = require('./util/noop');
-var type = require('./util/type');
 
 var ControlCursor = require('./controls/ControlCursor');
 

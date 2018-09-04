@@ -16,7 +16,6 @@
 'use strict';
 
 var Dynamics = require('./Dynamics');
-var defaults = require('../util/defaults');
 var eventEmitter = require('minimal-event-emitter');
 
 /**
