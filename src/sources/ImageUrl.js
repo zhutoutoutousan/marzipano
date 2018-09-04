@@ -69,6 +69,8 @@ function ImageUrlSource(sourceFromTile, opts) {
   this._sourceFromTile = sourceFromTile;
 }
 
+eventEmitter(ImageUrlSource);
+
 
 ImageUrlSource.prototype.loadAsset = function(stage, tile, done) {
 
@@ -182,37 +184,9 @@ ImageUrlSource.fromString = function(url, opts) {
   }
 };
 
-
-ImageUrlSource.stringHasFace = function(url) {
-  return ImageUrlSource.stringHasProperty(url, 'f');
-};
-
-
-ImageUrlSource.stringHasX = function(url) {
-  return ImageUrlSource.stringHasProperty(url, 'x');
-};
-
-
-ImageUrlSource.stringHasY = function(url) {
-  return ImageUrlSource.stringHasProperty(url, 'y');
-};
-
-
-ImageUrlSource.stringHasLevel = function(url) {
-  return ImageUrlSource.stringHasProperty(url, 'z');
-};
-
-
-ImageUrlSource.stringHasProperty = function(url, property) {
-  return !!url.match(propertyRegExp(property));
-};
-
-
 function propertyRegExp(property) {
   var regExpStr = '\\{(' + property + ')\\}';
   return new RegExp(regExpStr, 'g');
 }
-
-eventEmitter(ImageUrlSource);
 
 module.exports = ImageUrlSource;
