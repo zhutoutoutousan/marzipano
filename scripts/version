@@ -20,13 +20,14 @@
 var execSync = require('child_process').execSync;
 var fs = require('fs');
 
-// Regex for npm package version.
+// Regex for the string returned by getNpmVersion().
+// The subexpression match is the npm version.
 var npmRegex = /^(\d+(?:\.\d+)+)$/;
 
-// Regex for git --describe --tags --dirty output. See git-describe(1).
+// Regex for the string returned by getGitVersion().
 // The 1st subexpression match is the most recent tagged version.
 // The 2nd subexpression match exists if either commits were made since the most
-// recent tagged version, or there are staged and/or unstaged changes.
+// recent tagged version, or there are uncommitted or untracked changes.
 var gitRegex = /^v(\d+(?:\.\d+)+)((?:-\d+-g([\da-f]+))?(?:-dirty)?)?$/;
 
 // Return npm package version declared by package.json.
@@ -34,9 +35,17 @@ function getNpmVersion() {
   return JSON.parse(fs.readFileSync('package.json', 'utf-8')).version;
 }
 
-// Return the output of git --describe for the current HEAD.
+// Return the output of `git describe --tags --dirty`, modified by the result
+// of `git status --porcelain`. The latter is necessary because `git describe`
+// ignores untracked files, but we want their presence to be considered dirty.
 function getGitVersion() {
-  return execSync("git describe --tags --dirty", { encoding: 'utf-8' }).trim();
+  var versionStr =
+      execSync("git describe --tags --dirty", { encoding: 'utf-8' }).trim();
+  if (!/-dirty$/.test(versionStr) &&
+      execSync("git status --porcelain", { encoding: 'utf-8' })) {
+    versionStr += '-dirty';
+  }
+  return versionStr;
 }
 
 function getVersion() {
