@@ -17,7 +17,7 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
-var waitForCall = require('../../waitForCall');
+var wait = require('../../wait');
 
 var defer = require('../../../src/util/defer');
 
@@ -28,7 +28,7 @@ suite('defer', function() {
   test('without arguments', function(done) {
     var spy = sinon.spy();
     defer(spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith());
       done();
     });
@@ -37,7 +37,7 @@ suite('defer', function() {
   test('with arguments', function(done) {
     var spy = sinon.spy();
     defer(spy, [1, 2, 3]);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(1, 2, 3));
       done();
     });

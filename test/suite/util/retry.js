@@ -17,7 +17,7 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
-var waitForCall = require('../../waitForCall');
+var wait = require('../../wait');
 
 var retry = require('../../../src/util/retry');
 var defer = require('../../../src/util/defer');
@@ -45,7 +45,7 @@ suite('retry', function() {
     var spy = sinon.spy();
     var fn = retry(cancelize(flaky(0)));
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledOnce);
       assert(spy.calledWith(null, 4));
       done();
@@ -56,7 +56,7 @@ suite('retry', function() {
     var spy = sinon.spy();
     var fn = retry(cancelize(flaky(1)));
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledOnce);
       assert(spy.calledWith(null, 4));
       done();
@@ -67,7 +67,7 @@ suite('retry', function() {
     var spy = sinon.spy();
     var fn = retry(cancelize(flaky(2)));
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledOnce);
       assert(spy.calledWith(null, 4));
       done();
@@ -79,7 +79,7 @@ suite('retry', function() {
     var fn = retry(cancelize(flaky(0)));
     var cancel = fn(2, spy);
     cancel(error);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledOnce);
       assert(spy.calledWith(error));
       done();

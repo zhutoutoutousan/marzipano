@@ -21,7 +21,7 @@ var sinon = require('sinon');
 var Timer = require('../../src/Timer');
 var clock = require('../../src/util/clock');
 var defer = require('../../src/util/defer');
-var waitForCall = require('../waitForCall');
+var wait = require('../wait');
 
 suite('Timer', function() {
 
@@ -35,7 +35,7 @@ suite('Timer', function() {
     timer.start();
     assert(timer.started());
 
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
       assert(!timer.started());
       assert(timeAfter - timeBefore >= 50);
@@ -73,7 +73,7 @@ suite('Timer', function() {
       timer.start();
     }, 50);
 
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
       assert(!timer.started());
       assert(timeAfter - timeBefore >= 150);
@@ -93,7 +93,7 @@ suite('Timer', function() {
       timer.setDuration(50);
     });
 
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
       assert(timeAfter - timeBefore >= 50);
       done();
@@ -112,7 +112,7 @@ suite('Timer', function() {
     var timeBefore = clock();
     timer.start();
 
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
       assert(timeAfter - timeBefore >= 100);
       done();
@@ -131,7 +131,7 @@ suite('Timer', function() {
       timer.setDuration(100);
     });
 
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
       assert(timeAfter - timeBefore >= 100);
       done();

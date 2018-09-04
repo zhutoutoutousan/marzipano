@@ -17,7 +17,7 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
-var waitForCall = require('../../waitForCall');
+var wait = require('../../wait');
 
 var chain = require('../../../src/util/chain');
 var cancelize = require('../../../src/util/cancelize');
@@ -69,7 +69,7 @@ suite('chain', function() {
     var fn = chain();
     var spy = sinon.spy();
     fn(1, 2, 3, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(null, 1, 2, 3));
     });
   });
@@ -78,7 +78,7 @@ suite('chain', function() {
     var fn = chain(twiceAsync);
     var spy = sinon.spy();
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(null, 4));
       done();
     });
@@ -88,7 +88,7 @@ suite('chain', function() {
     var fn = chain(twiceAsync, squareAsync);
     var spy = sinon.spy();
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(null, 16));
       done();
     });
@@ -98,7 +98,7 @@ suite('chain', function() {
     var fn = chain(twiceSync);
     var spy = sinon.spy();
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(null, 4));
       done();
     });
@@ -108,7 +108,7 @@ suite('chain', function() {
     var fn = chain(twiceSync, squareSync);
     var spy = sinon.spy();
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(null, 16));
       done();
     });
@@ -118,7 +118,7 @@ suite('chain', function() {
     var fn = chain(twiceSync, squareAsync);
     var spy = sinon.spy();
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(null, 16));
       done();
     });
@@ -128,7 +128,7 @@ suite('chain', function() {
     var fn = chain(twiceAsync, squareSync);
     var spy = sinon.spy();
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(spy.calledWith(null, 16));
       done();
     });
@@ -139,7 +139,7 @@ suite('chain', function() {
     var neverCalledSpy = sinon.spy(succeed);
     var fn = chain(fail, neverCalledSpy);
     fn(2, spy);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(neverCalledSpy.notCalled);
       assert(spy.calledWith(error));
       done();
@@ -152,7 +152,7 @@ suite('chain', function() {
     var fn = chain(cancelize(twiceAsync), neverCalledSpy);
     var cancel = fn(2, spy);
     cancel(error);
-    waitForCall(spy, function() {
+    wait.untilSpyCalled(spy, function() {
       assert(neverCalledSpy.notCalled);
       assert(spy.calledWith(error));
       done();
