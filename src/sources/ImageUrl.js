@@ -46,13 +46,15 @@ var defaultRetryDelay = 10000;
  * @classdesc Source that loads images given a URL and a crop rectangle.
  * @implements Source
  * @param {Function} sourceFromTile Function that receives a tile and returns
- * an object `{ url, rect }`.
+ * a `{ url, rect }` object, where `url` is an image URL and `rect`, when
+ * present, is an `{ x, y, width, height }` object in normalized coordinates
+ * denoting the portion of the image to use.
  * @param {Object} opts
- * @param {number} [opts.concurrency=4] Maximum number of tiles to load at the
- * same time.
- * @param {number} [opts.retryDelay=10000] Milliseconds to wait before
- * retrying failed requests.
-*/
+ * @param {number} [opts.concurrency=4] Maximum number of tiles to request at
+ *     the same time. The limit is per {@link ImageSourceUrl} instance.
+ * @param {number} [opts.retryDelay=10000] Time in milliseconds to wait before
+ *     retrying a failed request.
+ */
 function ImageUrlSource(sourceFromTile, opts) {
 
   opts = opts ? opts : {};
@@ -82,6 +84,9 @@ ImageUrlSource.prototype.loadAsset = function(stage, tile, done) {
   var loadImage = stage.loadImage.bind(stage, url, rect);
 
   var loadFn = function(done) {
+    // TODO: Deduplicate load requests for the same URL. Although the browser
+    // might be smart enough to avoid duplicate requests, they are still unduly
+    // impacted by the concurrency parameter.
     return self._loadPool.push(loadImage, function(err, asset) {
       if (err) {
         if (err instanceof NetworkError) {
@@ -121,16 +126,22 @@ ImageUrlSource.prototype.loadAsset = function(stage, tile, done) {
 
 
 /**
- * Create an ImageUrlSource from a string template
- * @param {String} url Template for the tile URLs. The following placeholders may be used:
-   - {z} : tile level index (0 is the smallest level)
-   - {f} : tile face (b, d, f, l, r, u)
-   - {x} : tile x index
-   - {y} : tile y index
- * @param {Object} opts
- * @param {String} opts.cubeMapPreviewUrl Use the cube map preview at this URL as the first level
- * @param {String} [opts.cubeMapPreviewFaceOrder='bdflru'] Ordering of the faces on the cube map preview
-*/
+ * Creates an ImageUrlSource from a string template.
+ *
+ * @param {String} url Tile URL template, which may contain the following
+ *    placeholders:
+ *    - `{f}` : tile face (one of `b`, `d`, `f`, `l`, `r`, `u`)
+ *    - `{z}` : tile level index (0 is the smallest level)
+ *    - `{x}` : tile horizontal index
+ *    - `{y}` : tile vertical index
+ * @param {Object} opts In addition to the options already supported by the
+ *     {@link ImageUrlSource} constructor.
+ * @param {String} opts.cubeMapPreviewUrl URL to use as the preview level.
+ *     This must be a single image containing six cube faces laid out
+ *     vertically according to the face order parameter.
+ * @param {String} [opts.cubeMapPreviewFaceOrder='bdflru'] Face order within
+ *     the preview image.
+ */
 ImageUrlSource.fromString = function(url, opts) {
   opts = opts || {};
 
@@ -138,7 +149,7 @@ ImageUrlSource.fromString = function(url, opts) {
 
   var urlFn = opts.cubeMapPreviewUrl ? withPreview : withoutPreview;
 
-  return new ImageUrlSource(urlFn);
+  return new ImageUrlSource(urlFn, opts);
 
   function withoutPreview(tile) {
     var tileUrl = url;
