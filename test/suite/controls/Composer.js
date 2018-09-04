@@ -39,7 +39,7 @@ suite('ControlComposer', function() {
   var clock = function() { return clockValue; };
 
   // Initialize instances
-  beforeEach(function() {
+  setup(function() {
     clockValue = 0;
 
     composer = new ControlComposer({ clock: clock });

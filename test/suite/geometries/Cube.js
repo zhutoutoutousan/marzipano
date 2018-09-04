@@ -63,7 +63,7 @@ suite('CubeGeometry', function() {
 
     var cube = null;
 
-    before(function() {
+    setup(function() {
       var levels = [
         { tileSize: 512, size: 512 },
         { tileSize: 512, size: 1024 },
@@ -114,7 +114,7 @@ suite('CubeGeometry', function() {
 
     var cube = null;
 
-    before(function() {
+    setup(function() {
       var levels = [
         { tileSize: 256, size: 512 },
         { tileSize: 512, size: 1024 }
@@ -143,7 +143,7 @@ suite('CubeGeometry', function() {
 
     var cube = null;
 
-    before(function() {
+    setup(function() {
       var levels = [
         { tileSize: 128, size: 256 },
         { tileSize: 64, size: 512 }
@@ -175,7 +175,7 @@ suite('CubeGeometry', function() {
 
     var cube = null;
 
-    before(function() {
+    setup(function() {
       var levels = [
         { tileSize: 256, size: 512 },
         { tileSize: 256, size: 1536 }
