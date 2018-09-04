@@ -40,7 +40,10 @@ Run `npm run dev` to serve this directory at `http://localhost:8080`.
 While this script is running, the demos are live-reloaded whenever the source
 files are edited.
 
-Run `npm run test` to serve the browser-based test suite at `http://localhost:7357`.
+Run `npm test` to automatically run the browser-based test suite on all
+available browsers in your system.
+
+Run `npm run livetest` to serve the browser-based test suite at `http://localhost:7357`.
 While this script is running, the test suite is live-reloaded whenever the
 source or test files are edited.
 
