@@ -79,7 +79,9 @@ function TextureStoreItem(store, tile) {
 
   var self = this;
 
-  self._id = nextId++;
+  var id = nextId++;
+
+  self._id = id;
   self._store = store;
   self._tile = tile;
 
@@ -100,11 +102,12 @@ function TextureStoreItem(store, tile) {
   // This process may be canceled at any point by calling the destroy() method.
   var fn = chain(retry(loadAsset), createTexture);
 
+  store.emit('textureStartLoad', tile);
   if (debug) {
-    console.log('loading', self._id, self._tile);
+    console.log('loading', id, tile);
   }
 
-  self._cancel = fn(stage, tile, function(err, tile, asset, texture) {
+  self._cancel = fn(stage, tile, function(err, _tile, asset, texture) {
 
     // Make sure we do not call cancel after the operation is complete.
     self._cancel = null;
@@ -124,14 +127,14 @@ function TextureStoreItem(store, tile) {
 
       // Emit events.
       if (err instanceof CancelError) {
-        self._store.emit('textureCancel', self._tile);
+        store.emit('textureCancel', tile);
         if (debug) {
-          console.log('cancel', self._id, self._tile);
+          console.log('cancel', id, tile);
         }
       } else {
-        self._store.emit('textureError', self._tile, err);
+        store.emit('textureError', tile, err);
         if (debug) {
-          console.log('error', self._id, self._tile);
+          console.log('error', id, tile);
         }
       }
 
@@ -152,9 +155,9 @@ function TextureStoreItem(store, tile) {
     }
 
     // Emit event.
-    self._store.emit('textureLoad', self._tile);
+    store.emit('textureLoad', tile);
     if (debug) {
-      console.log('load', self._id, self._tile);
+      console.log('load', id, tile);
     }
   });
 
@@ -217,33 +220,57 @@ TextureStoreItem.prototype.destroy = function() {
 
 eventEmitter(TextureStoreItem);
 
+/**
+ * Signals that a texture has started to load.
+ *
+ * This event is followed by either {@link TextureStore#textureLoad},
+ * {@link TextureStore#textureError} or {@link TextureStore#textureCancel}.
+ *
+ * @event TextureStore#textureStartLoad
+ * @param {Tile} tile The tile for which the texture has started to load.
+ */
 
 /**
  * Signals that a texture has been loaded.
+ *
  * @event TextureStore#textureLoad
  * @param {Tile} tile The tile for which the texture was loaded.
  */
 
 /**
  * Signals that a texture has been unloaded.
+ *
  * @event TextureStore#textureUnload
  * @param {Tile} tile The tile for which the texture was unloaded.
  */
 
 /**
  * Signals that a texture has been invalidated.
+ *
+ * This event may be raised for a texture with an underlying dynamic asset. It
+ * may only occur while the texture is loaded, i.e., in between
+ * {@link TextureStore#textureLoad} and {@link TextureStore#textureUnload}.
+ *
  * @event TextureStore#textureInvalid
  * @param {Tile} tile The tile for which the texture was invalidated.
  */
 
 /**
  * Signals that loading a texture has been cancelled.
+ *
+ * This event may follow {@link TextureStore#textureStartLoad} if the texture
+ * becomes unnecessary before it finishes loading.
+ *
  * @event TextureStore#textureCancel
  * @param {Tile} tile The tile for which the texture loading was cancelled.
  */
 
 /**
  * Signals that loading a texture has failed.
+ *
+ * This event may follow {@link TextureStore#textureStartLoad} if the texture
+ * fails to load.
+ *
  * @event TextureStore#textureError
  * @param {Tile} tile The tile for which the texture loading has failed.
  */

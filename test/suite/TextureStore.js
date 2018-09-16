@@ -147,15 +147,22 @@ suite('TextureStore', function() {
     test('load texture for static asset', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile();
-      store.addEventListener('textureLoad', function(event, eventTile) {
-        var texture = store.texture(tile);
-        assert(event === 'textureLoad');
+      store.addEventListener('textureStartLoad', function(event, eventTile) {
+        assert(event === 'textureStartLoad');
         assert(eventTile === tile);
-        assert(texture != null);
-        assert(texture.id === tile.id);
+        assert(store.texture(tile) == null);
         assert(!store.query(tile).hasAsset);
-        assert(store.query(tile).hasTexture);
-        done();
+        assert(!store.query(tile).hasTexture);
+        store.addEventListener('textureLoad', function(event, eventTile) {
+          var texture = store.texture(tile);
+          assert(event === 'textureLoad');
+          assert(eventTile === tile);
+          assert(texture != null);
+          assert(texture.id === tile.id);
+          assert(!store.query(tile).hasAsset);
+          assert(store.query(tile).hasTexture);
+          done();
+        });
       });
       store.startFrame();
       store.markTile(tile);
@@ -165,15 +172,22 @@ suite('TextureStore', function() {
     test('load texture for dynamic asset', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile({ dynamicAsset: true });
-      store.addEventListener('textureLoad', function(event, eventTile) {
-        var texture = store.texture(tile);
-        assert(event === 'textureLoad');
+      store.addEventListener('textureStartLoad', function(event, eventTile) {
+        assert(event === 'textureStartLoad');
         assert(eventTile === tile);
-        assert(texture != null);
-        assert(texture.id === tile.id);
-        assert(store.query(tile).hasAsset);
-        assert(store.query(tile).hasTexture);
-        done();
+        assert(store.texture(tile) == null);
+        assert(!store.query(tile).hasAsset);
+        assert(!store.query(tile).hasTexture);
+        store.addEventListener('textureLoad', function(event, eventTile) {
+          var texture = store.texture(tile);
+          assert(event === 'textureLoad');
+          assert(eventTile === tile);
+          assert(texture != null);
+          assert(texture.id === tile.id);
+          assert(store.query(tile).hasAsset);
+          assert(store.query(tile).hasTexture);
+          done();
+        });
       });
       store.startFrame();
       store.markTile(tile);
