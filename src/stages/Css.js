@@ -23,6 +23,7 @@ var loadImageHtml = require('./loadImageHtml');
 var setAbsolute = require('../util/dom').setAbsolute;
 var setFullSize = require('../util/dom').setFullSize;
 var setNullTransformOrigin = require('../util/dom').setNullTransformOrigin;
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 
 // Browser-specific workarounds.
@@ -51,6 +52,7 @@ var browserQuirks = {
 
 };
 
+
 /**
  * @class
  * @classdesc A {@link Stage} implementation using CSS 3D Transforms.
@@ -73,9 +75,12 @@ function CssStage(opts) {
 inherits(CssStage, Stage);
 
 
+/**
+ * Destructor.
+ */
 CssStage.prototype.destroy = function() {
+  // Delegate clearing own properties to the Stage destructor.
   this.constructor.super_.prototype.destroy.call(this);
-  this._domElement = null;
 };
 
 
@@ -111,9 +116,7 @@ CssStage.prototype.endFrame = function() {};
 
 
 CssStage.prototype.takeSnapshot = function() {
-  
   throw new Error('CssStage: takeSnapshot not implemented');
-  
 }
 
 
@@ -198,8 +201,7 @@ CssTexture.prototype.refresh = function(tile, asset) {
 CssTexture.prototype.destroy = function() {
   // TODO: investigate whether keeping a pool of canvases instead of
   // creating new ones on demand improves performance.
-  this._canvas = null;
-  this._timestamp = null;
+  clearOwnProperties(this);
 };
 
 

@@ -15,8 +15,9 @@
  */
 'use strict';
 
-var Composer = require('./Composer');
 var eventEmitter = require('minimal-event-emitter');
+var Composer = require('./Composer');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.controls;
 
@@ -56,6 +57,16 @@ function Controls(opts) {
 }
 
 eventEmitter(Controls);
+
+/**
+ * Destructor.
+ */
+Controls.prototype.destroy = function() {
+  this.detach();
+  this._composer.destroy();
+  clearOwnProperties(this);
+};
+
 
 /**
  * @return {ControlMethod[]} List of registered @{link ControlMethod instances}
@@ -402,16 +413,6 @@ Controls.prototype._updateViewsWithControls = function() {
       this.updatedViews_.push(view);
     }
   }
-};
-
-
-/**
- * Destroys the instance
- */
-Controls.prototype.destroy = function() {
-  this.detach();
-  this._composer.destroy();
-  this._methods = null;
 };
 
 

@@ -16,6 +16,7 @@
 'use strict';
 
 var defaults = require('../util/defaults');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 var defaultOpts = {
   active: 'move',
@@ -68,26 +69,22 @@ function ControlCursor(controls, id, element, opts) {
 }
 
 /**
- * Destroys the instance.
+ * Destructor.
  */
 ControlCursor.prototype.destroy = function() {
   this._detachFromControlMethod(this._controls.method(this._id));
   this._setOriginalCursor();
 
-  this._controls.removeEventListener('methodEnabled', this._updateAttachmentHandler);
-  this._controls.removeEventListener('methodDisabled', this._updateAttachmentHandler);
-  this._controls.removeEventListener('enabled', this._updateAttachmentHandler);
-  this._controls.removeEventListener('disabled', this._updateAttachmentHandler);
+  this._controls.removeEventListener('methodEnabled',
+      this._updateAttachmentHandler);
+  this._controls.removeEventListener('methodDisabled',
+      this._updateAttachmentHandler);
+  this._controls.removeEventListener('enabled',
+      this._updateAttachmentHandler);
+  this._controls.removeEventListener('disabled',
+      this._updateAttachmentHandler);
 
-  this._element = null;
-  this._controls = null;
-  this._id = null;
-  this._attached = null;
-  this._setActiveCursor = null;
-  this._setInactiveCursor = null;
-  this._setDisabledCursor = null;
-  this._setOriginalCursor = null;
-  this._updateAttachmentHandler = null;
+  clearOwnProperties(this);
 };
 
 ControlCursor.prototype._updateAttachment = function() {

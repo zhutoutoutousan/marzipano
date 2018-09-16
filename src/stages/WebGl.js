@@ -26,6 +26,7 @@ var hash = require('../util/hash');
 var ispot = require('../util/ispot');
 var setAbsolute = require('../util/dom').setAbsolute;
 var setFullSize = require('../util/dom').setFullSize;
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.webGl;
 
@@ -134,15 +135,13 @@ function WebGlStage(opts) {
 inherits(WebGlStage, Stage);
 
 
+/**
+ * Destructor.
+ */
 WebGlStage.prototype.destroy = function() {
-
+  this._domElement.removeEventListener('webglcontextlost', this._handleContextLoss);
+  // Delegate clearing own properties to the Stage destructor.
   this.constructor.super_.prototype.destroy.call(this);
-
-  this.removeEventListener('webglcontextlost', this._handleContextLoss);
-  this._domElement = null;
-  this._rendererInstances = null;
-  this._gl = null;
-
 };
 
 
@@ -378,20 +377,10 @@ WebGlTexture.prototype.refresh = function(tile, asset) {
 
 
 WebGlTexture.prototype.destroy = function() {
-
-  var texture = this._texture;
-  var gl = this._gl;
-
-  if (texture) {
-    gl.deleteTexture(texture);
+  if (this._texture) {
+    this._gl.deleteTexture(this._texture);
   }
-
-  this._stage = null;
-  this._gl = null;
-  this._texture = null;
-  this._timestamp = null;
-  this._width = this._height = null;
-
+  clearOwnProperties(this);
 };
 
 

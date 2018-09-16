@@ -15,10 +15,11 @@
  */
 'use strict';
 
+var eventEmitter = require('minimal-event-emitter');
 var Dynamics = require('./Dynamics');
 var WheelListener = require('./WheelListener');
 var defaults = require('../util/defaults');
-var eventEmitter = require('minimal-event-emitter');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 var defaultOptions = {
   frictionTime: 0.2,
@@ -50,13 +51,11 @@ function ScrollZoomControlMethod(element, opts) {
 eventEmitter(ScrollZoomControlMethod);
 
 /**
- * Destroy the instance
+ * Destructor.
  */
 ScrollZoomControlMethod.prototype.destroy = function() {
-  this._wheelListener.remove();
-  this._opts = null;
-  this._dynamics = null;
-  this._eventList = null;
+  this._wheelListener.destroy();
+  clearOwnProperties(this);
 };
 
 

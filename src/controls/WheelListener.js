@@ -13,11 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Cross-browser mouse wheel event listener
-// Adapted from: https://developer.mozilla.org/en-US/docs/Web/Events/wheel
-// This version requires eventShim
-
 'use strict';
+
+var clearOwnProperties = require('../util/clearOwnProperties');
+
+// Cross-browser mouse wheel event listener.
+// Adapted from: https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+// This version requires eventShim.
+function WheelListener(elem, callback, useCapture) {
+  var eventName = getEventName();
+
+  if (eventName === 'wheel') {
+    this._fun = callback;
+    this._elem = elem;
+    this._elem.addEventListener('wheel', this._fun, useCapture);
+  } else if (eventName === 'mousewheel') {
+    this._fun = fallbackHandler(callback);
+    this._elem = elem;
+    this._elem.addEventListener('mousewheel', this._fun, useCapture);
+  } else {
+    throw new Error('Browser does not support mouse wheel events');
+  }
+}
+
+/**
+ * Destructor.
+ */
+WheelListener.prototype.destroy = function() {
+  this._elem.removeEventListener(getEventName(), this._fun);
+  clearOwnProperties(this);
+};
 
 // Detect the available wheel event.
 function getEventName() {
@@ -31,35 +56,6 @@ function getEventName() {
     return null;
   }
 }
-
-function WheelListener(elem, callback, useCapture) {
-  var eventName = getEventName();
-
-  if (eventName === 'wheel') {
-    this._fun = callback;
-    this._elem = elem;
-    this._elem.addEventListener('wheel', this._fun, useCapture);
-  }
-  else if (eventName === 'mousewheel') {
-    this._fun = fallbackHandler(callback);
-    this._elem = elem;
-    this._elem.addEventListener('mousewheel', this._fun, useCapture);
-  }
-  else {
-    throw new Error('Browser does not support mouse wheel events');
-  }
-}
-
-WheelListener.prototype.remove = function() {
-  var eventName = getEventName();
-
-  if (eventName === 'wheel') {
-    this._elem.removeEventListener('wheel', this._fun);
-  }
-  else if (eventName === 'mousewheel') {
-    this._elem.removeEventListener('mousewheel', this._fun);
-  }
-};
 
 function fallbackHandler(callback) {
   return function handleWheelEvent(originalEvent) {

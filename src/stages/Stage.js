@@ -20,6 +20,7 @@ var WorkQueue = require('../collections/WorkQueue');
 var calcRect = require('../calcRect');
 var async = require('../util/async');
 var cancelize = require('../util/cancelize');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 var RendererRegistry = require('./RendererRegistry');
 
@@ -93,16 +94,7 @@ eventEmitter(Stage);
  */
 Stage.prototype.destroy = function() {
   this.removeAllLayers();
-  this._layers = null;
-  this._renderers = null;
-  this._visibleTiles = null;
-  this._fallbackTiles = null;
-  this._tmpTiles = null;
-  this._width = null;
-  this._height = null;
-  this._createTextureWorkQueue = null;
-  this.emitRenderInvalid = null;
-  this._rendererRegistry = null;
+  clearOwnProperties(this);
 };
 
 

@@ -16,6 +16,7 @@
 'use strict';
 
 var eventEmitter = require('minimal-event-emitter');
+var clearOwnProperties = require('./util/clearOwnProperties');
 
 /**
  * Signals that {@link Stage#render} is about to be called.
@@ -80,11 +81,7 @@ eventEmitter(RenderLoop);
 RenderLoop.prototype.destroy = function() {
   this.stop();
   this._stage.removeEventListener('renderInvalid', this._renderInvalidHandler);
-  this._stage = null;
-  this._running = null;
-  this._rendering = null;
-  this._requestHandle = null;
-  this._boundLoop = null;
+  clearOwnProperties(this);
 };
 
 

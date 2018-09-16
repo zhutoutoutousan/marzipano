@@ -18,6 +18,7 @@
 var eventEmitter = require('minimal-event-emitter');
 var Dynamics = require('./Dynamics');
 var defaultClock = require('../util/clock');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
  * @class
@@ -152,7 +153,7 @@ ControlComposer.prototype.offsets = function() {
       // Calculate offset from velocity and add it
       var elapsed = (currentTime - parameterDynamics.time)/1000;
       var offsetFromVelocity = dynamics.offsetFromVelocity(elapsed);
-      
+
       if(offsetFromVelocity) {
         this._composedOffsets[parameter] += offsetFromVelocity;
       }
@@ -181,7 +182,7 @@ ControlComposer.prototype.destroy = function() {
     this.remove(instances[i]);
   }
 
-  this._methods = null;
+  clearOwnProperties(this);
 };
 
 

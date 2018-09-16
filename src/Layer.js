@@ -18,6 +18,7 @@
 
 var eventEmitter = require('minimal-event-emitter');
 var extend = require('./util/extend');
+var clearOwnProperties = require('./util/clearOwnProperties');
 
 
 /**
@@ -82,15 +83,7 @@ Layer.prototype.destroy = function() {
     this._textureStoreChangeHandler);
   this._textureStore.removeEventListener('textureInvalid',
     this._textureStoreChangeHandler);
-  this._stage = null;
-  this._source = null;
-  this._geometry = null;
-  this._view = null;
-  this._textureStore = null;
-  this._fixedLevelIndex = null;
-  this._effects = null;
-  this._viewChangeHandler = null;
-  this._textureStoreChangeHandler = null;
+  clearOwnProperties(this);
 };
 
 

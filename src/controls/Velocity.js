@@ -15,8 +15,9 @@
  */
 'use strict';
 
-var Dynamics = require('./Dynamics');
 var eventEmitter = require('minimal-event-emitter');
+var Dynamics = require('./Dynamics');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
  * @class
@@ -39,9 +40,10 @@ function VelocityControlMethod(parameter) {
 eventEmitter(VelocityControlMethod);
 
 /**
-  Destroy the instance
-*/
+ * Destructor.
+ */
 VelocityControlMethod.prototype.destroy = function() {
+  clearOwnProperties(this);
 };
 
 /**

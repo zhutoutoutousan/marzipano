@@ -23,6 +23,7 @@ var clock = require('./util/clock');
 var noop = require('./util/noop');
 var type = require('./util/type');
 var defaults = require('./util/defaults');
+var clearOwnProperties = require('./util/clearOwnProperties');
 
 /**
  * Signals that the scene's view has changed. See {@link View#event:change}.
@@ -100,11 +101,7 @@ Scene.prototype.destroy = function() {
 
   this.destroyAllLayers();
 
-  this._movement = null;
-  this._viewer = null;
-  this._layers = null;
-  this._view = null;
-  this._hotspotContainer = null;
+  clearOwnProperties(this);
 };
 
 

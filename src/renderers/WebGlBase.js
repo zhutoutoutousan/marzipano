@@ -15,6 +15,10 @@
  */
 'use strict';
 
+var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var vec3 = require('gl-matrix/src/gl-matrix/vec3');
+var clearOwnProperties = require('../util/clearOwnProperties');
+
 var WebGlCommon = require('./WebGlCommon');
 var createConstantBuffers = WebGlCommon.createConstantBuffers;
 var destroyConstantBuffers = WebGlCommon.destroyConstantBuffers;
@@ -41,9 +45,6 @@ var uniformList = [
   'uColorOffset', 'uColorMatrix'
 ];
 
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
-var vec3 = require('gl-matrix/src/gl-matrix/vec3');
-
 
 function WebGlBaseRenderer(gl) {
   this.gl = gl;
@@ -68,17 +69,8 @@ function WebGlBaseRenderer(gl) {
 
 WebGlBaseRenderer.prototype.destroy = function() {
   destroyConstantBuffers(this.gl, this.constantBuffers);
-  this.constantBuffers = null;
-
   destroyShaderProgram(this.gl, this.shaderProgram);
-  this.shaderProgram = null;
-
-  this.projMatrix = null;
-  this.viewportMatrix = null;
-  this.translateVector = null;
-  this.scaleVector = null;
-
-  this.gl = null;
+  clearOwnProperties(this);
 };
 
 WebGlBaseRenderer.prototype.startLayer = function(layer, rect) {

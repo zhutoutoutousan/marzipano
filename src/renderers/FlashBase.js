@@ -16,6 +16,7 @@
 'use strict';
 
 var Map = require('../collections/Map');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 
 function tileCmp(a, b) {
@@ -41,12 +42,10 @@ function FlashBaseRenderer(flashElement, layerId, quirks, tileClass) {
 
 
 FlashBaseRenderer.prototype.destroy = function() {
-  this._flashElement.destroyLayer(this._layerId);
-  this._flashElement = null;
-  this._layerId = null;
-  this._layerCreated = null;
-  this._tileList = null;
-  this._padSize = null;
+  if (this._layerCreated) {
+    this._flashElement.destroyLayer(this._layerId);
+  }
+  clearOwnProperties(this);
 };
 
 

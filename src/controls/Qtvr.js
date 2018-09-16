@@ -15,11 +15,13 @@
  */
 'use strict';
 
+var eventEmitter = require('minimal-event-emitter');
 var Dynamics = require('./Dynamics');
 var HammerGestures = require('./HammerGestures');
 var defaults = require('../util/defaults');
-var eventEmitter = require('minimal-event-emitter');
 var maxFriction = require('./util').maxFriction;
+var clearOwnProperties = require('../util/clearOwnProperties');
+
 
 var defaultOptions = {
   speed: 8,
@@ -68,15 +70,11 @@ function QtvrControlMethod(element, pointerType, opts) {
 eventEmitter(QtvrControlMethod);
 
 /**
- * Destroy the instance
+ * Destructor.
  */
 QtvrControlMethod.prototype.destroy = function() {
   this._hammer.release();
-  this._hammer = null;
-  this._element = null;
-  this._opts = null;
-  this._active = null;
-  this._dynamics = null;
+  clearOwnProperties(this);
 };
 
 

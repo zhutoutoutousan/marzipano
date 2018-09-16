@@ -20,6 +20,7 @@ var setOverflowHidden = require('../util/dom').setOverflowHidden;
 var setNoPointerEvents = require('../util/dom').setNoPointerEvents;
 var setNullTransform = require('../util/dom').setNullTransform;
 var setTransform = require('../util/dom').setTransform;
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.css;
 
@@ -63,8 +64,7 @@ function CssBaseRenderer(root, quirks, tileClass) {
 
 CssBaseRenderer.prototype.destroy = function() {
   this._root.removeChild(this.domElement);
-  this._textureMap = null;
-  this.domElement = null;
+  clearOwnProperties(this);
 };
 
 

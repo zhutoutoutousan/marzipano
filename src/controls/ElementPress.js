@@ -15,8 +15,9 @@
  */
 'use strict';
 
-var Dynamics = require('./Dynamics');
 var eventEmitter = require('minimal-event-emitter');
+var Dynamics = require('./Dynamics');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
  * @class
@@ -67,7 +68,7 @@ function ElementPressControlMethod(element, parameter, velocity, friction) {
 eventEmitter(ElementPressControlMethod);
 
 /**
- * Destroy the instance
+ * Destructor.
  */
 ElementPressControlMethod.prototype.destroy = function() {
   this._element.removeEventListener('mousedown', this._pressHandler);
@@ -76,6 +77,7 @@ ElementPressControlMethod.prototype.destroy = function() {
   this._element.removeEventListener('touchstart', this._pressHandler);
   this._element.removeEventListener('touchmove', this._releaseHandler);
   this._element.removeEventListener('touchend', this._releaseHandler);
+  clearOwnProperties(this);
 };
 
 ElementPressControlMethod.prototype._handlePress = function() {

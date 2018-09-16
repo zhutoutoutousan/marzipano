@@ -26,6 +26,7 @@ var setOverflowVisible = require('./util/dom').setOverflowVisible;
 var setNullSize = require('./util/dom').setNullSize;
 var setPixelSize = require('./util/dom').setPixelSize;
 var setPointerEvents = require('./util/dom').setWithVendorPrefix('pointer-events');
+var clearOwnProperties = require('./util/clearOwnProperties');
 
 /**
  * Signals that a hotspot has been created or destroyed on the container.
@@ -106,11 +107,9 @@ eventEmitter(HotspotContainer);
 
 
 /**
- * Destroy the instance
-*/
+ * Destructor.
+ */
 HotspotContainer.prototype.destroy = function() {
-  var self = this;
-
   while (this._hotspots.length) {
     this.destroyHotspot(this._hotspots[0]);
   }
@@ -119,11 +118,7 @@ HotspotContainer.prototype.destroy = function() {
 
   this._renderLoop.removeEventListener('afterRender', this._updateHandler);
 
-  this._parentDomElement = null;
-  this._stage = null;
-  this._view = null;
-  this._renderLoop  = null;
-  this._rect = null;
+  clearOwnProperties(this);
 };
 
 

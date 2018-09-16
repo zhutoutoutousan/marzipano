@@ -16,6 +16,8 @@
 'use strict';
 
 var eventEmitter = require('minimal-event-emitter');
+var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var vec4 = require('gl-matrix/src/gl-matrix/vec4');
 var pixelRatio = require('../util/pixelRatio');
 var convertFov = require('../util/convertFov');
 var rotateVector = require('../util/rotateVector');
@@ -24,8 +26,7 @@ var real = require('../util/real');
 var clamp = require('../util/clamp');
 var decimal = require('../util/decimal');
 var compose = require('../util/compose');
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
-var vec4 = require('gl-matrix/src/gl-matrix/vec4');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 // Default viewport dimensions.
 // Start with zero to ensure that those values are handled correctly.
@@ -121,19 +122,7 @@ eventEmitter(RectilinearView);
  * Destructor.
  */
 RectilinearView.prototype.destroy = function() {
-  this._yaw = null;
-  this._pitch = null;
-  this._roll = null;
-  this._fov = null;
-  this._width = null;
-  this._height = null;
-  this._limiter = null;
-  this._projectionChanged = null;
-  this._projectionMatrix = null;
-  this._viewFrustum = null;
-  this._params = null;
-  this._vertex = null;
-  this._invProj = null;
+  clearOwnProperties(this);
 };
 
 

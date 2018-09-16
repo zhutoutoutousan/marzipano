@@ -19,6 +19,7 @@ var eventEmitter = require('minimal-event-emitter');
 var cssSupported = require('./support/Css');
 var positionAbsolutely = require('./positionAbsolutely');
 var setTransform = require('./util/dom').setTransform;
+var clearOwnProperties = require('./util/clearOwnProperties');
 
 /**
  * Use {@link HotspotContainer#createHotspot} instead of this constructor
@@ -89,20 +90,14 @@ function Hotspot(domElement, parentDomElement, view, params, opts) {
 
 eventEmitter(Hotspot);
 
+
 /**
- * Destructor. Clients should call {@link HotspotContainer#destroyHotspot}
- * instead.
+ * Destructor.
+ * Clients should call {@link HotspotContainer#destroyHotspot} instead.
  */
 Hotspot.prototype.destroy = function() {
   this._parentDomElement.removeChild(this._domElement);
-
-  this._domElement = null;
-  this._parentDomElement = null;
-  this._params = null;
-  this._view = null;
-
-  this._position = null;
-  this._visible = false;
+  clearOwnProperties(this);
 };
 
 

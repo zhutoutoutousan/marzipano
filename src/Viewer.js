@@ -15,6 +15,7 @@
  */
 'use strict';
 
+var browser = require('bowser');
 var eventEmitter = require('minimal-event-emitter');
 
 var RenderLoop = require('./RenderLoop');
@@ -26,6 +27,9 @@ var WebGlStage = require('./stages/WebGl');
 var CssStage = require('./stages/Css');
 var FlashStage = require('./stages/Flash');
 
+var ControlCursor = require('./controls/ControlCursor');
+var HammerGestures = require('./controls/HammerGestures');
+
 var registerDefaultControls = require('./controls/registerDefaultControls');
 var registerDefaultRenderers = require('./renderers/registerDefaultRenderers');
 
@@ -36,12 +40,7 @@ var setBlocking = require('./util/dom').setBlocking;
 
 var tween = require('./util/tween');
 var noop = require('./util/noop');
-
-var ControlCursor = require('./controls/ControlCursor');
-
-var HammerGestures = require('./controls/HammerGestures');
-
-var browser = require('bowser');
+var clearOwnProperties = require('./util/clearOwnProperties');
 
 var stageMap = {
   webgl: WebGlStage,
@@ -238,56 +237,39 @@ eventEmitter(Viewer);
 Viewer.prototype.destroy = function() {
 
   window.removeEventListener('resize', this._updateSizeListener);
-  this._updateSizeListener = null;
-  this._size = null;
 
   if (this._currentScene) {
     this._removeSceneEventListeners(this._currentScene);
   }
-  this._currentScene = null;
 
   if (this._replacedScene) {
     this._removeSceneEventListeners(this._replacedScene);
   }
-  this._replacedScene = null;
-
-  this._layerChangeHandler = null;
-  this._viewChangeHandler = null;
 
   this._dragCursor.destroy();
-  this._dragCursor = null;
 
   for (var methodName in this._controlMethods) {
     this._controlMethods[methodName].destroy();
   }
-  this._controlMethods = null;
 
   while (this._scenes.length) {
     this.destroyScene(this._scenes[0]);
   }
-  this._scenes = null;
 
   // The Flash renderer must be torn down before the element is removed from
   // the DOM, so all scenes must have been destroyed before this point.
   this._domElement.removeChild(this._stage.domElement());
 
   this._stage.destroy();
-  this._stage = null;
-
   this._renderLoop.destroy();
-  this._renderLoop = null;
-
   this._controls.destroy();
   this._controls = null;
 
   if (this._cancelCurrentTween) {
     this._cancelCurrentTween();
-    this._cancelCurrentTween = null;
   }
 
-  this._domElement = null;
-  this._controlContainer = null;
-
+  clearOwnProperties(this);
 };
 
 

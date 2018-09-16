@@ -16,11 +16,12 @@
 'use strict';
 
 var eventEmitter = require('minimal-event-emitter');
+var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var vec4 = require('gl-matrix/src/gl-matrix/vec4');
 var pixelRatio = require('../util/pixelRatio');
 var real = require('../util/real');
 var clamp = require('../util/clamp');
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
-var vec4 = require('gl-matrix/src/gl-matrix/vec4');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 // Default viewport dimensions.
 // Start with zero to ensure that those values are handled correctly.
@@ -137,19 +138,7 @@ eventEmitter(FlatView);
  * Destructor.
  */
 FlatView.prototype.destroy = function() {
-  this._x = null;
-  this._y = null;
-  this._zoom = null;
-  this._mediaAspectRatio = null;
-  this._width = null;
-  this._height = null;
-  this._limiter = null;
-  this._viewFrustum = null;
-  this._projectionMatrix = null;
-  this._projectionChanged = null;
-  this._params = null;
-  this._vertex = null;
-  this._invProj = null;
+  clearOwnProperties(this);
 };
 
 

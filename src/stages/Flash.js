@@ -18,12 +18,13 @@
 var Stage = require('./Stage');
 var flashSupported = require('../support/Flash');
 var WorkQueue = require('../collections/WorkQueue');
+var loadImageFlash = require('./loadImageFlash');
 var inherits = require('../util/inherits');
 var defer = require('../util/defer');
 var setAbsolute = require('../util/dom').setAbsolute;
 var setFullSize = require('../util/dom').setFullSize;
 var setBlocking = require('../util/dom').setBlocking;
-var loadImageFlash = require('./loadImageFlash');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 // Default Flash wmode.
 var defaultWMode = 'transparent';
@@ -137,18 +138,16 @@ function FlashStage(opts) {
 inherits(FlashStage, Stage);
 
 
+/**
+ * Destructor.
+ */
 FlashStage.prototype.destroy = function() {
-
-  this.constructor.super_.prototype.destroy.call(this);
-
-  this._domElement = null;
-  this._blockingElement = null;
-  this._flashElement = null;
   window[callbackObjectName][this._flashStageId] = null;
-  this._callbacksObj = null;
-  this._loadImageQueue = null;
-  clearInterval(this._checkReadyTimer);
-
+  if (this._checkReadyTimer != null) {
+    clearInterval(this._checkReadyTimer);
+  }
+  // Delegate clearing own properties to the Stage destructor.
+  this.constructor.super_.prototype.destroy.call(this);
 };
 
 
@@ -215,6 +214,7 @@ FlashStage.prototype._checkReady = function() {
 
   // Disable interval timer.
   clearTimeout(this._checkReadyTimer);
+  this._checkReadyTimer = null;
 
   // Resume image loading queue.
   this._loadImageQueue.resume();
@@ -284,27 +284,25 @@ FlashStage.prototype.endFrame = function() {};
 
 
 FlashStage.prototype.takeSnapshot = function (options) {
-  
-  // Validate passed argument
+  // Validate argument.
   if (typeof options !== 'object' || options == null) {
     options = {};
   }
-  
+
   var quality = options.quality;
-  
-  // Set default quality if it is not passed
+
+  // Set default quality if it is not passed in.
   if (typeof quality == 'undefined') {
     quality = 75;
   }
-  
-  // Throw if quality is of invlid type or out of bounds
+
+  // Throw if quality is of invlid type or out of bounds.
   if (typeof quality !== 'number' || quality < 0 || quality > 100) {
     throw new Error('FlashStage: Snapshot quality needs to be a number between 0 and 100');
   }
-  
-  // Return the snapshot by executing a flash-exported method
+
+  // Return the snapshot by executing a flash-exported method.
   return this._flashElement.takeSnapshot(quality);
-  
 }
 
 
@@ -342,11 +340,8 @@ FlashTexture.prototype.refresh = function(tile, asset) {
 
 
 FlashTexture.prototype.destroy = function() {
-  var textureId = this._textureId;
-  var stage = this._stage;
-  stage._flashElement.destroyTexture(textureId);
-  this._stage = null;
-  this._textureId = null;
+  this._stage._flashElement.destroyTexture(this._textureId);
+  clearOwnProperties(this);
 };
 
 

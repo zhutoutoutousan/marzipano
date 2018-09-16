@@ -22,8 +22,8 @@ var eventEmitter = require('minimal-event-emitter');
 var defaults = require('./util/defaults');
 var retry = require('./util/retry');
 var chain = require('./util/chain');
-
 var inherits = require('./util/inherits');
+var clearOwnProperties = require('./util/clearOwnProperties');
 
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.textureStore;
 
@@ -175,15 +175,12 @@ TextureStoreItem.prototype.texture = function() {
 
 
 TextureStoreItem.prototype.destroy = function() {
-
-  var self = this;
-
-  var id = self._id;
-  var store = self._store;
-  var tile = self._tile;
-  var asset = self._asset;
-  var texture = self._texture;
-  var cancel = self._cancel;
+  var id = this._id;
+  var store = this._store;
+  var tile = this._tile;
+  var asset = this._asset;
+  var texture = this._texture;
+  var cancel = this._cancel;
 
   if (cancel) {
     // The texture is still loading, so cancel it.
@@ -193,7 +190,7 @@ TextureStoreItem.prototype.destroy = function() {
 
   // Destroy asset.
   if (asset) {
-    asset.removeEventListener('change', self._changeHandler);
+    asset.removeEventListener('change', this._changeHandler);
     asset.destroy();
   }
 
@@ -208,14 +205,7 @@ TextureStoreItem.prototype.destroy = function() {
     console.log('unload', id, tile);
   }
 
-  // Kill references.
-  self._changeHandler = null;
-  self._asset = null;
-  self._texture = null;
-  self._tile = null;
-  self._store = null;
-  self._id = null;
-
+  clearOwnProperties(this);
 };
 
 eventEmitter(TextureStoreItem);
@@ -345,16 +335,7 @@ eventEmitter(TextureStore);
  */
 TextureStore.prototype.destroy = function() {
   this.clear();
-  this._source = null;
-  this._stage = null;
-  this._itemMap = null;
-  this._visible = null;
-  this._previouslyVisible = null;
-  this._pinMap = null;
-  this._newVisible = null;
-  this._noLongerVisible = null;
-  this._visibleAgain = null;
-  this._evicted = null;
+  clearOwnProperties(this);
 };
 
 

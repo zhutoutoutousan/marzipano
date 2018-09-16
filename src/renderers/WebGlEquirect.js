@@ -15,6 +15,9 @@
  */
 'use strict';
 
+var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var clearOwnProperties = require('../util/clearOwnProperties');
+
 var WebGlCommon = require('./WebGlCommon');
 var createConstantBuffers = WebGlCommon.createConstantBuffers;
 var destroyConstantBuffers = WebGlCommon.destroyConstantBuffers;
@@ -42,8 +45,6 @@ var uniformList = [
   'uTextureHeight'
 ];
 
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
-
 
 /**
  * @class
@@ -68,15 +69,8 @@ function WebGlEquirectRenderer(gl) {
 
 WebGlEquirectRenderer.prototype.destroy = function() {
   destroyConstantBuffers(this.gl, this.constantBuffers);
-  this.constantBuffers = null;
-
   destroyShaderProgram(this.gl, this.shaderProgram);
-  this.shaderProgram = null;
-
-  this.invProjMatrix = null;
-  this.viewportMatrix = null;
-
-  this.gl = null;
+  clearOwnProperties(this);
 };
 
 
