@@ -647,16 +647,22 @@ TextureStore.prototype.unpin = function(tile) {
 
 
 /**
+ * Return type for {@link TextureStore#query}.
+ * @typedef {Object} TileState
+ * @property {boolean} visible Whether the tile is in the visible set.
+ * @property {boolean} previouslyVisible Whether the tile is in the previously
+ *     visible set.
+ * @property {boolean} hasAsset Whether the asset for the tile is present.
+ * @property {boolean} hasTexture Whether the texture for the tile is present.
+ * @property {boolean} pinned Whether the tile is in the pinned set.
+ * @property {number} pinCount The pin reference count for the tile.
+ */
+
+
+/**
  * Return the state of a tile.
- * @param {Tile} tile the tile to query
- * @return {Object} state
- * @return {boolean} state.visible whether the tile is in the visible set
- * @return {boolean} state.previouslyVisible whether the tile is in the
-                     previously visible set
- * @return {boolean} state.hasAsset whether the asset for the tile is present
- * @return {boolean} state.hasTexture whether the texture for the tile is present
- * @return {boolean} state.pinned whether the tile is pinned
- * @return {number} state.pinCount the pin reference count for the tile
+ * @param {Tile} tile The tile to query.
+ * @return {TileState}
  */
 TextureStore.prototype.query = function(tile) {
   var item = this._itemMap.get(tile);
