@@ -202,9 +202,9 @@ FlashStage.prototype._callListeners = function(callbackName) {
 
 
 FlashStage.prototype._checkReady = function() {
-  if (!this._flashElement
-  ||  !this._flashElement.isReady
-  ||  !this._flashElement.isReady()) {
+  if (!this._flashElement ||
+      !this._flashElement.isReady ||
+      !this._flashElement.isReady()) {
     // Not ready yet.
     return false;
   }
@@ -303,7 +303,7 @@ FlashStage.prototype.takeSnapshot = function (options) {
 
   // Return the snapshot by executing a flash-exported method.
   return this._flashElement.takeSnapshot(quality);
-}
+};
 
 
 FlashStage.type = FlashStage.prototype.type = 'flash';

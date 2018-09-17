@@ -117,7 +117,7 @@ CssStage.prototype.endFrame = function() {};
 
 CssStage.prototype.takeSnapshot = function() {
   throw new Error('CssStage: takeSnapshot not implemented');
-}
+};
 
 
 CssStage.type = CssStage.prototype.type = 'css';
