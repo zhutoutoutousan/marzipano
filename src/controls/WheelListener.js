@@ -44,19 +44,6 @@ WheelListener.prototype.destroy = function() {
   clearOwnProperties(this);
 };
 
-// Detect the available wheel event.
-function getEventName() {
-  if ('onwheel' in document.createElement('div')) {
-    // Modern browsers support 'wheel'.
-    return 'wheel';
-  } else if (document.onmousewheel !== undefined) {
-    // Webkit and IE support at least 'mousewheel'.
-    return 'mousewheel';
-  } else {
-    return null;
-  }
-}
-
 function fallbackHandler(callback) {
   return function handleWheelEvent(originalEvent) {
     if (!originalEvent) {
@@ -85,6 +72,23 @@ function fallbackHandler(callback) {
     // Fire the callback.
     return callback(event);
   };
+}
+
+// Detect the supported wheel event name and cache the result.
+var eventName;
+function getEventName() {
+  if (eventName !== undefined) {
+    return eventName;
+  }
+  if ('onwheel' in document.createElement('div')) {
+    // Modern browsers support 'wheel'.
+    return (eventName = 'wheel');
+  } else if (document.onmousewheel !== undefined) {
+    // Webkit and IE support at least 'mousewheel'.
+    return (eventName = 'mousewheel');
+  } else {
+    return (eventName = null);
+  }
 }
 
 module.exports = WheelListener;
