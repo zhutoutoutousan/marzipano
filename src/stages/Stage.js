@@ -51,11 +51,10 @@ function reverseTileCmp(t1, t2) {
  * subclasses: {@link WebGlStage}, {@link CssStage} or {@link FlashStage}.
  */
 function Stage(opts) {
-
-  // Must be set by subclasses.
-  this._domElement = null;
-
+  // The list of layers in display order (background to foreground).
   this._layers = [];
+
+  // The list of renderers; the i-th renderer is for the i-th layer.
   this._renderers = [];
 
   this._visibleTiles = [];
@@ -117,10 +116,14 @@ Stage.prototype.registerRenderer = function(geometryType, viewType, Renderer) {
 
 
 /**
- * @return {HTMLElement} DOM element where layers are rendered
+ * Returns the underlying DOM element.
+ *
+ * Must be overridden by subclasses.
+ *
+ * @return {Element}
  */
 Stage.prototype.domElement = function() {
-  return this._domElement;
+  throw new Error('Stage implementation must override domElement');
 };
 
 

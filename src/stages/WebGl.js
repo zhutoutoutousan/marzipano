@@ -149,8 +149,21 @@ WebGlStage.supported = function() {
   return webGlSupported();
 };
 
+
 /**
- * @returns {WebGLRenderingContext }
+ * Returns the underlying DOM element.
+ *
+ * @return {Element}
+ */
+WebGlStage.prototype.domElement = function() {
+  return this._domElement;
+};
+
+
+/**
+ * Returns the underlying WebGL rendering context.
+ *
+ * @return {WebGLRenderingContext }
  */
 WebGlStage.prototype.webGlContext = function() {
   return this._gl;

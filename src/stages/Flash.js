@@ -156,6 +156,16 @@ FlashStage.supported = function() {
 };
 
 
+/**
+ * Returns the underlying DOM element.
+ *
+ * @return {Element}
+ */
+FlashStage.prototype.domElement = function() {
+  return this._domElement;
+};
+
+
 FlashStage.prototype._setSize = function() {};
 
 

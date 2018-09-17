@@ -89,6 +89,16 @@ CssStage.supported = function() {
 };
 
 
+/**
+ * Returns the underlying DOM element.
+ *
+ * @return {Element}
+ */
+CssStage.prototype.domElement = function() {
+  return this._domElement;
+};
+
+
 CssStage.prototype._setSize = function() {};
 
 
