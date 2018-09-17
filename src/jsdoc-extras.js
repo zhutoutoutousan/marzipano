@@ -35,14 +35,15 @@
  */
 
 /**
- * Returns the view type, used by the {@link Stage} to determine the appropriate
+ * The view type, used by the {@link Stage} to determine the appropriate
  * renderer for a given geometry and view.
+ *
+ * Known values are `"rectilinear"` and `"flat"`.
  *
  * See also {@link Stage#registerRenderer}.
  *
- * @function
+ * @property {string}
  * @name View#type
- * @returns {string}
  */
 
 /**
@@ -156,14 +157,15 @@
  */
 
 /**
- * Returns the geometry type, used by the {@link Stage} to determine the
- * appropriate renderer for a given geometry and view.
+ * The geometry type, used by the {@link Stage} to determine the appropriate
+ * renderer for a given geometry and view.
+ *
+ * Known values are `"cube"`, `"equirect"` and `"flat"`.
  *
  * See also {@link Stage#registerRenderer}.
  *
- * @function
+ * @property {string}
  * @name Geometry#type
- * @returns {string}
  */
 
 /**

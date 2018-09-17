@@ -552,14 +552,15 @@ Stage.prototype.createTexture = function(tile, asset, done) {
 };
 
 /**
- * Returns the stage type, used to determine the appropriate renderer for a
- * given geometry and view.
+ * The stage type, used to determine the appropriate renderer for a given
+ * geometry and view.
+ *
+ * Known values are `"webgl"`, `"css"` and `"flash"`.
  *
  * See also {@link Stage#registerRenderer}.
  *
- * @function
+ * @property {string}
  * @name Stage#type
- * @returns {string}
  */
 
 module.exports = Stage;
