@@ -247,6 +247,7 @@ Stage.prototype.addLayer = function(layer, i) {
 
   this._validateLayer(layer);
 
+  // The rendered is created lazily by _updateRenderer().
   this._layers.splice(i, 0, layer);
   this._renderers.splice(i, 0, null);
 
