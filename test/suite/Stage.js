@@ -47,40 +47,40 @@ suite('Stage', function() {
     var layer3 = new MockLayer();
 
     assert.isFalse(stage.hasLayer(layer1));
-    assert.deepEqual([], stage.listLayers());
+    assert.sameElements([], stage.listLayers());
     assert.throws(function() { stage.addLayer(layer1, 1); });
     assert.throws(function() { stage.moveLayer(layer1, 1); });
     assert.throws(function() { stage.removeLayer(layer1); });
 
     stage.addLayer(layer1);
     assert.isTrue(stage.hasLayer(layer1));
-    assert.deepEqual([layer1], stage.listLayers());
+    assert.sameElements([layer1], stage.listLayers());
 
     stage.addLayer(layer2, 1);
     assert.isTrue(stage.hasLayer(layer2));
-    assert.deepEqual([layer1, layer2], stage.listLayers());
+    assert.sameElements([layer1, layer2], stage.listLayers());
 
     assert.throws(function() { stage.addLayer(layer3, -1); });
     assert.throws(function() { stage.addLayer(layer3, 3); });
 
     stage.addLayer(layer3, 1);
     assert.isTrue(stage.hasLayer(layer3));
-    assert.deepEqual([layer1, layer3, layer2], stage.listLayers());
+    assert.sameElements([layer1, layer3, layer2], stage.listLayers());
 
     assert.throws(function() { stage.moveLayer(layer1, -1); });
     assert.throws(function() { stage.moveLayer(layer1, 3); });
 
     stage.moveLayer(layer1, 2);
     assert.isTrue(stage.hasLayer(layer1));
-    assert.deepEqual([layer3, layer2, layer1], stage.listLayers());
+    assert.sameElements([layer3, layer2, layer1], stage.listLayers());
 
     stage.removeLayer(layer2);
     assert.isFalse(stage.hasLayer(layer2));
-    assert.deepEqual([layer1, layer3], stage.listLayers());
+    assert.sameElements([layer3, layer1], stage.listLayers());
 
     stage.removeLayer(layer1);
     assert.isFalse(stage.hasLayer(layer1));
-    assert.deepEqual([layer3], stage.listLayers());
+    assert.sameElements([layer3], stage.listLayers());
   });
 
   test('throws if layer validation fails', function() {

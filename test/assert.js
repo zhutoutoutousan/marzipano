@@ -18,8 +18,20 @@
 var assert = require('proclaim');
 
 assert.closeTo = function(actual, expected, delta, msg) {
-  assert.greaterThanOrEqual(actual, expected - delta, msg);
-  assert.lessThanOrEqual(actual, expected + delta, msg);
+  if (actual < expected - delta || actual > expected + delta) {
+    assert.fail(actual, expected, msg, 'closeTo');
+  }
+};
+
+assert.sameElements = function(actual, expected, msg) {
+  if (actual.length !== expected.length) {
+    assert.fail(actual, expected, msg, 'sameElements');
+  }
+  for (var i = 0; i < actual.length; i++) {
+    if (actual[i] !== expected[i]) {
+      assert.fail(actual, expected, msg, 'sameElements');
+    }
+  }
 };
 
 module.exports = assert;
