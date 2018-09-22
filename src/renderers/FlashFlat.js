@@ -24,6 +24,10 @@ var inherits = require('../util/inherits');
  * @class
  * @classdesc A renderer for {@link FlatGeometry} and {@link FlatView},
  *     appropriate for a {@link FlashStage}.
+ *
+ * Most users do not need to instantiate this class. Renderers are created and
+ * destroyed by {@link Stage} as necessary.
+ *
  * @implements Renderer
  */
 function FlashFlatRenderer(flashElement, layerId, quirks) {
