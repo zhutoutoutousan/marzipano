@@ -93,7 +93,7 @@ function Stage(opts) {
   });
 
   // Function to emit event when render parameters have changed.
-  this.emitRenderInvalid = this.emitRenderInvalid.bind(this);
+  this._emitRenderInvalid = this._emitRenderInvalid.bind(this);
 
   // The renderer registry maps each geometry/view pair into the respective
   // Renderer class.
@@ -195,11 +195,11 @@ Stage.prototype.setSize = function(size) {
   this._setSize(); // must be defined by subclasses.
 
   this.emit('resize');
-  this.emitRenderInvalid();
+  this._emitRenderInvalid();
 };
 
 
-Stage.prototype.emitRenderInvalid = function() {
+Stage.prototype._emitRenderInvalid = function() {
   this.emit('renderInvalid');
 };
 
@@ -253,12 +253,12 @@ Stage.prototype.addLayer = function(layer, i) {
   this._renderers.splice(i, 0, null);
 
   // Listeners for render invalid.
-  layer.addEventListener('viewChange', this.emitRenderInvalid);
-  layer.addEventListener('effectsChange', this.emitRenderInvalid);
-  layer.addEventListener('fixedLevelChange', this.emitRenderInvalid);
-  layer.addEventListener('textureStoreChange', this.emitRenderInvalid);
+  layer.addEventListener('viewChange', this._emitRenderInvalid);
+  layer.addEventListener('effectsChange', this._emitRenderInvalid);
+  layer.addEventListener('fixedLevelChange', this._emitRenderInvalid);
+  layer.addEventListener('textureStoreChange', this._emitRenderInvalid);
 
-  this.emitRenderInvalid();
+  this._emitRenderInvalid();
 };
 
 
@@ -286,7 +286,7 @@ Stage.prototype.moveLayer = function(layer, i) {
   this._layers.splice(i, 0, layer);
   this._renderers.splice(i, 0, renderer);
 
-  this.emitRenderInvalid();
+  this._emitRenderInvalid();
 };
 
 
@@ -309,12 +309,12 @@ Stage.prototype.removeLayer = function(layer) {
     this.destroyRenderer(renderer);
   }
 
-  removedLayer.removeEventListener('viewChange', this.emitRenderInvalid);
-  removedLayer.removeEventListener('effectsChange', this.emitRenderInvalid);
-  removedLayer.removeEventListener('fixedLevelChange', this.emitRenderInvalid);
-  removedLayer.removeEventListener('textureStoreChange', this.emitRenderInvalid);
+  removedLayer.removeEventListener('viewChange', this._emitRenderInvalid);
+  removedLayer.removeEventListener('effectsChange', this._emitRenderInvalid);
+  removedLayer.removeEventListener('fixedLevelChange', this._emitRenderInvalid);
+  removedLayer.removeEventListener('textureStoreChange', this._emitRenderInvalid);
 
-  this.emitRenderInvalid();
+  this._emitRenderInvalid();
 };
 
 
