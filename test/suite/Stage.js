@@ -91,4 +91,32 @@ suite('Stage', function() {
     assert.throws(function() { stage.addLayer(layer); });
   });
 
+  test('emits invalidation event', function() {
+    var stage = new TestStage();
+    var layer = new MockLayer();
+
+    var spy = sinon.spy();
+    stage.addEventListener('renderInvalid', spy);
+
+    stage.addLayer(layer);
+    assert(spy.callCount === 1);
+
+    layer.emit('viewChange');
+    layer.emit('effectsChange');
+    layer.emit('fixedLevelChange');
+    layer.emit('textureStoreChange');
+    assert(spy.callCount === 5);
+
+    stage.moveLayer(layer, 0);
+    assert(spy.callCount === 6);
+
+    stage.removeLayer(layer);
+    assert(spy.callCount === 7);
+
+    layer.emit('viewChange');
+    layer.emit('effectsChange');
+    layer.emit('fixedLevelChange');
+    layer.emit('textureStoreChange');
+    assert(spy.callCount === 7);
+  });
 });
