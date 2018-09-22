@@ -80,8 +80,9 @@ function Stage(opts) {
   this._tmpTiles = [];
 
   // Cached stage dimensions.
-  this._width = null;
-  this._height = null;
+  // Start with zero, which inhibits rendering until setSize() is called.
+  this._width = 0;
+  this._height = 0;
 
   // Temporary variable for rect.
   this._rect = {};

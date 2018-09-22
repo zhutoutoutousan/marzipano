@@ -28,6 +28,7 @@ var Stage = require('../../src/stages/Stage');
 function TestStage() {
   this.constructor.super_.call(this);
   this._validateLayer = sinon.stub();
+  this._setSize = sinon.spy();
 }
 
 inherits(TestStage, Stage);
@@ -118,5 +119,22 @@ suite('Stage', function() {
     layer.emit('fixedLevelChange');
     layer.emit('textureStoreChange');
     assert(spy.callCount === 7);
+  });
+
+  test('size', function() {
+    var stage = new TestStage();
+
+    var size = {};
+
+    assert(size === stage.size(size));
+    assert(size.width === 0);
+    assert(size.height === 0);
+
+    stage.setSize({width: 200, height: 100});
+    assert(stage._setSize.called);
+
+    size = stage.size();
+    assert(size.width === 200);
+    assert(size.height === 100);
   });
 });
