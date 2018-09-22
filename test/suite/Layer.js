@@ -151,9 +151,17 @@ suite('Layer', function() {
     var layer = new Layer(stage, source, geometry, view, textureStore);
     var spy = sinon.spy();
     layer.addEventListener('textureStoreChange', spy);
+    textureStore.emit('textureStartLoad');
+    assert(spy.callCount === 0);
     textureStore.emit('textureLoad');
+    assert(spy.callCount === 1);
+    textureStore.emit('textureCancel');
+    assert(spy.callCount === 1);
     textureStore.emit('textureError');
+    assert(spy.callCount === 2);
     textureStore.emit('textureInvalid');
-    assert(spy.calledThrice);
+    assert(spy.callCount === 3);
+    textureStore.emit('textureUnload');
+    assert(spy.callCount === 3);
   });
 });
