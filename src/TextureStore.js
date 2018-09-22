@@ -28,32 +28,25 @@ var clearOwnProperties = require('./util/clearOwnProperties');
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.textureStore;
 
 
-// Clients communicate with the texture store primarily through the startFrame,
-// endFrame and markTile methods. The call sequence must be accepted by the
-// following grammar (where X* denotes zero or more occurrences of X):
+// A Stage informs the TextureStore about the set of visible tiles during a
+// frame by calling startFrame, markTile and endFrame. In a particular frame,
+// TextureStore expects one or more calls to startFrame, followed by zero or
+// more calls to markTile, followed by one or more calls to endFrame. The
+// number of calls to startFrame and endFrame must match. Calls to other
+// TextureStore methods may be freely interleaved with this sequence.
 //
-//   Sequence ::= Frame*
-//   Frame ::= Client*
-//   Client ::= StartFrame MarkTile* EndFrame
-//
-// In the grammar above:
-//   * Sequence comprises the entire lifetime of the texture store;
-//   * Frame comprises the duration of a single frame;
-//   * Client comprises the sequence of calls made into the store by one
-//     particular client within the duration of a single frame.
-//
-// Other kinds of calls into the store (e.g. pin and unpin) may be freely
-// interleaved with the above sequence.
-//
-// At any given time, the texture store is in one of three phases. The start
-// phase corresponds to the interval between the first StartFrame and the
-// first EndFrame of a Frame. The end phase corresponds to the interval
-// between the first and the last EndFrame of a Frame. The remaining periods
-// of time belong to the idle phase.
-
-var IdlePhase = 'idle';
-var StartPhase = 'start';
-var EndPhase = 'end';
+// At any given time, TextureStore is in one of four states. The START state
+// corresponds to the interval between the first startFrame and the first
+// markTile of a frame. The MARK state corresponds to the interval between the
+// first markTile and the first endFrame. The END state corresponds to the
+// interval between the first and the last endFrame. At any other time, the
+// TextureStore is in the IDLE state.
+var State = {
+  IDLE: 0,
+  START: 1,
+  MARK: 2,
+  END: 3
+};
 
 
 var defaultOptions = {
@@ -68,13 +61,17 @@ var defaultOptions = {
 var nextId = 0;
 
 
-// Distinguish a cancellation from other kinds of errors.
+// Distinguishes a cancellation from other kinds of errors.
 function CancelError() {}
 inherits(CancelError, Error);
 
 
-// An item saved in a texture store. This class is responsible for loading
-// and unloading a tile's texture and emitting the associated events.
+/**
+ * An item saved in a {@link TextureStore}.
+ *
+ * This class is responsible for loading, refreshing and unloading the texture
+ * for a tile, and for emitting associated events.
+ */
 function TextureStoreItem(store, tile) {
 
   var self = this;
@@ -274,36 +271,36 @@ eventEmitter(TextureStoreItem);
  * markTile() and endFrame() methods, which indicate the tiles that are visible
  * in the current frame. Textures for visible tiles are loaded and retained
  * as long as the tiles remain visible. A limited amount of textures whose
- * tiles used to be visible are cached according to an LRU policy. Tiles may
- * be pinned to ensure that their textures are never unloaded, even when
- * the tiles are invisible.
+ * tiles were previously visible are cached according to an LRU policy. Tiles
+ * may be pinned to keep their respective textures cached even when they are
+ * invisible; these textures do not count towards the previously visible limit.
  *
  * Multiple layers belonging to the same underlying {@link WebGlStage} may
  * share the same TextureStore. Layers belonging to distinct {@link WebGlStage}
  * instances, or belonging to a {@link CssStage} or a {@link FlashStage},
  * may not do so due to restrictions on the use of textures across stages.
  *
- * @param {Geometry} geometry the underlying geometry.
- * @param {Source} source the underlying source.
- * @param {Stage} stage the underlying stage.
- * @param {Object} opts options.
- * @param {Number} [opts.previouslyVisibleCacheSize=32] the non-visible texture
- *                 LRU cache size.
+ * @param {Geometry} geometry The underlying geometry.
+ * @param {Source} source The underlying source.
+ * @param {Stage} stage The underlying stage.
+ * @param {Object} opts Options.
+ * @param {Number} [opts.previouslyVisibleCacheSize=32] The maximum number of
+ *     previously visible textures to cache according to an LRU policy.
  */
 function TextureStore(geometry, source, stage, opts) {
-
   opts = defaults(opts || {}, defaultOptions);
+
+  var TileClass = geometry.TileClass;
 
   this._source = source;
   this._stage = stage;
 
-  var TileClass = geometry.TileClass;
+  // The current state.
+  this._state = State.IDLE;
 
-  // The current phase.
-  this._clientPhase = IdlePhase;
-
-  // The number of pending startFrame calls without a matching endFrame call.
-  this._clientCounter = 0;
+  // The number of startFrame calls yet to be matched by endFrame calls during
+  // the current frame.
+  this._delimCount = 0;
 
   // The cache proper: map cached tiles to their respective textures/assets.
   this._itemMap = new Map(TileClass.equals, TileClass.hash);
@@ -324,7 +321,6 @@ function TextureStore(geometry, source, stage, opts) {
   this._noLongerVisible = [];
   this._visibleAgain = [];
   this._evicted = [];
-
 }
 
 eventEmitter(TextureStore);
@@ -361,7 +357,6 @@ TextureStore.prototype.source = function() {
  * Remove all textures from the TextureStore, including pinned textures.
  */
 TextureStore.prototype.clear = function() {
-
   var self = this;
 
   // Collect list of tiles to be evicted.
@@ -391,7 +386,6 @@ TextureStore.prototype.clear = function() {
  * Remove all textures in the TextureStore, excluding unpinned textures.
  */
 TextureStore.prototype.clearNotPinned = function() {
-
   var self = this;
 
   // Collect list of tiles to be evicted.
@@ -420,33 +414,31 @@ TextureStore.prototype.clearNotPinned = function() {
  * Signal the beginning of a frame. Called from {@link Stage}.
  */
 TextureStore.prototype.startFrame = function() {
-
-  // Check that this is an appropriate state for startFrame to be called.
-  if (this._clientPhase !== IdlePhase && this._clientPhase !== StartPhase) {
+  // Check that we are in an appropriate state.
+  if (this._state !== State.IDLE) {
     throw new Error('TextureStore: startFrame called out of sequence');
   }
 
-  // We are now in the start phase and expect one more call to endFrame
-  // before the current frame is complete.
-  this._clientPhase = StartPhase;
-  this._clientCounter++;
+  // Enter the START state, if not already there.
+  this._state = State.START;
 
-  // Clear the set of visible tiles, which is populated by calls to markTile.
-  this._newVisible.clear();
-
+  // Expect one more endFrame call.
+  this._delimCount++;
 };
 
 
 /**
- * Mark a tile within the current frame. Called from {@link Stage}.
- * @param {Tile} tile the tile to mark
+ * Mark a tile as visible within the current frame. Called from {@link Stage}.
+ * @param {Tile} tile The tile to mark.
  */
 TextureStore.prototype.markTile = function(tile) {
-
-  // Check that this is an appropriate state for markTile to be called.
-  if (this._clientPhase !== StartPhase) {
+  // Check that we are in an appropriate state.
+  if (this._state !== State.START && this._state !== State.MARK) {
     throw new Error('TextureStore: markTile called out of sequence');
   }
+
+  // Enter the MARK state, if not already there.
+  this._state = State.MARK;
 
   // Refresh texture for dynamic assets.
   var item = this._itemMap.get(tile);
@@ -458,7 +450,6 @@ TextureStore.prototype.markTile = function(tile) {
 
   // Add tile to the visible set.
   this._newVisible.add(tile);
-
 };
 
 
@@ -466,28 +457,26 @@ TextureStore.prototype.markTile = function(tile) {
  * Signal the end of a frame. Called from {@link Stage}.
  */
 TextureStore.prototype.endFrame = function() {
-
-  // Check that this is an appropriate state for endFrame to be called.
-  if (this._clientPhase !== StartPhase && this._clientPhase !== EndPhase) {
+  // Check that we are in an appropriate state.
+  if (this._state !== State.START && this._state !== State.MARK) {
     throw new Error('TextureStore: endFrame called out of sequence');
   }
 
-  // We are now in the end phase and expect one less call to endFrame
-  // before the current frame is complete.
-  this._clientPhase = EndPhase;
-  this._clientCounter--;
+  // Enter the END state, if not already there.
+  this._state = State.END;
 
-  // If all calls to startFrame have been matched by a corresponding call
-  // to endFrame, process the frame and return to the idle phase.
-  if (!this._clientCounter) {
+  // Expect one less call to endFrame.
+  this._delimCount--;
+
+  // If no further calls are expected, process frame and enter the IDLE state.
+  if (!this._delimCount) {
     this._update();
-    this._clientPhase = IdlePhase;
+    this._state = State.IDLE;
   }
 };
 
 
 TextureStore.prototype._update = function() {
-
   var self = this;
 
   // Calculate the set of tiles that used to be visible but no longer are.
@@ -551,11 +540,13 @@ TextureStore.prototype._update = function() {
   self._visible = self._newVisible;
   self._newVisible = tmp;
 
+  // Clear the new visible set.
+  self._newVisible.clear();
+
   // Clear temporary variables.
   self._noLongerVisible.length = 0;
   self._visibleAgain.length = 0;
   self._evicted.length = 0;
-
 };
 
 
