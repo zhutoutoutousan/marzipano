@@ -230,7 +230,7 @@ FlashStage.prototype._checkReady = function() {
   this._loadImageQueue.resume();
 
   // Force next render.
-  this.emitRenderInvalid();
+  this.emit('renderInvalid');
 
   return true;
 };
