@@ -199,6 +199,19 @@ Stage.prototype.setSize = function(size) {
 };
 
 
+/**
+ * Loads an {@link Asset} from an image.
+ * @param {string} url The image URL.
+ * @param {?Rect} rect A {@link Rect} describing a portion of the image, or null
+ *     to use the full image.
+ * @param {function(?Error, Asset)} done The callback.
+ * @return {function()} A function to cancel loading.
+ */
+Stage.prototype.loadImage = function() {
+  throw new Error('Stage implementation must override loadImage');
+};
+
+
 Stage.prototype._emitRenderInvalid = function() {
   this.emit('renderInvalid');
 };

@@ -57,6 +57,22 @@
  */
 
 /**
+ * @interface ImageLoader
+ * @classdesc Creates {@link Asset assets} by loading images.
+ */
+
+/**
+ * Loads an {@link Asset} from an image.
+ * @function
+ * @name ImageLoader.prototype.loadImage
+ * @param {string} url The image URL.
+ * @param {?Rect} rect A {@link Rect} describing a portion of the image, or null
+ *     for the full image.
+ * @param {function(?Error, Asset)} done The callback.
+ * @return {function()} A function to cancel loading.
+ */
+
+/**
  * @interface Source
  * @classdesc A source that loads 360° media.
  */

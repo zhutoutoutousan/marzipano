@@ -15,13 +15,37 @@
  */
 'use strict';
 
+var FlashImageAsset = require('../assets/FlashImage');
 var NetworkError = require('../NetworkError');
 var once = require('../util/once');
 
-var FlashImageAsset = require('../assets/FlashImage');
+// TODO: Move the load queue into the loader.
 
-function loadImageFlash(stage, url, rect, done) {
-  var flashElement = stage._flashElement;
+/**
+ * @class
+ * @classdesc A {@link Loader} for Flash images.
+ * @implements ImageLoader
+ *
+ * @param {Stage} stage The stage which is going to request images to be loaded.
+ */
+function FlashImageLoader(stage) {
+  if (stage.type !== 'flash') {
+    throw new Error('Stage type incompatible with loader');
+  }
+  this._stage = stage;
+}
+
+/**
+ * Loads an {@link Asset} from an image.
+ * @param {string} url The image URL.
+ * @param {?Rect} rect A {@link Rect} describing a portion of the image, or null
+ *     to use the full image.
+ * @param {function(?Error, Asset)} done The callback.
+ * @return {function()} A function to cancel loading.
+ */
+FlashImageLoader.prototype.loadImage = function(url, rect, done) {
+  var stage = this._stage;
+  var flashElement = stage.flashElement();
 
   var x = rect && rect.x || 0;
   var y = rect && rect.y || 0;
@@ -41,7 +65,7 @@ function loadImageFlash(stage, url, rect, done) {
       return;
     }
 
-    stage._offCallback('imageLoaded', callback);
+    stage.removeFlashCallbackListener('imageLoaded', callback);
 
     // TODO: is there any way to distinguish a network error from other
     // kinds of errors? For now we always return NetworkError since this
@@ -53,16 +77,15 @@ function loadImageFlash(stage, url, rect, done) {
     }
   }
 
-  stage._onCallback('imageLoaded', callback);
+  stage.addFlashCallbackListener('imageLoaded', callback);
 
   function cancel() {
     flashElement.cancelImage(imageId);
-    stage._offCallback('imageLoaded', callback);
+    stage.removeFlashCallbackListener('imageLoaded', callback);
     done.apply(null, arguments);
   }
 
   return cancel;
+};
 
-}
-
-module.exports = loadImageFlash;
+module.exports = FlashImageLoader;

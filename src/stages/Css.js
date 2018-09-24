@@ -16,10 +16,10 @@
 'use strict';
 
 var Stage = require('./Stage');
+var HtmlImageLoader = require('../loaders/HtmlImage');
 var cssSupported = require('../support/Css');
 var browser = require('bowser');
 var inherits = require('../util/inherits');
-var loadImageHtml = require('./loadImageHtml');
 var setAbsolute = require('../util/dom').setAbsolute;
 var setFullSize = require('../util/dom').setFullSize;
 var setNullTransformOrigin = require('../util/dom').setNullTransformOrigin;
@@ -60,6 +60,8 @@ var browserQuirks = {
 */
 function CssStage(opts) {
   this.constructor.super_.call(this, opts);
+
+  this._loader = new HtmlImageLoader(this);
 
   this._domElement = document.createElement('div');
 
@@ -102,7 +104,9 @@ CssStage.prototype.domElement = function() {
 CssStage.prototype._setSize = function() {};
 
 
-CssStage.prototype.loadImage = loadImageHtml;
+CssStage.prototype.loadImage = function(url, rect, done) {
+  return this._loader.loadImage(url, rect, done);
+};
 
 
 CssStage.prototype._validateLayer = function(layer) {

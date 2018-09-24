@@ -16,10 +16,10 @@
 'use strict';
 
 var Stage = require('./Stage');
+var HtmlImageLoader = require('../loaders/HtmlImage');
 var webGlSupported = require('../support/WebGl');
 var browser = require('bowser');
 var Map = require('../collections/Map');
-var loadImageHtml = require('./loadImageHtml');
 var inherits = require('../util/inherits');
 var pixelRatio = require('../util/pixelRatio');
 var hash = require('../util/hash');
@@ -101,6 +101,8 @@ function WebGlStage(opts) {
   this._generateMipmaps = opts.generateMipmaps != null ?
     opts.generateMipmaps : false;
 
+  this._loader = new HtmlImageLoader(this);
+
   this._domElement = document.createElement('canvas');
 
   setAbsolute(this._domElement);
@@ -180,7 +182,9 @@ WebGlStage.prototype._setSize = function() {
 };
 
 
-WebGlStage.prototype.loadImage = loadImageHtml;
+WebGlStage.prototype.loadImage = function(url, rect, done) {
+  return this._loader.loadImage(url, rect, done);
+};
 
 
 WebGlStage.prototype.maxTextureSize = function() {

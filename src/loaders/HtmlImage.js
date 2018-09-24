@@ -15,21 +15,43 @@
  */
 'use strict';
 
+var StaticImageAsset = require('../assets/StaticImage');
+var StaticCanvasAsset = require('../assets/StaticCanvas');
 var NetworkError = require('../NetworkError');
 var once = require('../util/once');
 
-var StaticImageAsset = require('../assets/StaticImage');
-var StaticCanvasAsset = require('../assets/StaticCanvas');
+// N.B. HtmlImageLoader is broken on IE8 for images that require resizing, due
+// to the unavailable HTML5 canvas element and the naturalWidth/naturalHeight
+// properties of image elements. This is currently not a problem because the
+// HTML-based renderers (WebGL and CSS) do not work on IE8 anyway. It could
+// become a problem in the future if we decide to support CSS rendering of flat
+// panoramas on IE8.
 
-// N.B. loadImageHtml is broken on IE8 for images that require resizing, due
-// to the missing HTML5 canvas element and naturalWidth/naturalHeight
-// properties on image elements. This is currently not a problem because the
-// HTML-based renderers (WebGL and CSS) do not work on IE8 anyway for lack of
-// CSS transforms support. It could become a problem in the future if we
-// decide to support CSS rendering of flat panoramas on IE8.
+// TODO: Move the load queue into the loader.
 
-function loadImageHtml(url, rect, done) {
+/**
+ * @class
+ * @classdesc A {@link Loader} for HTML images.
+ * @implements ImageLoader
+ *
+ * @param {Stage} stage The stage which is going to request images to be loaded.
+ */
+function HtmlImageLoader(stage) {
+  if (stage.type !== 'webgl' && stage.type !== 'css') {
+    throw new Error('Stage type incompatible with loader');
+  }
+  this._stage = stage;
+}
 
+/**
+ * Loads an {@link Asset} from an image.
+ * @param {string} url The image URL.
+ * @param {?Rect} rect A {@link Rect} describing a portion of the image, or null
+ *     to use the full image.
+ * @param {function(?Error, Asset)} done The callback.
+ * @return {function()} A function to cancel loading.
+ */
+HtmlImageLoader.prototype.loadImage = function(url, rect, done) {
   var img = new Image();
 
   // Allow cross-domain image loading.
@@ -88,7 +110,6 @@ function loadImageHtml(url, rect, done) {
   }
 
   return cancel;
+};
 
-}
-
-module.exports = loadImageHtml;
+module.exports = HtmlImageLoader;

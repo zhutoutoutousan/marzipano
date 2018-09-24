@@ -16,9 +16,9 @@
 'use strict';
 
 var Stage = require('./Stage');
+var FlashImageLoader = require('../loaders/FlashImage');
 var flashSupported = require('../support/Flash');
 var WorkQueue = require('../collections/WorkQueue');
-var loadImageFlash = require('./loadImageFlash');
 var inherits = require('../util/inherits');
 var defer = require('../util/defer');
 var setAbsolute = require('../util/dom').setAbsolute;
@@ -112,9 +112,13 @@ function FlashStage(opts) {
     this._callbacksObj[callbackNames[i]] = this._callListeners(callbackNames[i]);
   }
 
+  this._loader = new FlashImageLoader(this);
+
   // Queue for loadImage calls.
   // The queue starts paused so that loadImage calls occurring before Flash
   // is ready do not start right away (as they would fail).
+  // TODO: This is awkward. The stage must signal that it's ready to load
+  // images, but queuing should otherwise be implemented by the loader.
   this._loadImageQueue = new WorkQueue();
   this._loadImageQueue.pause();
 
@@ -158,7 +162,6 @@ FlashStage.supported = function() {
 
 /**
  * Returns the underlying DOM element.
- *
  * @return {Element}
  */
 FlashStage.prototype.domElement = function() {
@@ -166,11 +169,21 @@ FlashStage.prototype.domElement = function() {
 };
 
 
+/**
+ * Returns the underlying Flash element.
+ * @return {Element}
+ */
+FlashStage.prototype.flashElement = function() {
+  return this._flashElement;
+};
+
+
 FlashStage.prototype._setSize = function() {};
 
 
-FlashStage.prototype.loadImage = function(tile, rect, done) {
-  var loadFn = loadImageFlash.bind(null, this, tile, rect);
+FlashStage.prototype.loadImage = function(url, rect, done) {
+  // TODO: Move the queuing into the loader, which avoids this nonsense.
+  var loadFn = this._loader.loadImage.bind(this._loader, url, rect);
   return this._loadImageQueue.push(loadFn, done);
 };
 
@@ -180,16 +193,16 @@ FlashStage.prototype._validateLayer = function(layer) {
 };
 
 
-FlashStage.prototype._onCallback = function(callbackName, f) {
+FlashStage.prototype.addFlashCallbackListener = function(callbackName, f) {
   this._callbackListeners[callbackName] = this._callbackListeners[callbackName] || [];
   this._callbackListeners[callbackName].push(f);
 };
 
 
-FlashStage.prototype._offCallback = function(callbackName, f) {
+FlashStage.prototype.removeFlashCallbackListener = function(callbackName, f) {
   var listeners = this._callbackListeners[callbackName] || [];
   var index = listeners.indexOf(f);
-  if(index >= 0) {
+  if (index >= 0) {
     listeners.splice(index, 1);
   }
 };
