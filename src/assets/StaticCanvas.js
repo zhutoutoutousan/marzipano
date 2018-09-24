@@ -15,21 +15,27 @@
  */
 'use strict';
 
-var noop = require('../util/noop');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * Static asset containing a canvas.
+ * Static asset containing an HTML canvas element.
  * @class
  * @implements Asset
- * @param {Element} element HTML Canvas element.
+ * @param {Element} element
  */
 function StaticCanvasAsset(element) {
   this._element = element;
 }
 
+StaticCanvasAsset.prototype.dynamic = false;
+
 /**
- * @return {Element}
+ * Destructor.
  */
+StaticCanvasAsset.prototype.destroy = function() {
+  clearOwnProperties(this);
+};
+
 StaticCanvasAsset.prototype.element = function() {
   return this._element;
 };
@@ -45,9 +51,5 @@ StaticCanvasAsset.prototype.height = function() {
 StaticCanvasAsset.prototype.timestamp = function() {
   return 0;
 };
-
-StaticCanvasAsset.prototype.dynamic = false;
-
-StaticCanvasAsset.prototype.destroy = noop;
 
 module.exports = StaticCanvasAsset;

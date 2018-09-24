@@ -15,17 +15,26 @@
  */
 'use strict';
 
-var noop = require('../util/noop');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * Static asset containing an image.
+ * Static asset containing an HTML image element.
  * @class
  * @implements Asset
- * @param {Element} element HTML Image element.
+ * @param {Element} element
  */
 function StaticImageAsset(element) {
   this._element = element;
 }
+
+StaticImageAsset.prototype.dynamic = false;
+
+/**
+ * Destructor.
+ */
+StaticImageAsset.prototype.destroy = function() {
+  clearOwnProperties(this);
+};
 
 StaticImageAsset.prototype.element = function() {
   return this._element;
@@ -46,9 +55,5 @@ StaticImageAsset.prototype.height = function() {
 StaticImageAsset.prototype.timestamp = function() {
   return 0;
 };
-
-StaticImageAsset.prototype.dynamic = false;
-
-StaticImageAsset.prototype.destroy = noop;
 
 module.exports = StaticImageAsset;

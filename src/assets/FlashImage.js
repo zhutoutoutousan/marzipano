@@ -15,36 +15,47 @@
  */
 'use strict';
 
+var clearOwnProperties = require('../util/clearOwnProperties');
+
 /**
- * Static asset referencing an image loaded by the Flash application.
+ * Static asset referencing an image loaded by a Flash application.
  * @class
  * @implements Asset
  * @param {Element} flashElement HTML element with the Flash application that
- * loaded the image.
- * @param {number} imageId ID of the image inside the Flash application.
+ *     loaded the image.
+ * @param {number} imageId Unique ID of the image inside the Flash application.
  */
 function FlashImageAsset(flashElement, imageId) {
   this._flashElement = flashElement;
   this._imageId = imageId;
 }
 
+FlashImageAsset.prototype.dynamic = false;
+
+/**
+ * Destructor.
+ */
+FlashImageAsset.prototype.destroy = function() {
+  this._flashElement.unloadImage(this._imageId);
+  clearOwnProperties(this);
+};
+
 FlashImageAsset.prototype.element = function() {
   return this._imageId;
 };
 
-FlashImageAsset.prototype.timestamp = function() {
+FlashImageAsset.prototype.width = function() {
+  // TODO: Return the real value.
   return 0;
 };
 
-FlashImageAsset.prototype.dynamic = false;
+FlashImageAsset.prototype.height = function() {
+  // TODO: Return the real value.
+  return 0;
+};
 
-FlashImageAsset.prototype.destroy = function() {
-  var flashElement = this._flashElement;
-  var imageId = this._imageId;
-  flashElement.unloadImage(imageId);
-
-  this._flashElement = null;
-  this._imageId = null;
+FlashImageAsset.prototype.timestamp = function() {
+  return 0;
 };
 
 module.exports = FlashImageAsset;

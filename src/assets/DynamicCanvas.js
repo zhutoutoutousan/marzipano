@@ -16,12 +16,17 @@
 'use strict';
 
 var eventEmitter = require('minimal-event-emitter');
+var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * Dynamic asset containing a canvas.
+ * Dynamic asset containing an HTML canvas element.
+ *
+ * Call {@link DynamicCanvasAsset#changed} to notify that the contents of the
+ * canvas were modified and derived textures need to be refreshed.
+ *
  * @class
  * @implements Asset
- * @param {Element} element HTML Canvas element
+ * @param {Element} element
  */
 function DynamicCanvasAsset(element, opts) {
   opts = opts || {};
@@ -29,16 +34,20 @@ function DynamicCanvasAsset(element, opts) {
   this._opts = opts;
 
   this._element = element;
-  this._timestamp = 1;
-  this._lastUsedTime = null;
-
+  this._timestamp = 0;
 }
 
 eventEmitter(DynamicCanvasAsset);
 
+DynamicCanvasAsset.prototype.dynamic = true;
+
 /**
- * @return {Element}
+ * Destructor.
  */
+DynamicCanvasAsset.prototype.destroy = function() {
+  clearOwnProperties(this);
+};
+
 DynamicCanvasAsset.prototype.element = function() {
   return this._element;
 };
@@ -51,25 +60,16 @@ DynamicCanvasAsset.prototype.height = function() {
   return this._element.height;
 };
 
-DynamicCanvasAsset.prototype.dynamic = true;
-
 DynamicCanvasAsset.prototype.timestamp = function() {
   return this._timestamp;
 };
 
 /**
- * Notifies that the contained Canvas element was modified.
- * @fires {Asset#change}
+ * Notifies that the contents of the canvas were modified.
  */
 DynamicCanvasAsset.prototype.changed = function() {
   this._timestamp++;
   this.emit('change');
-};
-
-DynamicCanvasAsset.prototype.destroy = function() {
-  if (this._opts.unload) {
-    this._opts.unload();
-  }
 };
 
 module.exports = DynamicCanvasAsset;
