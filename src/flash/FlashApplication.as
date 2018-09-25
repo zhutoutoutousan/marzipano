@@ -40,13 +40,13 @@ package {
   import mx.graphics.codec.JPEGEncoder;
   import mx.utils.Base64Encoder;
 
-  public class FlashCommon extends Sprite {
+  public class FlashApplication extends Sprite {
 
     private var initialized:Boolean = false;
 
     private var imageLoadedCallback:String = null;
 
-    public function FlashCommon() {
+    public function FlashApplication() {
 
       // Install event handler for uncaught errors.
       loaderInfo.uncaughtErrorEvents.addEventListener(
@@ -474,7 +474,7 @@ package {
       }
       delete textureMap[id];
     }
-    
+
     public function takeSnapshot(quality:uint):String {
       // Make an empty snap of stage size
       var snap:BitmapData = new BitmapData (
@@ -482,19 +482,19 @@ package {
         stage.height,
         false
       );
-      
+
       // Draw each layer onto it
       for each (var layer:Sprite in layerMap) {
         snap.draw(layer);
       }
-      
+
       // Make Base64Encoder and JPEGEncoder for exporting
       var buffer:Base64Encoder = new Base64Encoder();
       var jpeg:JPEGEncoder = new JPEGEncoder(quality);
-      
+
       // Base40 encode jpeg data
       buffer.encodeBytes(jpeg.encode(snap));
-      
+
       // Return proper base64 DataURI
       return 'data:image/jpeg;charset=utf-8;base64,' + buffer.toString();
     }

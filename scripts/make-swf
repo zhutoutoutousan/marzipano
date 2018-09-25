@@ -25,4 +25,4 @@ if [[ -z "$1" || -z "$2" ]]; then
 fi
 
 mxmlc -target-player=10.1 -static-link-runtime-shared-libraries \
-  -title "Marzipano $2" -output "$1" src/renderers/FlashCommon.as
+  -title "Marzipano $2" -output "$1" src/flash/FlashApplication.as
