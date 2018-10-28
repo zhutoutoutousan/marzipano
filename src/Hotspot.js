@@ -61,10 +61,11 @@ function Hotspot(domElement, parentDomElement, view, params, opts) {
 
   opts = opts || {};
   opts.perspective = opts.perspective || {};
-  opts.perspective.extraRotations = opts.perspective.extraRotations != null ? opts.perspective.extraRotations : "";
+  opts.perspective.extraRotations =
+      opts.perspective.extraRotations != null ? opts.perspective.extraRotations : "";
 
   if (opts.perspective.radius && !cssSupported()) {
-    throw new Error('Hotspot cannot not be embedded in sphere for lack of browser support');
+    throw new Error('Embedded hotspots are not supported on this browser');
   }
 
   this._domElement = domElement;
@@ -184,13 +185,15 @@ Hotspot.prototype._update = function() {
     var view = this._view;
 
     if (this._perspective.radius) {
-      // Hotspots which are embedded in the sphere should always be displayed. Even
-      // if they are behind the camera they can still be visible (e.g. a face-sized hotspot at yaw=91º)
+      // Hotspots that are embedded in the panorama may be visible even when
+      // positioned behind the camera.
       isVisible = true;
       this._setEmbeddedPosition(view, params);
     }
     else {
-      // Regular hotspots need only be displayed if they are not behind the camera
+      // Regular hotspots are only visible when positioned in front of the
+      // camera. Note that they may be partially visible when positioned outside
+      // the viewport.
       view.coordinatesToScreen(params, position);
       x = position.x;
       y = position.y;
@@ -216,7 +219,8 @@ Hotspot.prototype._update = function() {
 
 
 Hotspot.prototype._setEmbeddedPosition = function(view, params) {
-  var transform = view.coordinatesToPerspectiveTransform(params, this._perspective.radius, this._perspective.extraRotations);
+  var transform = view.coordinatesToPerspectiveTransform(
+      params, this._perspective.radius, this._perspective.extraRotations);
   setTransform(this._domElement, transform);
 };
 
