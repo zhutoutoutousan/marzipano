@@ -17,7 +17,7 @@
 
 var eventEmitter = require('minimal-event-emitter');
 var cssSupported = require('./support/Css');
-var positionAbsolutely = require('./positionAbsolutely');
+var positionAbsolutely = require('./util/positionAbsolutely');
 var setTransform = require('./util/dom').setTransform;
 var clearOwnProperties = require('./util/clearOwnProperties');
 

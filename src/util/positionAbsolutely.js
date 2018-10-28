@@ -15,10 +15,10 @@
  */
 'use strict';
 
-var cssSupported = require('./support/Css');
-var setTransform = require('./util/dom').setTransform;
-var setPixelPosition = require('./util/dom').setPixelPosition;
-var decimal = require('./util/decimal');
+var cssSupported = require('../support/Css');
+var setTransform = require('./dom').setTransform;
+var setPixelPosition = require('./dom').setPixelPosition;
+var decimal = require('./decimal');
 
 // This cannot belong in util/dom.js because support/Css also depends on it
 // and it would cause a circular dependency.
