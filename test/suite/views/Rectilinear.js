@@ -44,9 +44,9 @@ suite('RectilinearView', function() {
 
     test('sets default parameters', function() {
       var view = new RectilinearView();
-      assert.isNumber(view.yaw());
-      assert.isNumber(view.pitch());
-      assert.isNumber(view.fov());
+      assert(view.yaw() === 0.0);
+      assert(view.pitch() === 0.0);
+      assert(view.fov() === Math.PI/4);
     });
 
   });

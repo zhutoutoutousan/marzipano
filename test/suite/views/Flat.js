@@ -42,9 +42,9 @@ suite('FlatView', function() {
 
     test('sets default parameters', function() {
       var view = new FlatView({ mediaAspectRatio: 1 });
-      assert.isNumber(view.x());
-      assert.isNumber(view.y());
-      assert.isNumber(view.zoom());
+      assert(view.x() === 0.5);
+      assert(view.y() === 0.5);
+      assert(view.zoom() === 1.0);
     });
 
   });
