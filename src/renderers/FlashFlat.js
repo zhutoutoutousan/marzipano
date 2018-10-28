@@ -80,6 +80,14 @@ FlashFlatRenderer.prototype._renderOnFlash = function(layer, rect) {
     });
   }
 
+  // Get viewport position and size.
+  var stageWidth = this._flashElement.clientWidth;
+  var stageHeight = this._flashElement.clientHeight;
+  var viewportX = stageWidth * rect.x;
+  var viewportY = stageHeight * rect.y;
+  var viewportWidth = stageWidth * rect.width;
+  var viewportHeight = stageHeight * rect.height;
+
   // Get opacity value.
   var opacity = 1.0;
   var effects = layer.effects();
@@ -94,8 +102,9 @@ FlashFlatRenderer.prototype._renderOnFlash = function(layer, rect) {
   var zoomX = view._zoomX();
   var zoomY = view._zoomY();
 
-  flashElement.drawFlatTiles(layerId, rect.width, rect.height, rect.left, rect.top,
-                             opacity, x, y, zoomX, zoomY, flashTileList);
+  flashElement.drawFlatTiles(
+      layerId, viewportWidth, viewportHeight, viewportX, viewportY, opacity,
+      x, y, zoomX, zoomY, flashTileList);
 };
 
 

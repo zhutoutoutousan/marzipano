@@ -251,8 +251,8 @@ HotspotContainer.prototype._update = function() {
     if (visible) {
       if (this._rect) {
         calcRect(width, height, this._rect, tmpRect);
-        positionAbsolutely(wrapper, tmpRect.left, tmpRect.top);
-        setPixelSize(wrapper, tmpRect.width, tmpRect.height);
+        positionAbsolutely(wrapper, width * tmpRect.x, height * tmpRect.y);
+        setPixelSize(wrapper, width * tmpRect.width, height * tmpRect.height);
         setOverflowHidden(wrapper);
       } else {
         positionAbsolutely(wrapper, 0, 0);

@@ -16,6 +16,7 @@
 'use strict';
 
 var Map = require('../collections/Map');
+var decimal = require('../util/decimal');
 var setOverflowHidden = require('../util/dom').setOverflowHidden;
 var setNoPointerEvents = require('../util/dom').setNoPointerEvents;
 var setNullTransform = require('../util/dom').setNullTransform;
@@ -72,10 +73,12 @@ CssBaseRenderer.prototype.startLayer = function(layer, rect) {
   var domElement = this.domElement;
 
   // Set viewport effect.
-  domElement.style.left = rect.left + 'px';
-  domElement.style.top = rect.top + 'px';
-  domElement.style.width = rect.width + 'px';
-  domElement.style.height = rect.height + 'px';
+  var stageWidth = this._root.clientWidth;
+  var stageHeight = this._root.clientHeight;
+  domElement.style.left = decimal(stageWidth * rect.left) + 'px';
+  domElement.style.top = decimal(stageHeight * rect.top) + 'px';
+  domElement.style.width = decimal(stageWidth * rect.width) + 'px';
+  domElement.style.height = decimal(stageHeight * rect.height) + 'px';
 
   // Set opacity effect.
   var opacity = 1.0;
@@ -97,7 +100,7 @@ CssBaseRenderer.prototype.renderTile = function(tile, texture) {
 };
 
 
-CssBaseRenderer.prototype.endLayer = function(layer) {
+CssBaseRenderer.prototype.endLayer = function(layer, rect) {
 
   var domElement = this.domElement;
   var oldTileList = this._oldTileList;

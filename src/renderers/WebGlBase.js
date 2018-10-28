@@ -104,7 +104,7 @@ WebGlBaseRenderer.prototype.startLayer = function(layer, rect) {
 };
 
 
-WebGlBaseRenderer.prototype.endLayer = function() {
+WebGlBaseRenderer.prototype.endLayer = function(layer, rect) {
   var gl = this.gl;
   var shaderProgram = this.shaderProgram;
   disableAttributes(gl, shaderProgram);

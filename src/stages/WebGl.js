@@ -173,9 +173,15 @@ WebGlStage.prototype.webGlContext = function() {
 
 
 WebGlStage.prototype._setSize = function() {
-  // Update the size of the canvas coordinate space. The size is obtained by
-  // taking the stage dimensions, which are set in CSS pixels, and multiplying
-  // them by the device pixel ratio.
+  // Update the size of the canvas coordinate space.
+  //
+  // The size is obtained by taking the stage dimensions, which are set in CSS
+  // pixels, and multiplying them by the device pixel ratio. Crucially, this
+  // must be the only place where the WebGL rendering pipeline accesses the
+  // pixel ratio; subsequent uses should reference the `drawingBufferWidth` and
+  // `drawingBufferHeight` properties on the WebGLRenderingContext. Failing to
+  // do so will break the rendering if the pixel ratio changes but the stage
+  // size does not, e.g. when moving the window across screens.
   var ratio = pixelRatio();
   this._domElement.width = ratio * this._width;
   this._domElement.height = ratio * this._height;
@@ -233,12 +239,8 @@ WebGlStage.prototype.startFrame = function() {
     throw new Error('Bad WebGL context - maybe context was lost?');
   }
 
-  var width = this._width;
-  var height = this._height;
-  var ratio = pixelRatio();
-
   // Set the WebGL viewport.
-  gl.viewport(0, 0, ratio * width, ratio * height);
+  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
   // Clear framebuffer.
   gl.clearColor(0.0, 0.0, 0.0, 0.0);

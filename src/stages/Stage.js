@@ -85,7 +85,10 @@ function Stage(opts) {
   this._height = 0;
 
   // Temporary variable for rect.
-  this._rect = {};
+  this._tmpRect = {};
+
+  // Temporary variable for size.
+  this._tmpSize = {};
 
   // Work queue for createTexture.
   this._createTextureWorkQueue = new WorkQueue({
@@ -381,7 +384,8 @@ Stage.prototype.render = function() {
   var width = this._width;
   var height = this._height;
 
-  var rect = this._rect;
+  var rect = this._tmpRect;
+  var size = this._tmpSize;
 
   if (width <= 0 || height <= 0) {
     return;
@@ -403,14 +407,19 @@ Stage.prototype.render = function() {
     var depth = this._layers.length - i;
     var textureStore = layer.textureStore();
 
-    // Update the view size.
+    // Calculate the rect.
     // TODO: avoid doing this on every frame.
     calcRect(width, height, effects && effects.rect, rect);
+
     if (rect.width <= 0 || rect.height <= 0) {
       // Skip rendering on a null viewport.
       continue;
     }
-    view.setSize(rect);
+
+    // Update the view size.
+    size.width = rect.width * this._width;
+    size.height = rect.height * this._height;
+    view.setSize(size);
 
     // Clear the tile sets.
     visibleTiles.length = 0;

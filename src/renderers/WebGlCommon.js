@@ -19,7 +19,6 @@
 var MAX_LAYERS = 256; // Max number of layers per stage.
 var MAX_LEVELS = 256; // Max number of levels per layer.
 
-var pixelRatio = require('../util/pixelRatio');
 var clamp = require('../util/clamp');
 var vec4 = require('gl-matrix/src/gl-matrix/vec4');
 var vec3 = require('gl-matrix/src/gl-matrix/vec3');
@@ -135,6 +134,7 @@ function setDepth(gl, shaderProgram, layerZ, tileZ) {
   gl.uniform1f(shaderProgram.uDepth, depth);
 }
 
+
 var defaultOpacity = 1.0;
 var defaultColorOffset = vec4.create();
 var defaultColorMatrix = mat4.create();
@@ -161,106 +161,62 @@ function setupPixelEffectUniforms(gl, effects, uniforms) {
 }
 
 
-
-// This function returns a matrix that the vertex shader can use to compensate
-// the viewpoer clamping
-
-var viewportParameters = {};
-
-function setViewport(gl, layer, rect, viewportMatrix) {
-  var ratio = pixelRatio();
-  // Setting a negative offset on the viewport causes rendering problems
-  // Using a negative offset, the viewport size is larger than it should and
-  // rendering occurs outside the rect area
-  // This happens on all browsers as of 2015-04
-
-  // To solve this, one must clamp the viewport and compensate the clamping
-  // on the vertex shader by offsetting and scaling the vertexes.
-
-  // Offsets larger than the total size and sizes which cause the viewport to
-  // be larger than the canvas do not seem to cause any rendering problems.
-  // However, this may still have a performance impact. Therefore, the maximum
-  // values are also clamped.
-
-  rectToViewport(rect, viewportParameters, viewportMatrix);
-  gl.viewport(ratio * viewportParameters.offsetX,
-              ratio * viewportParameters.offsetY,
-              ratio * viewportParameters.width,
-              ratio * viewportParameters.height);
-}
-
-// Temporary vectors for rectToViewport
+// Temporary vectors for setViewport.
 var translateVector = vec3.create();
 var scaleVector = vec3.create();
 
-function rectToViewport(rect, resultParameters, resultViewportMatrix) {
-  // Horizontal axis.
-  var offsetX = rect.left;
-  var totalWidth = rect.totalWidth;
-  var clampedOffsetX = clamp(offsetX, 0, totalWidth);
 
-  var widthWithoutDiscarded = rect.width - (clampedOffsetX - offsetX);
-  var maxWidth = totalWidth - clampedOffsetX;
+// Sets the WebGL viewport and returns a viewport clamping compensation matrix.
+//
+// Negative viewport origin coordinates cause rendering issues. Letting the
+// viewport dimensions extend beyond the visible area do not seem to cause
+// rendering issues, but they may still have an impact on performance.
+// Therefore, when the scene's rect is not fully contained in the rendering
+// area, we clamp the viewport to the rendering area, and return a compensation
+// matrix to scale and translate vertices accordingly.
+function setViewport(gl, layer, rect, viewportMatrix) {
+  if (rect.x === 0 && rect.width === 1 && rect.y === 0 && rect.height === 1) {
+    // Fast path for full rect.
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    mat4.identity(viewportMatrix);
+    return;
+  }
 
-  var clampedWidth = clamp(widthWithoutDiscarded, 0, maxWidth);
+  var offsetX = rect.x;
+  var clampedOffsetX = clamp(offsetX, 0, 1);
+  var leftExcess = clampedOffsetX - offsetX;
+  var maxClampedWidth = 1 - clampedOffsetX;
+  var clampedWidth = clamp(rect.width - leftExcess, 0, maxClampedWidth);
+  var rightExcess = rect.width - clampedWidth;
 
-  resultParameters.offsetX = clampedOffsetX;
-  resultParameters.width = clampedWidth;
+  var offsetY = 1 - rect.height - rect.y;
+  var clampedOffsetY = clamp(offsetY, 0, 1);
+  var bottomExcess = clampedOffsetY - offsetY;
+  var maxClampedHeight = 1 - clampedOffsetY;
+  var clampedHeight = clamp(rect.height - bottomExcess, 0, maxClampedHeight);
+  var topExcess = rect.height - clampedHeight;
 
-  // Vertical axis.
-  var offsetY = rect.totalHeight - rect.bottom;
-  var totalHeight = rect.totalHeight;
-  var clampedOffsetY = clamp(offsetY, 0, totalHeight);
+  vec3.set(
+    scaleVector,
+    rect.width / clampedWidth,
+    rect.height / clampedHeight,
+    1);
 
-  var heightWithoutDiscarded = rect.height - (clampedOffsetY - offsetY);
-  var maxHeight = totalHeight - clampedOffsetY;
+  vec3.set(
+    translateVector,
+    (rightExcess - leftExcess) / clampedWidth,
+    (topExcess - bottomExcess) / clampedHeight,
+    0);
 
-  var clampedHeight = clamp(heightWithoutDiscarded, 0, maxHeight);
-
-  resultParameters.offsetY = clampedOffsetY;
-  resultParameters.height = clampedHeight;
-
-  // Compensation matrix for shader.
-  // This matrix is used to scale and offset the vertices by the necessary
-  // amount to compensate the viewport clamping.
-
-  // Scaling is easy. Just revert the scaling that a smaller viewport would
-  // cause.
-  scaleVector[0] = rect.width / clampedWidth;
-  scaleVector[1] = rect.height / clampedHeight;
-  scaleVector[2] = 1;
-
-  // Translating is more complicated. The center of the view will be at
-  // the center of the viewport, but it should actually be offset according
-  // to rect. One translation is be required to compensate for clamping at the
-  // beginning of the viewport and another for clamping at the end of the
-  // viewport. The two are calculated and subtracted.
-
-  // Horizontal axis translation compensation.
-  var leftClampCompensation = clampedOffsetX - offsetX;
-
-  var rightmost = offsetX + rect.width;
-  var clampedRightmost = clampedOffsetX + clampedWidth;
-  var rightClampCompensation = rightmost - clampedRightmost;
-
-  // Vertical axis translation compensation.
-  var bottomClampCompensation = clampedOffsetY - offsetY;
-
-  var topmost = offsetY + rect.height;
-  var clampedTopmost = clampedOffsetY + clampedHeight;
-  var topClampCompensation = topmost - clampedTopmost;
-
-  // Divide by the viewport size to convert from pixels to viewport coordinates.
-  translateVector[0] = (rightClampCompensation - leftClampCompensation)/clampedWidth;
-  translateVector[1] = (topClampCompensation - bottomClampCompensation)/clampedHeight;
-  translateVector[2] = 0;
-
-  var viewportMatrix = resultViewportMatrix;
   mat4.identity(viewportMatrix);
   mat4.translate(viewportMatrix, viewportMatrix, translateVector);
   mat4.scale(viewportMatrix, viewportMatrix, scaleVector);
-}
 
+  gl.viewport(gl.drawingBufferWidth * clampedOffsetX,
+              gl.drawingBufferHeight * clampedOffsetY,
+              gl.drawingBufferWidth * clampedWidth,
+              gl.drawingBufferHeight * clampedHeight);
+}
 
 module.exports = {
   createShaderProgram: createShaderProgram,
