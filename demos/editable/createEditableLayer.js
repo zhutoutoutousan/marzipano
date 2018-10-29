@@ -34,13 +34,13 @@ function createEditableLayers(stage, url, done) {
     var colorAsset = new Marzipano.DynamicCanvasAsset(colorCanvas);
     var colorSource = new Marzipano.SingleAssetSource(colorAsset);
     var colorTextureStore = new Marzipano.TextureStore(geometry, colorSource, stage);
-    var colorLayer = new Marzipano.Layer(stage, colorSource, geometry, view, colorTextureStore);
+    var colorLayer = new Marzipano.Layer(colorSource, geometry, view, colorTextureStore);
 
     // Create desaturated layer.
     var bwAsset = new Marzipano.DynamicCanvasAsset(bwCanvas);
     var bwSource = new Marzipano.SingleAssetSource(bwAsset);
     var bwTextureStore = new Marzipano.TextureStore(geometry, bwSource, stage);
-    var bwLayer = new Marzipano.Layer(stage, bwSource, geometry, view, bwTextureStore);
+    var bwLayer = new Marzipano.Layer(bwSource, geometry, view, bwTextureStore);
 
     done(null, {
       colorLayer: colorLayer,

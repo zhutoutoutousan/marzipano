@@ -68,7 +68,7 @@ var sourceBelow = new Marzipano.ImageUrlSource(function(tile) {
   return { url: "//www.marzipano.net/media/pixels/red.png" };
 });
 var textureStoreBelow = new Marzipano.TextureStore(geometryBelow, sourceBelow, stage);
-var layerBelow = new Marzipano.Layer(stage, sourceBelow, geometryBelow, view,
+var layerBelow = new Marzipano.Layer(sourceBelow, geometryBelow, view,
                                      textureStoreBelow, { effects: { opacity: 1 } });
 
 // Set up the top layer.
@@ -81,7 +81,7 @@ var sourceAbove = new Marzipano.ImageUrlSource(function(tile) {
     tile.z + '_' + tile.face + '_' + tile.x + '_' + tile.y + '.png' };
 });
 var textureStoreAbove = new Marzipano.TextureStore(geometryAbove, sourceAbove, stage);
-var layerAbove = new Marzipano.Layer(stage, sourceAbove, geometryAbove, view,
+var layerAbove = new Marzipano.Layer(sourceAbove, geometryAbove, view,
                                      textureStoreAbove, { effects: { opacity: 0.6 } });
 
 // Add layers to stage.

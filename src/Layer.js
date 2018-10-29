@@ -28,7 +28,6 @@ var clearOwnProperties = require('./util/clearOwnProperties');
  * and {@link TextureStore} that may be added into a {@link Stage} and rendered
  * with {@link Effects}.
  *
- * @param {Stage} stage
  * @param {Source} source
  * @param {Geometry} geometry
  * @param {View} view
@@ -36,12 +35,11 @@ var clearOwnProperties = require('./util/clearOwnProperties');
  * @param {Object} opts
  * @param {Effects} opts.effects
 */
-function Layer(stage, source, geometry, view, textureStore, opts) {
+function Layer(source, geometry, view, textureStore, opts) {
   opts = opts || {};
 
   var self = this;
 
-  this._stage = stage;
   this._source = source;
   this._geometry = geometry;
   this._view = view;
@@ -84,15 +82,6 @@ Layer.prototype.destroy = function() {
   this._textureStore.removeEventListener('textureInvalid',
     this._textureStoreChangeHandler);
   clearOwnProperties(this);
-};
-
-
-/**
- * Returns the underlying {@link Stage stage}.
- * @return {Stage}
- */
-Layer.prototype.stage = function() {
-  return this._stage;
 };
 
 

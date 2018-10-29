@@ -72,8 +72,7 @@ suite('Layer', function() {
   });
 
   test('getters', function() {
-    var layer = new Layer(stage, source, geometry, view, textureStore);
-    assert.equal(stage, layer.stage());
+    var layer = new Layer(source, geometry, view, textureStore);
     assert.equal(source, layer.source());
     assert.equal(geometry, layer.geometry());
     assert.equal(view, layer.view());
@@ -81,14 +80,14 @@ suite('Layer', function() {
   });
 
   test('visible tiles', function() {
-    var layer = new Layer(stage, source, geometry, view, textureStore);
+    var layer = new Layer(source, geometry, view, textureStore);
     var tiles = [];
     layer.visibleTiles(tiles);
     assert(geometry.visibleTiles.calledWith(view, selectedLevel, tiles));
   });
 
   test('fixed level', function() {
-    var layer = new Layer(stage, source, geometry, view, textureStore);
+    var layer = new Layer(source, geometry, view, textureStore);
     var spy = sinon.spy();
     layer.addEventListener('fixedLevelChange', spy);
 
@@ -110,7 +109,7 @@ suite('Layer', function() {
   });
 
   test('pin level', function() {
-    var layer = new Layer(stage, source, geometry, view, textureStore);
+    var layer = new Layer(source, geometry, view, textureStore);
     geometry.levelTiles.returns(tileList);
     layer.pinLevel(1);
     assert(geometry.levelTiles.withArgs(levelList[1]).calledOnce);
@@ -125,7 +124,7 @@ suite('Layer', function() {
   });
 
   test('pin first level', function() {
-    var layer = new Layer(stage, source, geometry, view, textureStore);
+    var layer = new Layer(source, geometry, view, textureStore);
     geometry.levelTiles.returns(tileList);
     layer.pinFirstLevel();
     assert(geometry.levelTiles.withArgs(levelList[0]).calledOnce);
@@ -140,7 +139,7 @@ suite('Layer', function() {
   });
 
   test('view events', function() {
-    var layer = new Layer(stage, source, geometry, view, textureStore);
+    var layer = new Layer(source, geometry, view, textureStore);
     var spy = sinon.spy();
     layer.addEventListener('viewChange', spy);
     view.emit('change');
@@ -148,7 +147,7 @@ suite('Layer', function() {
   });
 
   test('texture store events', function() {
-    var layer = new Layer(stage, source, geometry, view, textureStore);
+    var layer = new Layer(source, geometry, view, textureStore);
     var spy = sinon.spy();
     layer.addEventListener('textureStoreChange', spy);
     textureStore.emit('textureStartLoad');

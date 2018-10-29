@@ -113,7 +113,7 @@ function createLayer(stage, view, geometry, eye, rect) {
     { cubeMapPreviewUrl: urlPrefix + "/" + eye + "/preview.jpg" });
 
   var textureStore = new Marzipano.TextureStore(geometry, source, stage);
-  var layer = new Marzipano.Layer(stage, source, geometry, view, textureStore,
+  var layer = new Marzipano.Layer(source, geometry, view, textureStore,
     { effects: { rect: rect }});
 
   layer.pinFirstLevel();
