@@ -104,7 +104,7 @@ ControlComposer.prototype.list = function() {
 };
 
 
-ControlComposer.prototype._updateDynamics = function(storedDynamics, event, parameter, dynamics) {
+ControlComposer.prototype._updateDynamics = function(storedDynamics, parameter, dynamics) {
   var parameterDynamics = storedDynamics[parameter];
 
   if (!parameterDynamics) {

@@ -147,15 +147,13 @@ suite('TextureStore', function() {
     test('load texture for static asset', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile();
-      store.addEventListener('textureStartLoad', function(event, eventTile) {
-        assert(event === 'textureStartLoad');
+      store.addEventListener('textureStartLoad', function(eventTile) {
         assert(eventTile === tile);
         assert(store.texture(tile) == null);
         assert(!store.query(tile).hasAsset);
         assert(!store.query(tile).hasTexture);
-        store.addEventListener('textureLoad', function(event, eventTile) {
+        store.addEventListener('textureLoad', function(eventTile) {
           var texture = store.texture(tile);
-          assert(event === 'textureLoad');
           assert(eventTile === tile);
           assert(texture != null);
           assert(texture.id === tile.id);
@@ -172,15 +170,13 @@ suite('TextureStore', function() {
     test('load texture for dynamic asset', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile({ dynamicAsset: true });
-      store.addEventListener('textureStartLoad', function(event, eventTile) {
-        assert(event === 'textureStartLoad');
+      store.addEventListener('textureStartLoad', function(eventTile) {
         assert(eventTile === tile);
         assert(store.texture(tile) == null);
         assert(!store.query(tile).hasAsset);
         assert(!store.query(tile).hasTexture);
-        store.addEventListener('textureLoad', function(event, eventTile) {
+        store.addEventListener('textureLoad', function(eventTile) {
           var texture = store.texture(tile);
-          assert(event === 'textureLoad');
           assert(eventTile === tile);
           assert(texture != null);
           assert(texture.id === tile.id);
@@ -197,9 +193,8 @@ suite('TextureStore', function() {
     test('retry on loadAsset failure', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile({ assetFailures: 1 }); // will succeed when retried
-      store.addEventListener('textureLoad', function(event, eventTile) {
+      store.addEventListener('textureLoad', function(eventTile) {
         var texture = store.texture(tile);
-        assert(event === 'textureLoad');
         assert(eventTile === tile);
         assert(texture != null);
         assert(texture.id === tile.id);
@@ -215,8 +210,7 @@ suite('TextureStore', function() {
     test('error on createTexture failure', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile({ textureFailures: 1 });
-      store.addEventListener('textureError', function(event, eventTile) {
-        assert(event === 'textureError');
+      store.addEventListener('textureError', function(eventTile) {
         assert(eventTile === tile);
         assert(!store.query(tile).hasAsset);
         assert(!store.query(tile).hasTexture);
@@ -230,8 +224,7 @@ suite('TextureStore', function() {
     test('cancel load', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile();
-      store.addEventListener('textureCancel', function(event, eventTile) {
-        assert(event === 'textureCancel');
+      store.addEventListener('textureCancel', function(eventTile) {
         assert(eventTile === tile);
         assert(!store.query(tile).hasAsset);
         assert(!store.query(tile).hasTexture);
@@ -253,8 +246,7 @@ suite('TextureStore', function() {
       store.markTile(tile);
       store.endFrame();
       store.addEventListener('textureLoad', function() {
-        store.addEventListener('textureUnload', function(event, eventTile) {
-          assert(event === 'textureUnload');
+        store.addEventListener('textureUnload', function(eventTile) {
           assert(eventTile === tile);
           assert(!store.query(tile).hasAsset);
           assert(!store.query(tile).hasTexture);
@@ -335,8 +327,7 @@ suite('TextureStore', function() {
       store.markTile(tile);
       store.endFrame();
       store.addEventListener('textureLoad', function() {
-        store.addEventListener('textureInvalid', function(event, eventTile) {
-          assert(event === 'textureInvalid');
+        store.addEventListener('textureInvalid', function(eventTile) {
           assert(eventTile === tile);
           done();
         });
@@ -391,7 +382,7 @@ suite('TextureStore', function() {
           store.startFrame();
           store.markTile(tile);
           store.endFrame();
-          store.addEventListener('textureLoad', function(event, loadedTile) {
+          store.addEventListener('textureLoad', function(loadedTile) {
             if (loadedTile === tile) {
               markAndWaitForLoad(i+1);
             }
@@ -426,8 +417,7 @@ suite('TextureStore', function() {
     test('pinning tile causes load', function(done) {
       var store = makeTextureStore();
       var tile = new MockTile();
-      store.addEventListener('textureLoad', function(event, eventTile) {
-        assert(event === 'textureLoad');
+      store.addEventListener('textureLoad', function(eventTile) {
         assert(eventTile === tile);
         assert.ok(store.query(tile).pinned);
         done();
@@ -440,8 +430,7 @@ suite('TextureStore', function() {
       var tile = new MockTile();
       store.pin(tile);
       store.addEventListener('textureLoad', function() {
-        store.addEventListener('textureUnload', function(event, eventTile) {
-          assert(event === 'textureUnload');
+        store.addEventListener('textureUnload', function(eventTile) {
           assert(eventTile === tile);
           assert.notOk(store.query(tile).pinned);
           done();
