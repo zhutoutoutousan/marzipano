@@ -45,7 +45,7 @@ var clearOwnProperties = require('./util/clearOwnProperties');
  * @param {RenderLoop} renderLoop The render loop indicating when the hotspots
  *     must be rendered.
  * @param {Object} opts
- * @param {Rect} opts.rect Rectangular region covered by the container. See
+ * @param {RectSpec} opts.rect Rectangular region covered by the container. See
  *    {@link Effects#rect}.
  */
 function HotspotContainer(parentDomElement, stage, view, renderLoop, opts) {

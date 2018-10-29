@@ -17,8 +17,25 @@
 // This file contains no executable code, only documentation.
 
 /**
+ * @interface RectSpec
+ * @classdesc A rectangular region expressed in relative (normalized), absolute
+ * (pixels), or mixed coordinates. A missing value is interpreted as the minimum
+ * or maximum value for the respective dimension. Where an absolute and a
+ * relative value are in conflict, the absolute value takes precedence.
+ *
+ * @property {number} relativeX The relative horizontal offset.
+ * @property {number} relativeY The relative vertical offset.
+ * @property {number} relativeWidth The relative width.
+ * @property {number} relativeHeight The relative height.
+ * @property {number} absoluteX The absolute horizontal offset.
+ * @property {number} absoluteY The absolute vertical offset.
+ * @property {number} absoluteWidth The absolute width.
+ * @property {number} absoluteHeight The absolute height.
+ */
+
+/**
  * @interface Rect
- * @classdesc Represents a rectangular region.
+ * @classdesc A rectangular region in normalized coordinates.
  * @property {number} x The horizontal offset.
  * @property {number} y The vertical offset.
  * @property {number} width The width.
@@ -140,25 +157,15 @@
 /**
  * @interface Effects
  * @classdesc Effects to be applied on the rendering
- * @property {Number} opacity Transparency
- * @property {Object} rect Offset and size
- * @property {Number} rect.relativeWidth
- * @property {Number} rect.relativeHeight
- * @property {Number} rect.relativeX
- * @property {Number} rect.relativeY
- * @property {Number} rect.absoluteWidth
- * @property {Number} rect.absoluteHeight
- * @property {Number} rect.absoluteX
- * @property {Number} rect.absoluteY
+ * @property {Number} opacity Between 1 (fully opaque) and 0 (fully transparent)
+ * @property {RectSpec} rect The rectangular region on which to render. Useful
+ *     for side-by-side rendering or to otherwise compose a scene from
+ *     non-overlapping layers.
  * @property {vec4} colorOffset
  * @property {mat4} colorMatrix
- * @property {Object} textureCrop Use a subsection of the texture when rendering.
- Only supported on {@link WebGlEquirectRenderer}. Useful for rendering
- stereoscopic 360º video.
- * @property {Number} [textureCrop.width=1]
- * @property {Number} [textureCrop.height=1]
- * @property {Number} [textureCrop.x=0]
- * @property {Number} [textureCrop.y=0]
+ * @property {Rect} textureCrop Use only a portion of the texture when
+ *     rendering. Only supported on {@link WebGlEquirectRenderer}. Useful for
+ *     rendering stereoscopic 360° video.
  */
 
 /**
@@ -250,8 +257,7 @@
  * @function
  * @name Renderer#startLayer
  * @param {Layer} layer The layer onto which to render.
- * @param {Rect} rect The rectangular region of the viewport onto which to
- *     render, in normalized coordinates.
+ * @param {Rect} rect The rectangular region into which to render.
  */
 
 /**
@@ -274,8 +280,7 @@
  * @function
  * @name Renderer#endLayer
  * @param {Layer} layer The layer onto which to render.
- * @param {Rect} rect The rectangular region of the viewport onto which to
- *     render, in normalized coordinates.
+ * @param {Rect} rect The rectangular region into which to render.
  */
 
 /**

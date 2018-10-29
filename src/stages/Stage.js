@@ -435,7 +435,7 @@ Stage.prototype.render = function() {
     var depth = this._layers.length - i;
     var textureStore = layer.textureStore();
 
-    // Calculate the rect.
+    // Convert the rect effect into a normalized rect.
     // TODO: avoid doing this on every frame.
     calcRect(width, height, effects && effects.rect, rect);
 

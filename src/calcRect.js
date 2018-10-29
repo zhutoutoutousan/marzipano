@@ -15,27 +15,23 @@
  */
 'use strict';
 
-// Converts a rect in the format:
-//
-//   { relativeX, absoluteX,
-//     relativeY, absoluteY,
-//     relativeWidth, absoluteWidth,
-//     relativeHeight, absoluteHeight }
-//
-// into the format:
-//
-//   { x, y, width, height }
-//
-// All coordinates use the HTML/CSS convention.
-//
-// The first format is accepted by user-facing APIs. It allows expressing the
-// offset and size in either relative (normalized) or absolute coordinates,
-// tolerates missing properties (defaulting to the minimum or maximum value),
-// and may be missing entirely (set to null).
-//
-// The second format is more convenient to the rendering pipeline. It is always
-// expressed in normalized coordinates, and all its properties are guaranteed
-// to be present.
+/**
+ * Converts a {@link RectSpec} into an equivalent {@link Rect}.
+ *
+ * A {@link RectSpec} is a convenient user API format, providing default values
+ * and the flexibility of specifying absolute, relative or mixed dimensions.
+ *
+ * A {@link Rect} is a more convenient format for the rendering pipeline. It is
+ * always expressed in normalized coordinates, and all its properties are
+ * guaranteed to be present.
+ *
+ * @param {number} totalWidth The total width of the rendering area in pixels.
+ * @param {number} totalHeight The total height of the rendering area in pixels.
+ * @param {RectSpec} spec The input spec, defaulting to the full rendering area
+ *     if null or undefined.
+ * @param {Rect} result The output spec. If the argument is present, it is
+ *     filled in and returned; otherwise, a fresh object is returned.
+ */
 function calcRect(totalWidth, totalHeight, spec, result) {
 
   result = result || {};
