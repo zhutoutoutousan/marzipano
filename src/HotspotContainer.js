@@ -17,7 +17,7 @@
 
 var eventEmitter = require('minimal-event-emitter');
 var Hotspot = require('./Hotspot');
-var calcRect = require('./calcRect');
+var calcRect = require('./util/calcRect');
 var cssPointerEventsSupported = require('./support/cssPointerEvents');
 var positionAbsolutely = require('./util/positionAbsolutely');
 var setAbsolute = require('./util/dom').setAbsolute;

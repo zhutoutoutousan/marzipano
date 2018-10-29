@@ -17,7 +17,7 @@
 
 var eventEmitter = require('minimal-event-emitter');
 var WorkQueue = require('../collections/WorkQueue');
-var calcRect = require('../calcRect');
+var calcRect = require('../util/calcRect');
 var async = require('../util/async');
 var cancelize = require('../util/cancelize');
 var clearOwnProperties = require('../util/clearOwnProperties');
