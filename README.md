@@ -49,10 +49,12 @@ source or test files are edited.
 
 ### Maintainer guide
 
-Before preparing a release, make sure there are no uncommitted changes.
+Before preparing a release, make sure there are no uncommitted changes and
+verify that the tests pass and all of the demos work correctly.
 
-Create a new commit to bump the version number in `package.json`, tag it
-with `git tag vX.Y.Z`, and publish the tag with `git push --tags`.
+Update the `CHANGELOG` file and bump the version number in `package.json`.
+Create a new commit containing only the changes to these two files, tag it with
+`git tag vX.Y.Z`, and push it to GitHub with `git push --tags`.
 
 Run `npm run release` to prepare a new release.
 
