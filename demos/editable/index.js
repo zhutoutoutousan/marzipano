@@ -172,8 +172,8 @@
       ctx.drawImage(colorCanvas, 0, 0);
       ctx.drawImage(bwCanvas, 0, 0);
 
-      var data = merged.toDataURL('image/jpeg', 85);
-      window.open(data);
+      var dataUrl = merged.toDataURL('image/jpeg', 85);
+      saveAs(dataUrl, 'image.jpg'); // FileSaver.js
     }
 
     function calculateIntensity(originXY, testXY) {
