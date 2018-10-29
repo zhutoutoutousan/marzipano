@@ -101,7 +101,7 @@ CssStage.prototype.domElement = function() {
 };
 
 
-CssStage.prototype._setSize = function() {};
+CssStage.prototype.setSizeForType = function() {};
 
 
 CssStage.prototype.loadImage = function(url, rect, done) {
@@ -109,8 +109,8 @@ CssStage.prototype.loadImage = function(url, rect, done) {
 };
 
 
-CssStage.prototype._validateLayer = function(layer) {
-  return;
+CssStage.prototype.validateLayer = function(layer) {
+  return; // always valid
 };
 
 

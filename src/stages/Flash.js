@@ -178,7 +178,7 @@ FlashStage.prototype.flashElement = function() {
 };
 
 
-FlashStage.prototype._setSize = function() {};
+FlashStage.prototype.setSizeForType = function() {};
 
 
 FlashStage.prototype.loadImage = function(url, rect, done) {
@@ -188,8 +188,8 @@ FlashStage.prototype.loadImage = function(url, rect, done) {
 };
 
 
-FlashStage.prototype._validateLayer = function(layer) {
-  return;
+FlashStage.prototype.validateLayer = function(layer) {
+  return; // always valid
 };
 
 

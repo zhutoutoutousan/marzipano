@@ -184,21 +184,37 @@ Stage.prototype.size = function(obj) {
  * Set the stage dimensions.
  *
  * This contains the size update logic common to all stage types. Subclasses
- * define the _setSize() method to perform their own logic, if required.
+ * must define the {@link Stage#setSizeForType} method to perform their own
+ * logic.
  *
- * @param {Object} obj
- * @param {number} obj.width
- * @param {number} obj.height
- *
+ * @param {Object} size
+ * @param {number} size.width
+ * @param {number} size.height
  */
 Stage.prototype.setSize = function(size) {
   this._width = size.width;
   this._height = size.height;
 
-  this._setSize(); // must be defined by subclasses.
+  this.setSizeForType(); // must be defined by subclasses.
 
   this.emit('resize');
   this._emitRenderInvalid();
+};
+
+
+/**
+ * Call {@link Stage#setSize} instead.
+ *
+ * This contains the size update logic specific to a stage type. It is called by
+ * {@link Stage#setSize} after the base class has been updated to reflect the
+ * new size, but before any events are emitted.
+ *
+ * @param {Object} size
+ * @param {number} size.width
+ * @param {number} size.height
+ */
+Stage.prototype.setSizeForType = function(size) {
+  throw new Error('Stage implementation must override setSizeForType');
 };
 
 
@@ -217,6 +233,18 @@ Stage.prototype.loadImage = function() {
 
 Stage.prototype._emitRenderInvalid = function() {
   this.emit('renderInvalid');
+};
+
+
+/**
+ * Verifies that the layer is valid for this stage, throwing an exception
+ * otherwise.
+ *
+ * @param {Layer} layer
+ * @throws {Error} If the layer is not valid for this stage.
+ */
+Stage.prototype.validateLayer = function(layer) {
+  throw new Error('Stage implementation must override validateLayer');
 };
 
 
@@ -262,7 +290,7 @@ Stage.prototype.addLayer = function(layer, i) {
     throw new Error('Invalid layer position');
   }
 
-  this._validateLayer(layer);
+  this.validateLayer(layer); // must be defined by subclasses.
 
   // The rendered is created lazily by _updateRenderer().
   this._layers.splice(i, 0, layer);

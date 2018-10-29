@@ -172,7 +172,7 @@ WebGlStage.prototype.webGlContext = function() {
 };
 
 
-WebGlStage.prototype._setSize = function() {
+WebGlStage.prototype.setSizeForType = function() {
   // Update the size of the canvas coordinate space.
   //
   // The size is obtained by taking the stage dimensions, which are set in CSS
@@ -198,7 +198,7 @@ WebGlStage.prototype.maxTextureSize = function() {
 };
 
 
-WebGlStage.prototype._validateLayer = function(layer) {
+WebGlStage.prototype.validateLayer = function(layer) {
   var tileSize = layer.geometry().maxTileSize();
   var maxTextureSize = this.maxTextureSize();
   if (tileSize > maxTextureSize) {

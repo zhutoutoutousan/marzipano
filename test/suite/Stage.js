@@ -27,8 +27,8 @@ var Stage = require('../../src/stages/Stage');
 // We must stub methods and properties expected to be implemented by subclasses.
 function TestStage() {
   this.constructor.super_.call(this);
-  this._validateLayer = sinon.stub();
-  this._setSize = sinon.spy();
+  this.validateLayer = sinon.stub();
+  this.setSizeForType = sinon.spy();
 }
 
 inherits(TestStage, Stage);
@@ -88,7 +88,7 @@ suite('Stage', function() {
     var stage = new TestStage();
     var layer = new MockLayer();
 
-    stage._validateLayer.throws();
+    stage.validateLayer.throws();
     assert.throws(function() { stage.addLayer(layer); });
   });
 
@@ -131,7 +131,7 @@ suite('Stage', function() {
     assert(size.height === 0);
 
     stage.setSize({width: 200, height: 100});
-    assert(stage._setSize.called);
+    assert(stage.setSizeForType.called);
 
     size = stage.size();
     assert(size.width === 200);
