@@ -16,13 +16,15 @@
 'use strict';
 
 /**
- * @class
- * @classdesc Represents how a control parameter changes. Is emitted by
+ * @class Dynamics
+ * @classdesc
+ *
+ * Represents how a control parameter changes. Used in the events emitted by
  * {@link ControlMethod}.
  *
- * @property {Number} offset Parameter changed by a fixed value
- * @property {Number} velocity Parameter is changing at this velocity
- * @property {Number} friction The velocity will decrease at this rate
+ * @property {number} offset Parameter changed by a fixed value
+ * @property {number} velocity Parameter is changing at this velocity
+ * @property {number} friction The velocity will decrease at this rate
  */
 function Dynamics() {
   this.velocity = null;

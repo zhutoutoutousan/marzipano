@@ -21,9 +21,11 @@ var defaultClock = require('../util/clock');
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * @class
- * @classdesc Combines changes in parameters triggered by multiple
- * {@link ControlMethod} instances.
+ * @class ControlComposer
+ * @classdesc
+ *
+ * Combines changes in parameters triggered by multiple {@link ControlMethod}
+ * instances.
  *
  * @listens ControlMethod#parameterDynamics
  */

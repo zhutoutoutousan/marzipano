@@ -34,9 +34,11 @@ var clearOwnProperties = require('./util/clearOwnProperties');
  */
 
 /**
- * @class
- * @classdesc Creates a DOM element to hold {@link Hotspot hotspots} and updates
- *     their position when necessary.
+ * @class HotspotContainer
+ * @classdesc
+ *
+ * Creates a DOM element to hold {@link Hotspot hotspots} and updates their
+ * position when necessary.
  *
  * @param {Element} parentDomElement The DOM element inside which the container
  *     should be created.
@@ -153,26 +155,24 @@ HotspotContainer.prototype.rect = function() {
  * Creates a new hotspot in this container.
  *
  * @param {Element} domElement DOM element to use for the hotspot
- * @param {Object} position The hotspot position. Use `{ yaw, pitch }` format
- *     for {@link RectilinearView} sources and `{ x, y }` format for
- *     {@link FlatView} sources.
+ * @param {Object} coords The hotspot coordinates.
+ *     Use {@link RectilinearViewCoords}` for a {@link RectilinearView} or
+ *     {@link FlatViewCoords} for a {@link FlatView}.
  * @param {Object} opts Options in the same format as the `opts` argument to
  *     the {@link Hotspot} constructor.
- *
  * @return {Hotspot}
  */
-HotspotContainer.prototype.createHotspot = function(domElement, position, opts) {
+HotspotContainer.prototype.createHotspot = function(domElement, coords, opts) {
+  coords = coords || {};
 
-  position = position || {};
-
-  var hotspot = new Hotspot(domElement, this._hotspotContainer, this._view, position, opts);
+  var hotspot = new Hotspot(
+      domElement, this._hotspotContainer, this._view, coords, opts);
   this._hotspots.push(hotspot);
   hotspot._update();
 
   this.emit('hotspotsChange');
 
   return hotspot;
-
 };
 
 

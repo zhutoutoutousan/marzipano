@@ -96,9 +96,11 @@ var neighborOffsets = [
 
 
 /**
- * @class
+ * @class CubeTile
  * @implements Tile
- * @classdesc A tile in a @{CubeGeometry}.
+ * @classdesc
+ *
+ * A tile in a @{CubeGeometry}.
  */
 function CubeTile(face, x, y, z, geometry) {
   this.face = face;
@@ -511,10 +513,12 @@ CubeLevel.prototype._validateWithParentLevel = function(parentLevel) {
 
 
 /**
- * @class
+ * @class CubeGeometry
  * @implements Geometry
- * @classdesc A @{geometry} implementation suitable for tiled cube images with
- *            multiple resolution levels.
+ * @classdesc
+ *
+ * A {@link Geometry} implementation suitable for tiled cube images with
+ * multiple resolution levels.
  *
  * The following restrictions apply:
  *   - All tiles in a level must be square and form a rectangular grid;

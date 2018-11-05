@@ -25,8 +25,10 @@ var defaultOpts = {
 };
 
 /**
- * @class
- * @classdesc Sets the CSS cursor on a DOM element according to the state of a
+ * @class ControlCursor
+ * @classdesc
+ *
+ * Sets the CSS cursor on a DOM element according to the state of a
  * {@link ControlMethod}.
  *
  * @param {Controls} controls Controls instance containing the control method.

@@ -66,8 +66,9 @@ var stagePrefList = [
  */
 
 /**
- * @class
+ * @class Viewer
  * @classdesc
+ *
  * A Viewer is a container for multiple {@link Scene scenes} to be displayed
  * inside a {@link Stage stage} contained in the DOM.
  *

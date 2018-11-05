@@ -22,9 +22,11 @@ var browser = require('bowser');
 
 
 /**
- * @class
- * @classdesc Manages Hammer.js instances. One instance is created for each
- * different combination of DOM element and pointer type.
+ * @class HammerGestures
+ * @classdesc
+ *
+ * Manages Hammer.js instances. One instance is created for each combination of
+ * DOM element and pointer type.
  */
 function HammerGestures() {
   this._managers = new Map(domElementEquals, domElementHash);

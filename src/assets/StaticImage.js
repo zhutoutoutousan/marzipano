@@ -18,9 +18,12 @@
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * Static asset containing an HTML image element.
- * @class
+ * @class StaticImageAsset
  * @implements Asset
+ * @classdesc
+ *
+ * Static asset containing an HTML image element.
+ *
  * @param {Element} element
  */
 function StaticImageAsset(element) {

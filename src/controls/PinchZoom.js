@@ -21,10 +21,11 @@ var HammerGestures = require('./HammerGestures');
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * @class
- * @classdesc Control the view fov/zoom by pinching with two fingers.
- *
+ * @class PinchZoomControlMethod
  * @implements ControlMethod
+ * @classdesc
+ *
+ * Control the view fov/zoom by pinching with two fingers.
  *
  * @param {Element} element Element to listen for events.
  * @param {string} pointerType Which Hammer.js pointer type to use

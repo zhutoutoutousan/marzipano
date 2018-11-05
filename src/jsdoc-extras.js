@@ -17,11 +17,34 @@
 // This file contains no executable code, only documentation.
 
 /**
+ * @interface Size
+ *
+ * The dimensions of a rectangular region.
+ *
+ * @property {number} width The width in pixels.
+ * @property {number} height The height in pixels.
+ */
+
+
+/**
+ * @interface Coords
+ *
+ * A pair of screen coordinates.
+ *
+ * @property {number} x The horizontal coordinate.
+ *     The horizontal axis points right.
+ * @property {number} y The vertical coordinate.
+ *     The vertical axis points down.
+ */
+
+
+/**
  * @interface RectSpec
- * @classdesc A rectangular region expressed in relative (normalized), absolute
- * (pixels), or mixed coordinates. A missing value is interpreted as the minimum
- * or maximum value for the respective dimension. Where an absolute and a
- * relative value are in conflict, the absolute value takes precedence.
+ *
+ * A rectangular region expressed in relative (normalized), absolute (pixels),
+ * or mixed coordinates. A missing value is interpreted as the minimum or
+ * maximum value for the respective dimension. Where an absolute and a relative
+ * value are in conflict, the absolute value takes precedence.
  *
  * @property {number} relativeX The relative horizontal offset.
  * @property {number} relativeY The relative vertical offset.
@@ -35,7 +58,9 @@
 
 /**
  * @interface Rect
- * @classdesc A rectangular region in normalized coordinates.
+ *
+ * A rectangular region in normalized coordinates.
+ *
  * @property {number} x The horizontal offset.
  * @property {number} y The vertical offset.
  * @property {number} width The width.
@@ -44,7 +69,8 @@
 
 /**
  * @interface View
- * @classdesc Defines the camera direction, aperture and projection used to
+ *
+ * Defines the camera direction, aperture and projection used to
  * render media.
  *
  * This is an abstract interface; the concrete implementations are

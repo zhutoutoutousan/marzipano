@@ -31,8 +31,10 @@ var defaultOptions = {
 
 
 /**
- * @class
- * @classdesc A Timer provides a mechanism to receive an event after a timeout.
+ * @class Timer
+ * @classdesc
+ *
+ * A Timer provides a mechanism to receive an event after a timeout.
  *
  * A timer has a set duration, and is either started or stopped at a given time.
  * The timer is initially stopped. When the timer is started, a timeout event is

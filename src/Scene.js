@@ -36,11 +36,12 @@ var clearOwnProperties = require('./util/clearOwnProperties');
  */
 
 /**
- * @class
+ * @class Scene
  * @classdesc
- * A {@link Scene} is a stack of {@link Layer layers} sharing the same
- * {@link View view} and {@link HotspotContainer hotspot container}. It belongs
- * to the {@link Viewer viewer} inside which it is displayed.
+ *
+ * A Scene is a stack of {@link Layer layers} sharing the same {@link View view}
+ * and {@link HotspotContainer hotspot container}. It belongs to the
+ * {@link Viewer viewer} inside which it is displayed.
  *
  * Clients should call {@link Viewer#createScene} instead of invoking the
  * constructor directly.

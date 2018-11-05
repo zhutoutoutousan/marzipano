@@ -16,7 +16,9 @@
 'use strict';
 
 /**
- * @class
+ * @class RendererRegistry
+ * @classdesc
+ *
  * A RendererRegistry maps pairs of {@link Geometry} and {@link View} type into
  * the appropriate {@link Renderer} class. It is used by a {@link Stage} to
  * determine the appropriate renderer for a {@link Layer}.

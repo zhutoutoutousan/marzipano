@@ -42,9 +42,13 @@ var defaultRetryDelay = 10000;
 
 
 /**
- * @class
- * @classdesc Source that loads images given a URL and a crop rectangle.
+ * @class ImageUrlSource
  * @implements Source
+ * @classdesc
+ *
+ * A {@link Source} that loads {@link Asset assets} from images given a URL and
+ * a crop rectangle.
+ *
  * @param {Function} sourceFromTile Function that receives a tile and returns
  * a `{ url, rect }` object, where `url` is an image URL and `rect`, when
  * present, is an `{ x, y, width, height }` object in normalized coordinates

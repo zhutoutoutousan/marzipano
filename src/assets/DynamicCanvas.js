@@ -19,13 +19,15 @@ var eventEmitter = require('minimal-event-emitter');
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
+ * @class DynamicCanvasAsset
+ * @implements Asset
+ * @classdesc
+ *
  * Dynamic asset containing an HTML canvas element.
  *
  * Call {@link DynamicCanvasAsset#changed} to notify that the contents of the
  * canvas were modified and derived textures need to be refreshed.
  *
- * @class
- * @implements Asset
  * @param {Element} element
  */
 function DynamicCanvasAsset(element, opts) {

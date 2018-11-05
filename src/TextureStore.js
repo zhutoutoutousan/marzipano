@@ -67,10 +67,17 @@ inherits(CancelError, Error);
 
 
 /**
+ * @class TextureStoreItem
+ * @classdesc
+ *
  * An item saved in a {@link TextureStore}.
  *
- * This class is responsible for loading, refreshing and unloading the texture
- * for a tile, and for emitting associated events.
+ * Clients do not need to instantiate this. It is automatically instantiated by
+ * a {@link TextureStore} to manage the lifetime of a stored item: loading,
+ * refreshing, unloading and emitting associated events.
+ *
+ * @param {TextureStore} store The underlying {@link TextureStore}.
+ * @param {Tile} tile The underlying tile.
  */
 function TextureStoreItem(store, tile) {
 
@@ -263,8 +270,9 @@ eventEmitter(TextureStoreItem);
  */
 
 /**
- * @class
+ * @class TextureStore
  * @classdesc
+ *
  * A TextureStore maintains a cache of textures used to render a {@link Layer}.
  *
  * A {@link Stage} communicates with the TextureStore through the startFrame(),

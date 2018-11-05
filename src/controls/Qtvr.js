@@ -31,11 +31,12 @@ var defaultOptions = {
 
 
 /**
- * @class
- * @classdesc Control the view by clicking and moving the mouse. Also known as
- * "QTVR" control mode.
- *
+ * @class QtvrControlMethod
  * @implements ControlMethod
+ * @classdesc
+ *
+ * Controls the view by holding the mouse button down and moving it.
+ * Also known as "QTVR" control mode.
  *
  * @param {Element} element Element to listen for events.
  * @param {string} pointerType Which Hammer.js pointer type to use (e.g.

@@ -54,10 +54,12 @@ var browserQuirks = {
 
 
 /**
- * @class
- * @classdesc A {@link Stage} implementation using CSS 3D Transforms.
+ * @class CssStage
  * @extends Stage
-*/
+ * @classdesc
+ *
+ * A {@link Stage} implementation using CSS 3D Transforms.
+ */
 function CssStage(opts) {
   this.constructor.super_.call(this, opts);
 

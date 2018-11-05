@@ -53,9 +53,11 @@ var neighborOffsets = [
 
 
 /**
- * @class
+ * @class FlatTile
  * @implements Tile
- * @classdesc A tile in a @{FlatGeometry}.
+ * @classdesc
+ *
+ * A tile in a {@link FlatGeometry}.
  */
 function FlatTile(x, y, z, geometry) {
   this.x = x;
@@ -400,10 +402,12 @@ FlatLevel.prototype._validateWithParentLevel = function(parentLevel) {
 
 
 /**
- * @class
+ * @class FlatGeometry
  * @implements Geometry
- * @classdesc A @{Geometry} implementation suitable for tiled flat images with
- *            multiple resolution levels.
+ * @classdesc
+ *
+ * A {@link Geometry} implementation suitable for tiled flat images with
+ * multiple resolution levels.
  *
  * The following restrictions apply:
  *   - All tiles must be square, except when in the last row or column position,

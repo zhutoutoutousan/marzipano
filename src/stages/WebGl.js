@@ -71,8 +71,11 @@ function initWebGlContext(canvas, opts) {
 
 /**
  * @class WebGlStage
- * @classdesc A {@link Stage} implementation using WebGl.
  * @extends Stage
+ * @classdesc
+ *
+ * A {@link Stage} implementation using WebGl.
+ *
  * @param {Object} opts
  * @param {boolean} [opts.antialias=false]
  * @param {boolean} [opts.preserveDrawingBuffer=false]

@@ -18,9 +18,12 @@
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * Static asset referencing an image loaded by a Flash application.
- * @class
+ * @class FlashImageAsset
  * @implements Asset
+ * @classdesc
+ *
+ * Static asset referencing an image loaded by a Flash application.
+ *
  * @param {Element} flashElement HTML element with the Flash application that
  *     loaded the image.
  * @param {number} imageId Unique ID of the image inside the Flash application.

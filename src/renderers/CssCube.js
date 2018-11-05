@@ -22,14 +22,15 @@ var inherits = require('../util/inherits');
 
 
 /**
- * @class
- * @classdesc A renderer for {@link CubeGeometry} and {@link RectilinearView},
- *     appropriate for a {@link CssStage}.
+ * @class CssCubeRenderer
+ * @implements Renderer
+ * @classdesc
+ *
+ * A renderer for {@link CubeGeometry} and {@link RectilinearView}, appropriate
+ * for a {@link CssStage}.
  *
  * Most users do not need to instantiate this class. Renderers are created and
  * destroyed by {@link Stage} as necessary.
- *
- * @implements Renderer
  */
 function CssCubeRenderer(root, quirks) {
   this.constructor.super_.call(this, root, quirks, CubeTile);

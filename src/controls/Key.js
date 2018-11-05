@@ -20,17 +20,18 @@ var Dynamics = require('./Dynamics');
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * @class
- * @classdesc Set the velocity and friction of a single parameter by pressing
- * and unpressing a key.
- *
+ * @class KeyControlMethod
  * @implements ControlMethod
+ * @classdesc
  *
- * @param {Number} keyCode Key which activates the method when pressed
- * @param {String} parameter The parameter to be controlled (e.g. `x`, `y` or `zoom`)
- * @param {Number} velocity Velocity at which the parameter changes. Use a
+ * Sets the velocity and friction of a single parameter by pressing and
+ * unpressing a key.
+ *
+ * @param {number} keyCode Key which activates the method when pressed
+ * @param {string} parameter The parameter to be controlled (e.g. `x`, `y` or `zoom`)
+ * @param {number} velocity Velocity at which the parameter changes. Use a
  * negative number for opposite direction
- * @param {Number} friction Friction at which the parameter stops
+ * @param {number} friction Friction at which the parameter stops
  * @param {Element} [element=document] DOM element where the key events are listened to
  */
 function KeyControlMethod(keyCode, parameter, velocity, friction, element) {

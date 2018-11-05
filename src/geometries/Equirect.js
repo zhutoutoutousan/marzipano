@@ -24,9 +24,11 @@ var type = require('../util/type');
 
 
 /**
- * @class
+ * @class EquirectTile
  * @implements Tile
- * @classdesc A tile in an @{EquirectGeometry}.
+ * @classdesc
+ *
+ * A tile in an @{EquirectGeometry}.
  */
 function EquirectTile(z, geometry) {
   this.z = z;
@@ -227,10 +229,12 @@ EquirectLevel.prototype.tileHeight = function() {
 
 
 /**
- * @class
+ * @class EquirectGeometry
  * @implements Geometry
- * @classdesc A @{Geometry} implementation suitable for equirectangular images
- *            with a 2:1 aspect ratio.
+ * @classdesc
+ *
+ * A {@link Geometry} implementation suitable for equirectangular images with a
+ * 2:1 aspect ratio.
  *
  * @param {Object[]} levelPropertiesList Level description
  * @param {number} levelPropertiesList[].width Level width in pixels

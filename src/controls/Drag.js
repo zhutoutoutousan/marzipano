@@ -30,10 +30,11 @@ var defaultOptions = {
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.controls;
 
 /**
- * @class
- * @classdesc Control the view by clicking/tapping and dragging.
- *
+ * @class DragControlMethod
  * @implements ControlMethod
+ * @classdesc
+ *
+ * Controls the view by clicking/tapping and dragging.
  *
  * @param {Element} element Element to listen for events.
  * @param {string} pointerType Which Hammer.js pointer type to use (e.g.

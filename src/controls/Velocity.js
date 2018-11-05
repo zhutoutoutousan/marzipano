@@ -20,12 +20,13 @@ var Dynamics = require('./Dynamics');
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * @class
- * @classdesc ControlMethod to set the velocity and friction of a single parameter.
+ * @class VelocityControlMethod
+ * @implements ControlMethod
+ * @classdesc
+ *
+ * Sets the velocity and friction of a single parameter.
  *
  * The user should emit 'active' and 'inactive' events if required.
- *
- * @implements ControlMethod
  *
  * @param {String} parameter The parameter to be controlled (e.g. `x`, `y` or `zoom`)
 */

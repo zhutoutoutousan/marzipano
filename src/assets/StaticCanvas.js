@@ -18,9 +18,12 @@
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 /**
- * Static asset containing an HTML canvas element.
- * @class
+ * @class StaticCanvasAsset
  * @implements Asset
+ * @classdesc
+ *
+ * Static asset containing an HTML canvas element.
+ *
  * @param {Element} element
  */
 function StaticCanvasAsset(element) {

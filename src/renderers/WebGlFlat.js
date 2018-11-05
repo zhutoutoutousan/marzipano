@@ -19,14 +19,15 @@ var WebGlBaseRenderer = require('./WebGlBase');
 var inherits = require('../util/inherits');
 
 /**
- * @class
- * @classdesc A renderer for {@link FlatGeometry} and {@link FlatView},
- *     appropriate for a {@link WebGlStage}.
+ * @class WebGlFlatRenderer
+ * @implements Renderer
+ * @classdesc
+ *
+ * A renderer for {@link FlatGeometry} and {@link FlatView}, appropriate for a
+ * {@link WebGlStage}.
  *
  * Most users do not need to instantiate this class. Renderers are created and
  * destroyed by {@link Stage} as necessary.
- *
- * @implements Renderer
  */
 function WebGlFlatRenderer() {
   this.constructor.super_.apply(this, arguments);

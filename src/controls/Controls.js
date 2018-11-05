@@ -22,8 +22,10 @@ var clearOwnProperties = require('../util/clearOwnProperties');
 var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.controls;
 
 /**
- * @class
- * @classdesc Set of controls which affect a view (e.g. keyboard, touch)
+ * @class Controls
+ * @classdesc
+ *
+ * Set of controls which affect a view (e.g. keyboard, touch)
  *
  * {@link ControlMethod} instances can be registered on this class. The methods
  * are then combined to calculate the final parameters to change the {@link View}.

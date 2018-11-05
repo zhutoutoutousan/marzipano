@@ -23,14 +23,15 @@ var radToDeg = require('../util/radToDeg');
 
 
 /**
- * @class
- * @classdesc A renderer for {@link CubeGeometry} and {@link RectilinearView},
- *     appropriate for a {@link FlashStage}.
+ * @class FlashCubeRenderer
+ * @implements Renderer
+ * @classdesc
+ *
+ * A renderer for {@link CubeGeometry} and {@link RectilinearView}, appropriate
+ * for a {@link FlashStage}.
  *
  * Most users do not need to instantiate this class. Renderers are created and
  * destroyed by {@link Stage} as necessary.
- *
- * @implements Renderer
  */
 function FlashCubeRenderer(flashElement, layerId, quirks) {
   this.constructor.super_.call(this, flashElement, layerId, quirks, CubeTile);

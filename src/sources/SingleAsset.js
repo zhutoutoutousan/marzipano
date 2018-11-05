@@ -16,10 +16,13 @@
 'use strict';
 
 /**
- * @class
- * @classdesc Receives an asset which is returned on load.
+ * @class SingleAssetSource
  * @implements Source
- * @param {Asset} asset
+ * @classdesc
+ *
+ * A {@link Source} wrapping a DOM element to be provided as an {@link Asset}.
+ *
+ * @param {Asset} asset The DOM element.
 */
 function SingleAssetSource(asset) {
   this._asset = asset;

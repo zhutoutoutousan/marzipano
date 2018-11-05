@@ -29,11 +29,13 @@ var clearOwnProperties = require('./util/clearOwnProperties');
  */
 
 /**
- * @class
- * @classdesc A RenderLoop wraps a {@link Stage} and calls {@link Stage#render}
- * on the next frame whenever it fires {@link Stage#renderInvalid}. It may be
- * started and stopped, and is initially in the stopped state, in which no call
- * to {@link Stage#render} occurs.
+ * @class RenderLoop
+ * @classdesc
+ *
+ * A RenderLoop wraps a {@link Stage} and calls {@link Stage#render} on the next
+ * frame whenever it fires {@link Stage#renderInvalid}. It may be started and
+ * stopped, and is initially in the stopped state, in which no call to
+ * {@link Stage#render} occurs.
  *
  * @listens Stage#renderInvalid
  *

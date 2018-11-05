@@ -53,8 +53,10 @@ function reverseTileCmp(t1, t2) {
  */
 
 /**
- * @interface
- * @classdesc A Stage is a container with the ability to render a stack of
+ * @interface Stage
+ * @classdesc
+ *
+ * A Stage is a container with the ability to render a stack of
  * {@link Layer layers}.
  *
  * This is a superclass containing logic that is common to all implementations;
@@ -164,19 +166,16 @@ Stage.prototype.height = function() {
 
 
 /**
- * Get the stage dimensions. If an object argument is supplied, the object is
- * filled in with the result and returned. Otherwise, a fresh object is
- * returned.
+ * Get the stage dimensions. If an argument is supplied, it is filled in with
+ * the result and returned. Otherwise, a fresh object is filled in and returned.
  *
- * @param {Object} obj
- * @param {number} obj.width
- * @param {number} obj.height
+ * @param {Size=} size
  */
-Stage.prototype.size = function(obj) {
-  obj = obj || {};
-  obj.width = this._width;
-  obj.height = this._height;
-  return obj;
+Stage.prototype.size = function(size) {
+  size = size || {};
+  size.width = this._width;
+  size.height = this._height;
+  return size;
 };
 
 
@@ -187,9 +186,7 @@ Stage.prototype.size = function(obj) {
  * must define the {@link Stage#setSizeForType} method to perform their own
  * logic.
  *
- * @param {Object} size
- * @param {number} size.width
- * @param {number} size.height
+ * @param {Size} size
  */
 Stage.prototype.setSize = function(size) {
   this._width = size.width;
@@ -209,9 +206,7 @@ Stage.prototype.setSize = function(size) {
  * {@link Stage#setSize} after the base class has been updated to reflect the
  * new size, but before any events are emitted.
  *
- * @param {Object} size
- * @param {number} size.width
- * @param {number} size.height
+ * @param {Size} size
  */
 Stage.prototype.setSizeForType = function(size) {
   throw new Error('Stage implementation must override setSizeForType');

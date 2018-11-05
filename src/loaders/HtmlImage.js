@@ -30,9 +30,11 @@ var once = require('../util/once');
 // TODO: Move the load queue into the loader.
 
 /**
- * @class
- * @classdesc A {@link Loader} for HTML images.
+ * @class HtmlImageLoader
  * @implements ImageLoader
+ * @classdesc
+ *
+ * A {@link Loader} for HTML images.
  *
  * @param {Stage} stage The stage which is going to request images to be loaded.
  */

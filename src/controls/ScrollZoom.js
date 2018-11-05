@@ -27,10 +27,11 @@ var defaultOptions = {
 };
 
 /**
- * @class
- * @classdesc Control the fov/zoom by using the mouse wheel.
- *
+ * @class ScrollZoomControlMethod
  * @implements ControlMethod
+ * @classdesc
+ *
+ * Controls the fov/zoom through the mouse wheel.
  *
  * @param {Element} element Element to listen for events.
  * @param {Object} opts

@@ -22,8 +22,9 @@ var clearOwnProperties = require('./util/clearOwnProperties');
 
 
 /**
- * @class
+ * @class Layer
  * @classdesc
+ *
  * A Layer is a combination of {@link Source}, {@link Geometry}, {@link View}
  * and {@link TextureStore} that may be added into a {@link Stage} and rendered
  * with {@link Effects}.

@@ -81,9 +81,12 @@ var flashQuirks = {
 };
 
 /**
- * @class
- * @classdesc A {@link Stage} implementation using Flash.
+ * @class FlashStage
  * @extends Stage
+ * @classdesc
+ *
+ * A {@link Stage} implementation using Flash.
+ *
  * @param {Object} opts
  * @param {String} [wmode='transparent'] Flash `wmode` property. Read
  *   [this](http://helpx.adobe.com/flash/kb/flash-object-embed-tag-attributes.html)
