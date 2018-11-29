@@ -36,10 +36,10 @@ function reverseTileCmp(t1, t2) {
 }
 
 /**
- * Signals that a render is complete.
+ * Signals that the stage has been rendered.
  *
- * @param {boolean} Whether all tiles were successfully rendered without missing
- *     textures or resorting to fallbacks.
+ * @param {boolean} stable Whether all tiles were successfully rendered without
+ *     missing textures or resorting to fallbacks.
  * @event Stage#renderComplete
  */
 
@@ -479,6 +479,7 @@ Stage.prototype.render = function() {
         visibleTiles, textureStore, renderer, layer, depth,
         childrenTiles, parentTiles);
 
+    layer.emit('renderComplete', stableLayer);
     if (!stableLayer) {
       stableStage = false;
     }

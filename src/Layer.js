@@ -20,6 +20,13 @@ var eventEmitter = require('minimal-event-emitter');
 var extend = require('./util/extend');
 var clearOwnProperties = require('./util/clearOwnProperties');
 
+/**
+ * Signals that the layer has been rendered.
+ *
+ * @param {boolean} stable Whether all tiles were successfully rendered without
+ *     missing textures or resorting to fallbacks.
+ * @event Layer#renderComplete
+ */
 
 /**
  * @class Layer
