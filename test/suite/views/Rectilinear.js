@@ -459,24 +459,24 @@ suite('RectilinearView', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: 0, pitch: 0, fov: Math.PI/8 });
         var coords = view.coordinatesToScreen({ yaw: -Math.PI/16, pitch: -Math.PI/16 });
         assert(coords && real(coords.x) && real(coords.y));
-        assert.closeTo(coords.x, 0, 0.001);
-        assert.closeTo(coords.y, 0, 1);
+        assert.closeTo(coords.x, 0, 1.0);
+        assert.closeTo(coords.y, 0, 1.0);
       });
 
       test('bottom right', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: 0, pitch: 0, fov: Math.PI/8 });
         var coords = view.coordinatesToScreen({ yaw: Math.PI/16, pitch: Math.PI/16 });
         assert(coords && real(coords.x) && real(coords.y));
-        assert.closeTo(coords.x, 100, 0.001);
-        assert.closeTo(coords.y, 100, 1);
+        assert.closeTo(coords.x, 100, 1.0);
+        assert.closeTo(coords.y, 100, 1.0);
       });
 
       test('offscreen', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: 0, pitch: 0, fov: Math.PI/8 });
-        var coords = view.coordinatesToScreen({ yaw: Math.PI/16 + 0.05, pitch: 0 }, coords);
+        var coords = view.coordinatesToScreen({ yaw: Math.PI/16 + 0.05, pitch: 0 });
         assert(coords && real(coords.x) && real(coords.y));
-        assert.closeTo(coords.x, 113.2, 0.1);
-        assert.closeTo(coords.y, 50, 0.001);
+        assert.closeTo(coords.x, 113.2, 0.5);
+        assert.closeTo(coords.y, 50, 0.5);
       });
 
       test('behind camera', function() {
@@ -504,24 +504,24 @@ suite('RectilinearView', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: Math.PI, pitch: 0, fov: Math.PI/8 });
         var coords = view.coordinatesToScreen({ yaw: 15*Math.PI/16, pitch: -Math.PI/16 });
         assert(coords && real(coords.x) && real(coords.y));
-        assert.closeTo(coords.x, 0, 0.001);
-        assert.closeTo(coords.y, 0, 1);
+        assert.closeTo(coords.x, 0, 1.0);
+        assert.closeTo(coords.y, 0, 1.0);
       });
 
       test('bottom right', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: Math.PI, pitch: 0, fov: Math.PI/8 });
         var coords = view.coordinatesToScreen({ yaw: -15*Math.PI/16, pitch: Math.PI/16 });
         assert(coords && real(coords.x) && real(coords.y));
-        assert.closeTo(coords.x, 100, 0.001);
-        assert.closeTo(coords.y, 100, 1);
+        assert.closeTo(coords.x, 100, 1.0);
+        assert.closeTo(coords.y, 100, 1.0);
       });
 
       test('offscreen', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: Math.PI, pitch: 0, fov: Math.PI/8 });
-        var coords = view.coordinatesToScreen({ yaw: -15*Math.PI/16 + 0.05, pitch: 0 }, coords);
+        var coords = view.coordinatesToScreen({ yaw: -15*Math.PI/16 + 0.05, pitch: 0 });
         assert(coords && real(coords.x) && real(coords.y));
-        assert.closeTo(coords.x, 113.2, 0.1);
-        assert.closeTo(coords.y, 50, 0.001);
+        assert.closeTo(coords.x, 113.2, 0.01);
+        assert.closeTo(coords.y, 50, 0.01);
       });
 
       test('behind camera', function() {
@@ -580,8 +580,8 @@ suite('RectilinearView', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: 0, pitch: 0, fov: Math.PI/8 });
         var coords = view.screenToCoordinates({ x: 200, y: 200 });
         assert(coords && real(coords.yaw) && real(coords.pitch));
-        assert.closeTo(coords.yaw, 0.538, 0.1);
-        assert.closeTo(coords.pitch, 0.473, 0.1);
+        assert.closeTo(coords.yaw, 0.538, 0.01);
+        assert.closeTo(coords.pitch, 0.473, 0.01);
       });
 
     });
@@ -616,8 +616,8 @@ suite('RectilinearView', function() {
         var view = new RectilinearView({ width: 100, height: 100, yaw: Math.PI, pitch: 0, fov: Math.PI/8 });
         var coords = view.screenToCoordinates({ x: 200, y: 200 });
         assert(coords && real(coords.yaw) && real(coords.pitch));
-        assert.closeTo(coords.yaw, -2.603, 0.1);
-        assert.closeTo(coords.pitch, 0.473, 0.1);
+        assert.closeTo(coords.yaw, -2.603, 0.001);
+        assert.closeTo(coords.pitch, 0.473, 0.001);
       });
 
     });

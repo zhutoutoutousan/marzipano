@@ -20,7 +20,6 @@ var mat4 = require('gl-matrix/src/gl-matrix/mat4');
 var vec4 = require('gl-matrix/src/gl-matrix/vec4');
 var pixelRatio = require('../util/pixelRatio');
 var convertFov = require('../util/convertFov');
-var rotateVector = require('../util/rotateVector');
 var mod = require('../util/mod');
 var real = require('../util/real');
 var clamp = require('../util/clamp');
@@ -144,8 +143,8 @@ function RectilinearView(params, limiter) {
   // Temporary variables used for calculations.
   this._params = {};
   this._fovs = {};
-  this._vertex = vec4.create();
-  this._invProj = mat4.create();
+  this._tmpVec = vec4.create();
+  this._tmpMat = mat4.create();
 
   // Force view limiting on initial parameters.
   this._update();
@@ -654,7 +653,7 @@ RectilinearView.prototype.projection = function() {
 RectilinearView.prototype.intersects = function(rectangle) {
 
   var planes = this._viewFrustum;
-  var vertex = this._vertex;
+  var vertex = this._tmpVec;
 
   // Call projection() for the side effect of updating the view frustum.
   this.projection();
@@ -724,7 +723,7 @@ RectilinearView.prototype.selectLevel = function(levelList) {
  * @return {Coords}
  */
 RectilinearView.prototype.coordinatesToScreen = function(coords, result) {
-  var ray = this._vertex;
+  var ray = this._tmpVec;
 
   if (!result) {
     result = {};
@@ -740,13 +739,15 @@ RectilinearView.prototype.coordinatesToScreen = function(coords, result) {
     return null;
   }
 
-  // Extract coordinates from argument, filling in default values.
-  var yaw = coords && coords.yaw != null ? coords.yaw : defaultYaw;
-  var pitch = coords && coords.pitch != null ? coords.pitch : defaultPitch;
+  // Compute view ray pointing into the (yaw, pitch) direction.
+  var yaw = coords.yaw;
+  var pitch = coords.pitch;
+  var x = Math.sin(yaw) * Math.cos(pitch);
+  var y = -Math.sin(coords.pitch);
+  var z = -Math.cos(yaw) * Math.cos(pitch);
+  vec4.set(ray, x, y, z, 1);
 
   // Project view ray onto clip space.
-  vec4.set(ray, 0, 0, -1, 1);
-  rotateVector(ray, ray, -yaw, -pitch, 0);
   vec4.transformMat4(ray, ray, this.projection());
 
   // w in clip space equals -z in camera space.
@@ -776,8 +777,8 @@ RectilinearView.prototype.coordinatesToScreen = function(coords, result) {
  * @return {RectilinearViewCoords}
  */
 RectilinearView.prototype.screenToCoordinates = function(coords, result) {
-  var ray = this._vertex;
-  var invProj = this._invProj;
+  var ray = this._tmpVec;
+  var invProj = this._tmpMat;
 
   if (!result) {
     result = {};

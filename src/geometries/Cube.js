@@ -22,7 +22,6 @@ var LruMap = require('../collections/LruMap');
 var Level = require('./Level');
 var makeLevelList = require('./common').makeLevelList;
 var makeSelectableLevelList = require('./common').makeSelectableLevelList;
-var rotateVector = require('../util/rotateVector');
 var clamp = require('../util/clamp');
 var cmp = require('../util/cmp');
 var type = require('../util/type');
@@ -65,13 +64,29 @@ var faceRotation = {
   d: { x: -Math.PI/2, y: 0 }
 };
 
+// Zero vector.
+var origin = vec3.create();
+
+// Rotate a vector in ZXY order.
+function rotateVector(vec, z, x, y) {
+  if (z) {
+    vec3.rotateZ(vec, vec, origin, z);
+  }
+  if (x) {
+    vec3.rotateX(vec, vec, origin, x);
+  }
+  if (y) {
+    vec3.rotateY(vec, vec, origin, y);
+  }
+}
+
 // Normalized vectors pointing to the center of each face.
 var faceVectors = {};
 for (var i = 0; i < faceList.length; i++) {
   var face = faceList[i];
   var rotation = faceRotation[face];
   var v = vec3.fromValues(0,  0, -1);
-  rotateVector(v, v, rotation.y, rotation.x, 0);
+  rotateVector(v, 0, rotation.x, rotation.y);
   faceVectors[face] = v;
 }
 
@@ -218,7 +233,7 @@ CubeTile.prototype.vertices = function(result) {
 
   function makeVertex(vec, x, y) {
     vec3.set(vec, x, y, -0.5);
-    rotateVector(vec, vec, rot.y, rot.x, 0);
+    rotateVector(vec, 0, rot.x, rot.y);
   }
 
   var left = this.centerX() - this.scaleX() / 2;
@@ -361,14 +376,14 @@ CubeTile.prototype.neighbors = function() {
       // belongs to.
 
       rot = faceRotation[face];
-      rotateVector(vec, vec, rot.y, rot.x, 0);
+      rotateVector(vec, 0, rot.x, rot.y);
 
       // Finally, rotate the vector from the neighboring face into the front
       // face. Again, this is so that the neighboring tile x,y coordinates
       // map directly into the x,y axes.
 
       rot = faceRotation[newFace];
-      rotateVector(vec, vec, -rot.y, -rot.x, 0);
+      rotateVector(vec, 0, -rot.x, -rot.y);
 
       // Calculate the neighboring tile coordinates.
 
@@ -603,7 +618,7 @@ CubeGeometry.prototype._closestTile = function(params, level) {
 
   // Calculate a view ray pointing to the tile.
   vec3.set(ray, 0, 0, -1);
-  rotateVector(ray, ray, -params.yaw, -params.pitch, -params.roll);
+  rotateVector(ray, -params.roll, -params.pitch, -params.yaw);
 
   // Find the face whose vector makes a minimal angle with the view ray.
   // This is the face into which the view ray points.
@@ -626,7 +641,7 @@ CubeGeometry.prototype._closestTile = function(params, level) {
 
   // Rotate view ray into front face.
   var rot = faceRotation[closestFace];
-  rotateVector(ray, ray, -rot.y, -rot.x, -rot.z);
+  rotateVector(ray, 0, -rot.x, -rot.y);
 
   // Get the desired zoom level.
   var tileZ = this.levelList.indexOf(level);
