@@ -19,7 +19,7 @@ var assert = require('../../assert');
 
 var FlatView = require('../../../src/views/Flat');
 var FlatGeometry = require('../../../src/geometries/Flat');
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var mat4 = require('gl-matrix').mat4;
 var real = require('../../../src/util/real');
 var pixelRatio = require('../../../src/util/pixelRatio');
 

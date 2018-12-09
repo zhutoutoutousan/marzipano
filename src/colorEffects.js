@@ -15,8 +15,8 @@
  */
 'use strict';
 
-var vec4 = require('gl-matrix/src/gl-matrix/vec4');
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var vec4 = require('gl-matrix').vec4;
+var mat4 = require('gl-matrix').mat4;
 
 /**
  * Helper functions for color transformation {@link Effects}.

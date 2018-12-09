@@ -16,8 +16,8 @@
 'use strict';
 
 var eventEmitter = require('minimal-event-emitter');
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
-var vec4 = require('gl-matrix/src/gl-matrix/vec4');
+var mat4 = require('gl-matrix').mat4;
+var vec4 = require('gl-matrix').vec4;
 var pixelRatio = require('../util/pixelRatio');
 var real = require('../util/real');
 var clamp = require('../util/clamp');

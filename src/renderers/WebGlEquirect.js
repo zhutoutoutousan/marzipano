@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var mat4 = require('gl-matrix').mat4;
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 var WebGlCommon = require('./WebGlCommon');

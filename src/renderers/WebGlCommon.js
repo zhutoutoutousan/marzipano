@@ -20,9 +20,9 @@ var MAX_LAYERS = 256; // Max number of layers per stage.
 var MAX_LEVELS = 256; // Max number of levels per layer.
 
 var clamp = require('../util/clamp');
-var vec4 = require('gl-matrix/src/gl-matrix/vec4');
-var vec3 = require('gl-matrix/src/gl-matrix/vec3');
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var vec4 = require('gl-matrix').vec4;
+var vec3 = require('gl-matrix').vec3;
+var mat4 = require('gl-matrix').mat4;
 
 
 function createShader(gl, type, src) {

@@ -26,7 +26,7 @@ var clamp = require('../util/clamp');
 var mod = require('../util/mod');
 var cmp = require('../util/cmp');
 var type = require('../util/type');
-var vec2 = require('gl-matrix/src/gl-matrix/vec2');
+var vec2 = require('gl-matrix').vec2;
 
 // Some renderer implementations require tiles to be padded around with
 // repeated pixels to prevent the appearance of visible seams between tiles.

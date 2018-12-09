@@ -15,8 +15,8 @@
  */
 'use strict';
 
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
-var vec3 = require('gl-matrix/src/gl-matrix/vec3');
+var mat4 = require('gl-matrix').mat4;
+var vec3 = require('gl-matrix').vec3;
 var clearOwnProperties = require('../util/clearOwnProperties');
 
 var WebGlCommon = require('./WebGlCommon');

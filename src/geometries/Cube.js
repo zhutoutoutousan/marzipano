@@ -25,7 +25,7 @@ var makeSelectableLevelList = require('./common').makeSelectableLevelList;
 var clamp = require('../util/clamp');
 var cmp = require('../util/cmp');
 var type = require('../util/type');
-var vec3 = require('gl-matrix/src/gl-matrix/vec3');
+var vec3 = require('gl-matrix').vec3;
 
 // Some renderer implementations require tiles to be padded around with
 // repeated pixels to prevent the appearance of visible seams between tiles.

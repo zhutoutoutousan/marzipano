@@ -19,7 +19,7 @@ var assert = require('../../assert');
 
 var RectilinearView = require('../../../src/views/Rectilinear');
 var CubeGeometry = require('../../../src/geometries/Cube');
-var mat4 = require('gl-matrix/src/gl-matrix/mat4');
+var mat4 = require('gl-matrix').mat4;
 var htov = require('../../../src/util/convertFov').htov;
 var real = require('../../../src/util/real');
 var pixelRatio = require('../../../src/util/pixelRatio');
