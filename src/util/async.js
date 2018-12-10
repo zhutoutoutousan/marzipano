@@ -24,7 +24,11 @@ function async(fn) {
     } catch (e) {
       err = e;
     } finally {
-      done(err || null, err ? null : ret);
+      if (err) {
+        done(err);
+      } else {
+        done(null, ret);
+      }
     }
   };
 }
