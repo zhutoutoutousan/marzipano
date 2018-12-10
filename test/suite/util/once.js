@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 
 var once = require('../../../src/util/once');
@@ -29,9 +29,9 @@ suite('once', function() {
   test('does not call a second time', function() {
     var spy = sinon.spy(twice);
     var fn = once(spy);
-    assert(fn(2) === 4);
-    assert(fn(3) === 4);
-    assert(spy.calledOnce);
+    assert.strictEqual(fn(2), 4);
+    assert.strictEqual(fn(3), 4);
+    assert.isTrue(spy.calledOnce);
   });
 
 });

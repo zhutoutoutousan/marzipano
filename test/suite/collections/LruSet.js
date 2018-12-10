@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('../../assert');
+var assert = require('chai').assert;
 
 var deepEqual = require('deep-equal');
 
@@ -32,23 +32,23 @@ suite('LruSet', function() {
 
     test('single element', function() {
       var set = new LruSet(deepEqual, hash, 16);
-      assert(set.add(42) === null);
+      assert.isNull(set.add(42));
       assert(set.has(42));
     });
 
     test('two elements with same hash', function() {
       var set = new LruSet(deepEqual, hash, 16);
-      assert(set.add({}) === null);
-      assert(set.add("") === null);
-      assert(set.has({}));
-      assert(set.has(""));
+      assert.isNull(set.add({}));
+      assert.isNull(set.add(""));
+      assert.isTrue(set.has({}));
+      assert.isTrue(set.has(""));
     });
 
     test('existing element', function() {
       var set = new LruSet(deepEqual, hash, 16);
-      assert(set.add({}) === null);
-      assert(set.add({}) === null);
-      assert(set.has({}));
+      assert.isNull(set.add({}));
+      assert.isNull(set.add({}));
+      assert.isTrue(set.has({}));
     });
 
     test('existing element at full size', function() {
@@ -59,11 +59,11 @@ suite('LruSet', function() {
         if (i === 0) {
           oldest = obj;
         }
-        assert(set.add(obj) === null);
+        assert.isNull(set.add(obj));
       }
-      assert(set.add({ prop: 0 }) === null);
-      assert(set.has(oldest));
-      assert(set.size() === 16);
+      assert.isNull(set.add({ prop: 0 }));
+      assert.isTrue(set.has(oldest));
+      assert.strictEqual(set.size(), 16);
     });
 
     test('nonexisting element at full size', function() {
@@ -74,18 +74,18 @@ suite('LruSet', function() {
         if (i === 0) {
           oldest = obj;
         }
-        assert(set.add(obj) === null);
+        assert.isNull(set.add(obj));
       }
-      assert(set.add({ prop: 42 }) === oldest);
-      assert(set.has({ prop: 42 }));
-      assert(!set.has(oldest));
-      assert(set.size() === 16);
+      assert.strictEqual(set.add({ prop: 42 }), oldest);
+      assert.isTrue(set.has({ prop: 42 }));
+      assert.isFalse(set.has(oldest));
+      assert.strictEqual(set.size(), 16);
     });
 
     test('on a set with zero maximum size', function() {
       var set = new LruSet(deepEqual, hash, 0);
-      assert(set.add(42) === 42);
-      assert(!set.has(42));
+      assert.strictEqual(set.add(42), 42);
+      assert.isFalse(set.has(42));
     });
 
   });
@@ -95,31 +95,31 @@ suite('LruSet', function() {
     test('existing element', function() {
       var set = new LruSet(deepEqual, hash, 16);
       var elem = {};
-      assert(set.add(elem) === null);
-      assert(set.remove({}) === elem);
+      assert.isNull(set.add(elem));
+      assert.strictEqual(set.remove({}), elem);
       assert(!set.has(elem));
     });
 
     test('nonexisting element', function() {
       var set = new LruSet(deepEqual, hash, 16);
       set.add(42);
-      assert(set.remove(37) === null);
+      assert.isNull(set.remove(37));
     });
 
     test('existing element with same hash as existing element', function() {
       var set = new LruSet(deepEqual, hash, 16);
       set.add({});
       set.add("");
-      assert(set.remove("") === "");
-      assert(!set.has(""));
-      assert(set.has({}));
+      assert.strictEqual(set.remove(""), "");
+      assert.isFalse(set.has(""));
+      assert.isTrue(set.has({}));
     });
 
     test('nonexisting element with same hash as existing element', function() {
       var set = new LruSet(deepEqual, hash, 16);
       set.add({});
-      assert(set.remove("") === null);
-      assert(set.has({}));
+      assert.isNull(set.remove(""));
+      assert.isTrue(set.has({}));
     });
 
     test('first element on a full set', function() {
@@ -127,8 +127,8 @@ suite('LruSet', function() {
       for (var i = 0; i < 16; i++) {
         set.add(i);
       }
-      assert(set.remove(0) === 0);
-      assert(!set.has(0));
+      assert.strictEqual(set.remove(0), 0);
+      assert.isFalse(set.has(0));
     });
 
   });
@@ -137,13 +137,13 @@ suite('LruSet', function() {
 
     test('empty', function() {
       var set = new LruSet(deepEqual, hash, 16);
-      assert(set.size() === 0);
+      assert.strictEqual(set.size(), 0);
     });
 
     test('single element', function() {
       var set = new LruSet(deepEqual, hash, 16);
       set.add(42);
-      assert(set.size() === 1);
+      assert.strictEqual(set.size(), 1);
     });
 
     test('full', function() {
@@ -151,7 +151,7 @@ suite('LruSet', function() {
       for (var i = 0; i < 16; i++) {
         set.add(i);
       }
-      assert(set.size() === 16);
+      assert.strictEqual(set.size(), 16);
     });
 
   });
@@ -164,7 +164,7 @@ suite('LruSet', function() {
         set.add(i);
       }
       set.clear();
-      assert(set.size() === 0);
+      assert.strictEqual(set.size(), 0);
     });
 
   });
@@ -182,10 +182,10 @@ suite('LruSet', function() {
         seen.push(i);
       });
 
-      assert(count === 10);
+      assert.strictEqual(count, 10);
 
       for (var i = 0; i < 10; i++) {
-        assert(seen.indexOf(i) >= 0);
+        assert.include(seen, i);
       }
     });
 

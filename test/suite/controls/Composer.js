@@ -15,10 +15,9 @@
  */
 'use strict';
 
-var assert = require('../../assert');
+var assert = require('chai').assert;
 
 var ControlComposer = require('../../../src/controls/Composer');
-var Dynamics = require('../../../src/controls/Dynamics');
 var eventEmitter = require('minimal-event-emitter');
 
 

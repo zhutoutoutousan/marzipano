@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 var wait = require('../../wait');
 
@@ -46,8 +46,8 @@ suite('retry', function() {
     var fn = retry(cancelize(flaky(0)));
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledOnce);
-      assert(spy.calledWith(null, 4));
+      assert.isTrue(spy.calledOnce);
+      assert.isTrue(spy.calledWithExactly(null, 4));
       done();
     });
   });
@@ -57,8 +57,8 @@ suite('retry', function() {
     var fn = retry(cancelize(flaky(1)));
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledOnce);
-      assert(spy.calledWith(null, 4));
+      assert.isTrue(spy.calledOnce);
+      assert.isTrue(spy.calledWithExactly(null, 4));
       done();
     });
   });
@@ -68,8 +68,8 @@ suite('retry', function() {
     var fn = retry(cancelize(flaky(2)));
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledOnce);
-      assert(spy.calledWith(null, 4));
+      assert.isTrue(spy.calledOnce);
+      assert.isTrue(spy.calledWithExactly(null, 4));
       done();
     });
   });
@@ -80,8 +80,8 @@ suite('retry', function() {
     var cancel = fn(2, spy);
     cancel(error);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledOnce);
-      assert(spy.calledWith(error));
+      assert.isTrue(spy.calledOnce);
+      assert.isTrue(spy.calledWithExactly(error));
       done();
     });
   });

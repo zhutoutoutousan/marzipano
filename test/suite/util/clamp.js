@@ -15,18 +15,18 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var clamp = require('../../../src/util/clamp');
 
 suite('clamp', function() {
 
   test('below', function() {
-    assert(clamp(-0.5, 0, 1) === 0);
+    assert.strictEqual(clamp(-0.5, 0, 1), 0);
   });
 
   test('above', function() {
-    assert(clamp(1.5, 0, 1) === 1);
+    assert.strictEqual(clamp(1.5, 0, 1), 1);
   });
 
 });

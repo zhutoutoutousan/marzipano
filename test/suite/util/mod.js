@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var mod = require('../../../src/util/mod');
 
@@ -32,7 +32,7 @@ suite('mod', function() {
   test('mod', function() {
     for (var i = 0; i < tab.length; i++) {
       var a = tab[i][0], b = tab[i][1], c = tab[i][2];
-      assert(mod(a, b) === c);
+      assert.strictEqual(mod(a, b), c);
     }
   });
 

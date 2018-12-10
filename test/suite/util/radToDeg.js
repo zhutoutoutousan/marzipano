@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var radToDeg = require('../../../src/util/radToDeg');
 
@@ -32,8 +32,8 @@ suite('radToDeg', function() {
   test('radToDeg', function() {
     for (var i = 0; i < tab.length; i++) {
       var deg = tab[i][0], rad = tab[i][1];
-      assert(radToDeg(rad) === deg);
-      assert(radToDeg(-rad) === -deg);
+      assert.strictEqual(radToDeg(rad), deg);
+      assert.strictEqual(radToDeg(-rad), -deg);
     }
   });
 

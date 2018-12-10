@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 var wait = require('../../wait');
 
@@ -70,7 +70,7 @@ suite('chain', function() {
     var spy = sinon.spy();
     fn(1, 2, 3, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledWith(null, 1, 2, 3));
+      assert.isTrue(spy.calledWithExactly(null, 1, 2, 3));
     });
   });
 
@@ -79,7 +79,7 @@ suite('chain', function() {
     var spy = sinon.spy();
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledWith(null, 4));
+      assert.isTrue(spy.calledWithExactly(null, 4));
       done();
     });
   });
@@ -89,7 +89,7 @@ suite('chain', function() {
     var spy = sinon.spy();
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledWith(null, 16));
+      assert.isTrue(spy.calledWithExactly(null, 16));
       done();
     });
   });
@@ -99,7 +99,7 @@ suite('chain', function() {
     var spy = sinon.spy();
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledWith(null, 4));
+      assert.isTrue(spy.calledWithExactly(null, 4));
       done();
     });
   });
@@ -109,7 +109,7 @@ suite('chain', function() {
     var spy = sinon.spy();
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledWith(null, 16));
+      assert.isTrue(spy.calledWithExactly(null, 16));
       done();
     });
   });
@@ -119,7 +119,7 @@ suite('chain', function() {
     var spy = sinon.spy();
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledWith(null, 16));
+      assert.isTrue(spy.calledWithExactly(null, 16));
       done();
     });
   });
@@ -129,7 +129,7 @@ suite('chain', function() {
     var spy = sinon.spy();
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledWith(null, 16));
+      assert.isTrue(spy.calledWithExactly(null, 16));
       done();
     });
   });
@@ -140,8 +140,8 @@ suite('chain', function() {
     var fn = chain(fail, neverCalledSpy);
     fn(2, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(neverCalledSpy.notCalled);
-      assert(spy.calledWith(error));
+      assert.isTrue(neverCalledSpy.notCalled);
+      assert.isTrue(spy.calledWithExactly(error));
       done();
     });
   });
@@ -153,8 +153,8 @@ suite('chain', function() {
     var cancel = fn(2, spy);
     cancel(error);
     wait.untilSpyCalled(spy, function() {
-      assert(neverCalledSpy.notCalled);
-      assert(spy.calledWith(error));
+      assert.isTrue(neverCalledSpy.notCalled);
+      assert.isTrue(spy.calledWithExactly(error));
       done();
     });
   });

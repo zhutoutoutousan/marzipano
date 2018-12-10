@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 var wait = require('../../wait');
 
@@ -30,8 +30,8 @@ suite('delay', function() {
     var cancel = delay(4, spy);
     cancel(error);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledOnce);
-      assert(spy.calledWith(error));
+      assert.isTrue(spy.calledOnce);
+      assert.isTrue(spy.calledWithExactly(error));
     });
   });
 
@@ -39,7 +39,7 @@ suite('delay', function() {
     var spy = sinon.spy();
     delay(4, spy);
     wait.untilSpyCalled(spy, function() {
-      assert(spy.calledOnce);
+      assert.isTrue(spy.calledOnce);
     });
   });
 

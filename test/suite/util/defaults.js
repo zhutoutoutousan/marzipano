@@ -15,9 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
-
-var deepEqual = require('deep-equal');
+var assert = require('chai').assert;
 
 var defaults = require('../../../src/util/defaults');
 
@@ -28,7 +26,7 @@ suite('defaults', function() {
     var defaultsObj = { foo: 100, quux: 200 };
     var expectedObj = { foo: 42, bar: 37, quux: 200 };
     var resultObj = defaults(originalObj, defaultsObj);
-    assert(deepEqual(resultObj, expectedObj));
+    assert.deepEqual(resultObj, expectedObj);
   });
 
 });

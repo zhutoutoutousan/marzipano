@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var compose = require('../../../src/util/compose');
 
@@ -31,17 +31,17 @@ suite('compose', function() {
 
   test('zero', function() {
     var fn = compose();
-    assert(fn(42) === 42);
+    assert.strictEqual(fn(42), 42);
   });
 
   test('one', function() {
     var fn = compose(twice);
-    assert(fn(42) === 84);
+    assert.strictEqual(fn(42), 84);
   });
 
   test('two', function() {
     var fn = compose(twice, square);
-    assert(fn(4) === 64);
+    assert.strictEqual(fn(4), 64);
   });
 
 });

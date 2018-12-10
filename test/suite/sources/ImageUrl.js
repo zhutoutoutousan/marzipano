@@ -15,19 +15,12 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 
 var wait = require('../../wait');
 
 var ImageUrlSource = require('../../../src/sources/ImageUrl');
-
-function assertRect(expected, actual) {
-  assert(expected.x === actual.x);
-  assert(expected.y === actual.y);
-  assert(expected.width === actual.width);
-  assert(expected.height === actual.height);
-}
 
 function MockStage() {}
 
@@ -55,10 +48,10 @@ suite('ImageUrlSource', function() {
     source.loadAsset(stage, { face: "r", z: 3, x: 4, y: 5});
 
     wait.until(function() { return spy.callCount === 2; }, function() {
-      assert(spy.getCall(0).args[0] === "http://localhost/img?f=l&z=0&x=1&y=2");
-      assert(spy.getCall(0).args[1] === undefined);
-      assert(spy.getCall(1).args[0] === "http://localhost/img?f=r&z=3&x=4&y=5");
-      assert(spy.getCall(1).args[1] === undefined);
+      assert.strictEqual(spy.getCall(0).args[0], "http://localhost/img?f=l&z=0&x=1&y=2");
+      assert.strictEqual(spy.getCall(0).args[1], undefined);
+      assert.strictEqual(spy.getCall(1).args[0], "http://localhost/img?f=r&z=3&x=4&y=5");
+      assert.strictEqual(spy.getCall(1).args[1], undefined);
       done();
     });
   });
@@ -80,11 +73,11 @@ suite('ImageUrlSource', function() {
 
     wait.until(function() { return stage.loadImage.callCount === 7; }, function() {
       for (var i = 0; i < 6; i++) {
-        assert(spy.getCall(i).args[0] === "http://localhost/preview");
-        assertRect(spy.getCall(i).args[1], {x: 0, y: i/6, width: 1, height: 1/6});
+        assert.strictEqual(spy.getCall(i).args[0], "http://localhost/preview");
+        assert.deepEqual(spy.getCall(i).args[1], {x: 0, y: i/6, width: 1, height: 1/6});
       }
-      assert(spy.getCall(6).args[0] === "http://localhost/img?f=l&z=1&x=2&y=3");
-      assert(spy.getCall(6).args[1] === undefined);
+      assert.strictEqual(spy.getCall(6).args[0], "http://localhost/img?f=l&z=1&x=2&y=3");
+      assert.strictEqual(spy.getCall(6).args[1], undefined);
       done();
     });
   });
@@ -106,11 +99,11 @@ suite('ImageUrlSource', function() {
 
     wait.until(function() { return stage.loadImage.callCount === 7; }, function() {
       for (var i = 0; i < 6; i++) {
-        assert(spy.getCall(i).args[0] === "http://localhost/preview");
-        assertRect(spy.getCall(i).args[1], {x: 0, y: i/6, width: 1, height: 1/6});
+        assert.strictEqual(spy.getCall(i).args[0], "http://localhost/preview");
+        assert.deepEqual(spy.getCall(i).args[1], {x: 0, y: i/6, width: 1, height: 1/6});
       }
-      assert(spy.getCall(6).args[0] === "http://localhost/img?f=l&z=1&x=2&y=3");
-      assert(spy.getCall(6).args[1] === undefined);
+      assert.strictEqual(spy.getCall(6).args[0], "http://localhost/img?f=l&z=1&x=2&y=3");
+      assert.strictEqual(spy.getCall(6).args[1], undefined);
       done();
     });
   });
@@ -122,9 +115,9 @@ suite('ImageUrlSource', function() {
 
     var source = new ImageUrlSource(tileToUrl);
     source.loadAsset(stage, "tile", function(err, tile, asset) {
-      assert.notOk(err);
-      assert.equal("tile", tile);
-      assert.equal("asset", asset);
+      assert.isNull(err);
+      assert.strictEqual("tile", tile);
+      assert.strictEqual("asset", asset);
       done();
     });
   });
@@ -136,9 +129,9 @@ suite('ImageUrlSource', function() {
 
     var source = new ImageUrlSource(tileToUrl);
     source.loadAsset(stage, "tile", function(err, tile, asset) {
-      assert(!err);
-      assert(tile === "tile");
-      assert(asset === "asset-rect");
+      assert.isNull(err);
+      assert.strictEqual(tile, "tile");
+      assert.strictEqual(asset, "asset-rect");
       done();
     });
   });
@@ -150,9 +143,9 @@ suite('ImageUrlSource', function() {
 
     var source = new ImageUrlSource(tileToUrl);
     source.loadAsset(stage, "tile", function(err, tile, asset) {
-      assert(err instanceof Error);
-      assert(tile === "tile");
-      assert(!asset);
+      assert.instanceOf(err, Error);
+      assert.strictEqual(tile, "tile");
+      assert.isNotOk(asset);
       done();
     });
   });

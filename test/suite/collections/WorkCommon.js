@@ -17,7 +17,7 @@
 
 // Common tests for WorkQueue and WorkPool.
 
-var assert = require('../../assert');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 var wait = require('../../wait');
 
@@ -47,7 +47,7 @@ function runTests(name, cls) {
       var spy = sinon.spy();
       q.push(returnSync(1), spy);
       wait.untilSpyCalled(spy, function() {
-        assert(spy.calledWith(1));
+        assert.isTrue(spy.calledWithExactly(1));
         done();
       });
     });
@@ -57,7 +57,7 @@ function runTests(name, cls) {
       var spy = sinon.spy();
       q.push(returnAsync(1), spy);
       wait.untilSpyCalled(spy, function() {
-        assert(spy.calledWith(1));
+        assert.isTrue(spy.calledWithExactly(1));
         done();
       });
     });
@@ -69,8 +69,8 @@ function runTests(name, cls) {
       q.push(returnSync(1), spy1);
       q.push(returnSync(2), spy2);
       wait.untilSpyCalled(spy1, spy2, function() {
-        assert(spy1.calledWith(1));
-        assert(spy2.calledWith(2));
+        assert.isTrue(spy1.calledWithExactly(1));
+        assert.isTrue(spy2.calledWithExactly(2));
         done();
       });
     });
@@ -82,8 +82,8 @@ function runTests(name, cls) {
       q.push(returnAsync(1), spy1);
       q.push(returnAsync(2), spy2);
       wait.untilSpyCalled(spy1, spy2, function() {
-        assert(spy1.calledWith(1));
-        assert(spy2.calledWith(2));
+        assert.isTrue(spy1.calledWithExactly(1));
+        assert.isTrue(spy2.calledWithExactly(2));
         done();
       });
     });
@@ -95,8 +95,8 @@ function runTests(name, cls) {
       q.push(returnSync(1), spy1);
       q.push(returnAsync(2), spy2);
       wait.untilSpyCalled(spy1, spy2, function() {
-        assert(spy1.calledWith(1));
-        assert(spy2.calledWith(2));
+        assert.isTrue(spy1.calledWithExactly(1));
+        assert.isTrue(spy2.calledWithExactly(2));
         done();
       });
     });
@@ -108,8 +108,8 @@ function runTests(name, cls) {
       q.push(returnAsync(1), spy1);
       q.push(returnSync(2), spy2);
       wait.untilSpyCalled(spy1, spy2, function() {
-        assert(spy1.calledWith(1));
-        assert(spy2.calledWith(2));
+        assert.isTrue(spy1.calledWithExactly(1));
+        assert.isTrue(spy2.calledWithExactly(2));
         done();
       });
     });
@@ -120,7 +120,7 @@ function runTests(name, cls) {
       var cancel = q.push(returnAsync(1), spy);
       cancel('err');
       wait.untilSpyCalled(spy, function() {
-        assert(spy.calledWith('err'));
+        assert.isTrue(spy.calledWithExactly('err'));
         done();
       });
     });
@@ -131,10 +131,10 @@ function runTests(name, cls) {
       q.pause();
       q.push(returnSync(1), spy);
       setTimeout(function() {
-        assert(spy.notCalled);
+        assert.isTrue(spy.notCalled);
         q.resume();
         wait.untilSpyCalled(spy, function() {
-          assert(spy.calledWith(1));
+          assert.isTrue(spy.calledWithExactly(1));
           done();
         });
       }, 20);

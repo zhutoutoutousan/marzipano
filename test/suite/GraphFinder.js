@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var GraphFinder = require('../../src/GraphFinder');
 
@@ -54,12 +54,12 @@ var konigsberg = {
 
 suite('GraphFinder', function() {
 
-  test('empty graph', function() {
+  test('trivial graph', function() {
     var finder = new GraphFinder(equals, hash);
     var neighFun = neighborsFun.bind(null, empty);
     finder.start(0, neighFun, yesFun);
-    assert(finder.next() === 0);
-    assert(finder.next() === null);
+    assert.strictEqual(finder.next(), 0);
+    assert.isNull(finder.next());
   });
 
   test('explore all', function() {
@@ -71,7 +71,7 @@ suite('GraphFinder', function() {
       nodeList.push(node);
     }
     for (var i = 0; i < 4; i++) {
-      assert(nodeList.indexOf(i) >= 0);
+      assert.include(nodeList, i);
     }
   });
 
@@ -83,7 +83,7 @@ suite('GraphFinder', function() {
     while ((node = finder.next()) !== null) {
       nodeList.push(node);
     }
-    assert(nodeList.length === 0);
+    assert.strictEqual(nodeList.length, 0);
   });
 
   test('explore even', function() {
@@ -94,9 +94,7 @@ suite('GraphFinder', function() {
     while ((node = finder.next()) !== null) {
       nodeList.push(node);
     }
-    assert(nodeList.indexOf(0) >= 0);
-    assert(nodeList.indexOf(2) >= 0);
-    assert(nodeList.length === 2);
+    assert.sameMembers(nodeList, [0, 2]);
   });
 
   test('state reset after search', function() {
@@ -106,10 +104,10 @@ suite('GraphFinder', function() {
     finder.start(0, neighFun, yesFun);
     finder.next();
     finder.next();
-    assert(finder._neighborsFun === null);
-    assert(finder._exploreFun === null);
-    assert(finder._queue.length === 0);
-    assert(finder._visited.size() === 0);
+    assert.isNull(finder._neighborsFun);
+    assert.isNull(finder._exploreFun);
+    assert.isEmpty(finder._queue);
+    assert.equal(finder._visited.size(), 0);
   });
 
   test('throw when start is called with search in progress', function() {

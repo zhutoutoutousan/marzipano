@@ -15,22 +15,22 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var cmp = require('../../../src/util/cmp');
 
 suite('cmp', function() {
 
   test('less than', function() {
-    assert(cmp(0, 1) === -1);
+    assert.strictEqual(cmp(0, 1), -1);
   });
 
   test('equal', function() {
-    assert(cmp(1, 1) === 0);
+    assert.strictEqual(cmp(1, 1), 0);
   });
 
   test('greater than', function() {
-    assert(cmp(1, 0) === 1);
+    assert.strictEqual(cmp(1, 0), 1);
   });
 
 });

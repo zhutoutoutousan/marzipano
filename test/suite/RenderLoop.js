@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 
 var eventEmitter = require('minimal-event-emitter');
@@ -81,7 +81,7 @@ suite('RenderLoop', function() {
     var loop = new RenderLoop(stage);
     stage.emit('renderInvalid');
     fakeTickFrame();
-    assert(stage.render.notCalled);
+    assert.isTrue(stage.render.notCalled);
   });
 
   test('start', function() {
@@ -90,7 +90,7 @@ suite('RenderLoop', function() {
     loop.start();
     stage.emit('renderInvalid');
     fakeTickFrame();
-    assert(stage.render.called);
+    assert.isTrue(stage.render.called);
   });
 
   test('stop', function() {
@@ -100,7 +100,7 @@ suite('RenderLoop', function() {
     loop.stop();
     stage.emit('renderInvalid');
     fakeTickFrame();
-    assert(stage.render.notCalled);
+    assert.isTrue(stage.render.notCalled);
   });
 
   test('renderOnNextFrame', function() {
@@ -109,7 +109,7 @@ suite('RenderLoop', function() {
     loop.start();
     loop.renderOnNextFrame();
     fakeTickFrame();
-    assert(stage.render.called);
+    assert.isTrue(stage.render.called);
   });
 
 });

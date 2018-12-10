@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var ispot = require('../../../src/util/ispot');
 
@@ -24,11 +24,11 @@ suite('ispot', function() {
   test('ispot', function() {
     var powersOfTwo = [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
     for (var i = 0; i < powersOfTwo.length; i++) {
-      assert(ispot(powersOfTwo[i]));
+      assert.isTrue(ispot(powersOfTwo[i]));
     }
     var nonPowersOfTwo = [3, 5, 6, 10, 15, 33];
     for (var i = 0; i < nonPowersOfTwo.length; i++) {
-      assert(!ispot(nonPowersOfTwo[i]));
+      assert.isFalse(ispot(nonPowersOfTwo[i]));
     }
   });
 

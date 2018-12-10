@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var decimal = require('../../../src/util/decimal');
 
@@ -31,7 +31,7 @@ suite('decimal', function() {
   test('decimal', function() {
     for (var i = 0; i < tab.length; i++) {
       var a = tab[i][0], b = tab[i][1];
-      assert(decimal(a) === b);
+      assert.strictEqual(decimal(a), b);
     }
   });
 

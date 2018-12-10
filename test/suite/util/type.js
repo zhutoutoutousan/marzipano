@@ -15,42 +15,42 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var type = require('../../../src/util/type');
 
 suite('type', function() {
 
   test('undefined', function() {
-    assert(type(undefined) === 'undefined');
+    assert.strictEqual(type(undefined), 'undefined');
   });
 
   test('null', function() {
-    assert(type(null) === 'null');
+    assert.strictEqual(type(null), 'null');
   });
 
   test('number', function() {
-    assert(type(0) === 'number');
+    assert.strictEqual(type(0), 'number');
   });
 
   test('boolean', function() {
-    assert(type(false) === 'boolean');
+    assert.strictEqual(type(false), 'boolean');
   });
 
   test('array', function() {
-    assert(type([]) === 'array');
+    assert.strictEqual(type([]), 'array');
   });
 
   test('object', function() {
-    assert(type({}) === 'object');
+    assert.strictEqual(type({}), 'object');
   });
 
   test('function', function() {
-    assert(type(function(){}) === 'function');
+    assert.strictEqual(type(function(){}), 'function');
   });
 
   test('regexp', function() {
-    assert(type(/.*/) === 'regexp');
+    assert.strictEqual(type(/.*/), 'regexp');
   });
 
 });

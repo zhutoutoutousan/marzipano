@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 
 var Timer = require('../../src/Timer');
@@ -31,14 +31,14 @@ suite('Timer', function() {
     timer.addEventListener('timeout', spy);
 
     var timeBefore = clock();
-    assert(!timer.started());
+    assert.isFalse(timer.started());
     timer.start();
-    assert(timer.started());
+    assert.isTrue(timer.started());
 
     wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
-      assert(!timer.started());
-      assert(timeAfter - timeBefore >= 50);
+      assert.isFalse(timer.started());
+      assert.isAtLeast(timeAfter - timeBefore, 50);
       done();
     });
   });
@@ -48,14 +48,14 @@ suite('Timer', function() {
     var timer = new Timer({duration: 10});
     timer.addEventListener('timeout', spy);
 
-    assert(!timer.started());
+    assert.isFalse(timer.started());
     timer.start();
-    assert(timer.started());
+    assert.isTrue(timer.started());
     timer.stop();
-    assert(!timer.started());
+    assert.isFalse(timer.started());
 
     setTimeout(function() {
-      assert(spy.notCalled);
+      assert.isTrue(spy.notCalled);
       done();
     }, 50);
   });
@@ -69,14 +69,14 @@ suite('Timer', function() {
     timer.start();
 
     setTimeout(function() {
-      assert(spy.notCalled);
+      assert.isTrue(spy.notCalled);
       timer.start();
     }, 50);
 
     wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
-      assert(!timer.started());
-      assert(timeAfter - timeBefore >= 150);
+      assert.isFalse(timer.started());
+      assert.isAtLeast(timeAfter - timeBefore, 150);
       done();
     });
   });
@@ -95,7 +95,7 @@ suite('Timer', function() {
 
     wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
-      assert(timeAfter - timeBefore >= 50);
+      assert.isAtLeast(timeAfter - timeBefore, 50);
       done();
     });
   });
@@ -105,16 +105,16 @@ suite('Timer', function() {
     var timer = new Timer({duration: 50});
     timer.addEventListener('timeout', spy);
 
-    assert(timer.duration() === 50);
+    assert.strictEqual(timer.duration(), 50);
     timer.setDuration(100);
-    assert(timer.duration() === 100);
+    assert.strictEqual(timer.duration(), 100);
 
     var timeBefore = clock();
     timer.start();
 
     wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
-      assert(timeAfter - timeBefore >= 100);
+      assert.isAtLeast(timeAfter - timeBefore, 100);
       done();
     });
   });
@@ -133,7 +133,7 @@ suite('Timer', function() {
 
     wait.untilSpyCalled(spy, function() {
       var timeAfter = clock();
-      assert(timeAfter - timeBefore >= 100);
+      assert.isAtLeast(timeAfter - timeBefore, 100);
       done();
     });
   });
@@ -146,9 +146,9 @@ suite('Timer', function() {
     timer.start();
 
     setTimeout(function() {
-      assert(spy.notCalled);
+      assert.isTrue(spy.notCalled);
       timer.setDuration(10);
-      assert(spy.calledOnce);
+      assert.isTrue(spy.calledOnce);
       done();
     }, 50);
   });

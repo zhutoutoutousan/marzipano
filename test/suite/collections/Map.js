@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('../../assert');
+var assert = require('chai').assert;
 
 var deepEqual = require('deep-equal');
 
@@ -32,19 +32,19 @@ suite('Map', function() {
 
     test('existing key', function() {
       var map = new Map(deepEqual, hash);
-      assert(map.set(42, 'abc') === null);
-      assert(map.get(42) === 'abc');
+      assert.isNull(map.set(42, 'abc'));
+      assert.strictEqual(map.get(42), 'abc');
     });
 
     test('nonexisting key', function() {
       var map = new Map(deepEqual, hash);
-      assert(map.get(42) === null);
+      assert.isNull(map.get(42));
     });
 
     test('nonexisting key with same hash as existing key', function() {
       var map = new Map(deepEqual, hash);
-      assert(map.set({}, 'abc') === null);
-      assert(map.get("") === null);
+      assert.isNull(map.set({}, 'abc'));
+      assert.isNull(map.get(""));
     });
 
   });
@@ -53,24 +53,24 @@ suite('Map', function() {
 
     test('nonexisting key', function() {
       var map = new Map(deepEqual, hash);
-      assert(map.set(42, 'abc') === null);
-      assert(map.has(42));
+      assert.isNull(map.set(42, 'abc'));
+      assert.isTrue(map.has(42));
     });
 
     test('key with same hash as existing key', function() {
       var map = new Map(deepEqual, hash);
-      assert(map.set({}, 'abc') === null);
-      assert(map.set("", 'xyz') === null);
-      assert(map.has({}));
-      assert(map.has(""));
+      assert.isNull(map.set({}, 'abc'));
+      assert.isNull(map.set("", 'xyz'));
+      assert.isTrue(map.has({}));
+      assert.isTrue(map.has(""));
     });
 
     test('existing key', function() {
       var map = new Map(deepEqual, hash);
-      assert(map.set(42, 'abc') === null);
-      assert(map.set(42, 'xyz') !== null);
-      assert(map.has(42));
-      assert(map.get(42) === 'xyz');
+      assert.isNull(map.set(42, 'abc'));
+      assert.strictEqual(map.set(42, 'xyz'), 'abc');
+      assert.isTrue(map.has(42));
+      assert.strictEqual(map.get(42), 'xyz');
     });
 
   });
@@ -80,33 +80,33 @@ suite('Map', function() {
     test('existing key', function() {
       var map = new Map(deepEqual, hash);
       var elem = {};
-      assert(map.set(elem, 'abc') === null);
-      assert(map.del({}) === 'abc');
-      assert(!map.has(elem));
+      assert.isNull(map.set(elem, 'abc'));
+      assert.strictEqual(map.del({}), 'abc');
+      assert.isFalse(map.has(elem));
     });
 
     test('nonexisting key', function() {
       var map = new Map(deepEqual, hash);
       map.set(42, 'abc');
-      assert(map.del(37) === null);
+      assert.isNull(map.del(37));
     });
 
     test('existing key with same hash as existing key', function() {
       var map = new Map(deepEqual, hash);
       map.set({}, 'abc');
       map.set("", 'xyz');
-      assert(map.del("") === 'xyz');
-      assert(!map.has(""));
-      assert(map.has({}));
-      assert(map.get({}) === 'abc');
+      assert.strictEqual(map.del(""), 'xyz');
+      assert.isFalse(map.has(""));
+      assert.isTrue(map.has({}));
+      assert.strictEqual(map.get({}), 'abc');
     });
 
     test('nonexisting key with same hash as existing key', function() {
       var map = new Map(deepEqual, hash);
       map.set({}, 'abc');
-      assert(map.del("") === null);
-      assert(map.has({}));
-      assert(map.get({}) === 'abc');
+      assert.isNull(map.del(""));
+      assert.isTrue(map.has({}));
+      assert.strictEqual(map.get({}), 'abc');
     });
 
   });
@@ -115,13 +115,13 @@ suite('Map', function() {
 
     test('empty', function() {
       var map = new Map(deepEqual, hash);
-      assert(map.size() === 0);
+      assert.strictEqual(map.size(), 0);
     });
 
     test('single element', function() {
       var map = new Map(deepEqual, hash);
       map.set(42, 'abc');
-      assert(map.size() === 1);
+      assert.strictEqual(map.size(), 1);
     });
 
     test('more elements than buckets', function() {
@@ -129,7 +129,7 @@ suite('Map', function() {
       for (var i = 0; i < 32; i++) {
         map.set(i, 2*i);
       }
-      assert(map.size() === 32);
+      assert.strictEqual(map.size(), 32);
     });
 
   });
@@ -142,7 +142,7 @@ suite('Map', function() {
         map.set(i, 2*i);
       }
       map.clear();
-      assert(map.size() === 0);
+      assert.strictEqual(map.size(), 0);
     });
 
   });
@@ -160,10 +160,10 @@ suite('Map', function() {
         seen[key] = val;
       });
 
-      assert(count === 10);
+      assert.strictEqual(count, 10);
 
       for (var i = 0; i < 10; i++) {
-        assert(i in seen && seen[i] === 2*i);
+        assert.propertyVal(seen, i, 2*i);
       }
     });
 

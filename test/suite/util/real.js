@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 
 var real = require('../../../src/util/real');
 
@@ -33,7 +33,7 @@ suite('real', function() {
   test('real', function() {
     for (var i = 0; i < tab.length; i++) {
       var val = tab[i][0], ret = tab[i][1];
-      assert(real(val) === ret);
+      assert.strictEqual(real(val), ret);
     }
   });
 

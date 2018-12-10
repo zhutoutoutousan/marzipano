@@ -15,7 +15,7 @@
  */
 'use strict';
 
-var assert = require('proclaim');
+var assert = require('chai').assert;
 var sinon = require('sinon');
 
 var async = require('../../../src/util/async');
@@ -36,16 +36,16 @@ suite('async', function() {
     var fn = async(twice.bind(null, 2));
     var spy = sinon.spy();
     fn(spy);
-    assert(spy.calledOnce);
-    assert(spy.calledWith(null, 4));
+    assert.isTrue(spy.calledOnce);
+    assert.isTrue(spy.calledWithExactly(null, 4));
   });
 
   test('failure', function() {
     var fn = async(fail);
     var spy = sinon.spy();
     fn(spy);
-    assert(spy.calledOnce);
-    assert(spy.calledWith(error));
+    assert.isTrue(spy.calledOnce);
+    assert.isTrue(spy.calledWithExactly(error));
   });
 
 });
