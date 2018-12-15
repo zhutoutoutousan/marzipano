@@ -51,11 +51,9 @@ var planeCmp = [
 ];
 
 // A zoom of exactly 0 breaks some computations, so we force a minimum positive
-// value. We use 9 decimal places for the epsilon value since this is the
-// maximum number of significant digits for a 32-bit floating-point number.
-// Note that after a certain zoom level, rendering quality will be affected
-// by the loss of precision in floating-point computations.
-var zoomLimitEpsilon = 0.000000001;
+// value. We use 6 decimal places for the epsilon value to avoid broken
+// rendering due to loss of precision in floating point computations.
+var zoomLimitEpsilon = 0.000001;
 
 
 /**
