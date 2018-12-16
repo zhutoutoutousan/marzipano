@@ -644,11 +644,12 @@ RectilinearView.prototype.projection = function() {
 
 /**
  * Return whether the view frustum intersects the given rectangle.
+ *
  * This function may return false positives, but never false negatives.
  * It is used for frustum culling, i.e., excluding invisible tiles from the
  * rendering process.
- * @param {vec4[]} rectangle
- * @return whether the rectangle intersects the view frustum.
+ *
+ * @param {vec2[]} rectangle The vertices of the rectangle.
  */
 RectilinearView.prototype.intersects = function(rectangle) {
 

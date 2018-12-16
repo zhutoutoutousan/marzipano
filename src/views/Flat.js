@@ -523,11 +523,12 @@ FlatView.prototype.projection = function() {
 
 /**
  * Return whether the view frustum intersects the given rectangle.
+ *
  * This function may return false positives, but never false negatives.
  * It is used for frustum culling, i.e., excluding invisible tiles from the
  * rendering process.
- * @param {vec4[]} rectangle
- * @return whether the rectangle intersects the view frustum.
+ *
+ * @param {vec3[]} rectangle The vertices of the rectangle.
  */
 FlatView.prototype.intersects = function(rectangle) {
 
