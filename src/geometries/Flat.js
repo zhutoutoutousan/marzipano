@@ -17,7 +17,7 @@
 
 var inherits = require('../util/inherits');
 var hash = require('../util/hash');
-var GraphFinder = require('../GraphFinder');
+var TileSearcher = require('../TileSearcher');
 var LruMap = require('../collections/LruMap');
 var Level = require('./Level');
 var makeLevelList = require('./common').makeLevelList;
@@ -189,6 +189,9 @@ FlatTile.prototype.padRight = function() {
 
 
 FlatTile.prototype.vertices = function(result) {
+  if (!result) {
+    result = [vec2.create(), vec2.create(), vec2.create(), vec2.create()];
+  }
 
   var left = this.centerX() - this.scaleX() / 2;
   var right = this.centerX() + this.scaleX() / 2;
@@ -201,7 +204,6 @@ FlatTile.prototype.vertices = function(result) {
   vec2.set(result[3], left, bottom);
 
   return result;
-
 };
 
 
@@ -435,7 +437,7 @@ function FlatGeometry(levelPropertiesList) {
     this.levelList[i]._validateWithParentLevel(this.levelList[i-1]);
   }
 
-  this._graphFinder = new GraphFinder(FlatTile.equals, FlatTile.hash);
+  this._tileSearcher = new TileSearcher(this);
 
   this._neighborsCache = new LruMap(FlatTile.equals, FlatTile.hash, 64);
 
@@ -510,17 +512,7 @@ FlatGeometry.prototype._closestTile = function(params, level) {
 FlatGeometry.prototype.visibleTiles = function(view, level, result) {
   var viewSize = this._viewSize;
   var viewParams = this._viewParams;
-  var tileVertices = this._tileVertices;
-  var graphFinder = this._graphFinder;
-
-  function tileNeighbors(t) {
-    return t.neighbors();
-  }
-
-  function tileVisible(t) {
-    t.vertices(tileVertices);
-    return view.intersects(tileVertices);
-  }
+  var tileSearcher = this._tileSearcher;
 
   result = result || [];
 
@@ -531,14 +523,9 @@ FlatGeometry.prototype.visibleTiles = function(view, level, result) {
   }
 
   var startingTile = this._closestTile(view.parameters(viewParams), level);
-  if (!tileVisible(startingTile)) {
+  var count = tileSearcher.search(view, startingTile, result);
+  if (!count) {
     throw new Error('Starting tile is not visible');
-  }
-
-  var tile;
-  graphFinder.start(startingTile, tileNeighbors, tileVisible);
-  while ((tile = graphFinder.next()) != null) {
-    result.push(tile);
   }
 
   return result;

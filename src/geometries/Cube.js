@@ -17,7 +17,7 @@
 
 var inherits = require('../util/inherits');
 var hash = require('../util/hash');
-var GraphFinder = require('../GraphFinder');
+var TileSearcher = require('../TileSearcher');
 var LruMap = require('../collections/LruMap');
 var Level = require('./Level');
 var makeLevelList = require('./common').makeLevelList;
@@ -228,6 +228,9 @@ CubeTile.prototype.padRight = function() {
 
 
 CubeTile.prototype.vertices = function(result) {
+  if (!result) {
+    result = [vec3.create(), vec3.create(), vec3.create(), vec3.create()];
+  }
 
   var rot = faceRotation[this.face];
 
@@ -247,7 +250,6 @@ CubeTile.prototype.vertices = function(result) {
   makeVertex(result[3], left, bottom);
 
   return result;
-
 };
 
 
@@ -558,7 +560,7 @@ function CubeGeometry(levelPropertiesList) {
     this.levelList[i]._validateWithParentLevel(this.levelList[i-1]);
   }
 
-  this._graphFinder = new GraphFinder(CubeTile.equals, CubeTile.hash);
+  this._tileSearcher = new TileSearcher(this);
 
   this._neighborsCache = new LruMap(CubeTile.equals, CubeTile.hash, 64);
 
@@ -567,13 +569,6 @@ function CubeGeometry(levelPropertiesList) {
   this._viewSize = {};
 
   this._viewParams = {};
-
-  this._tileVertices = [
-    vec3.create(),
-    vec3.create(),
-    vec3.create(),
-    vec3.create()
-  ];
 }
 
 
@@ -661,17 +656,7 @@ CubeGeometry.prototype._closestTile = function(params, level) {
 CubeGeometry.prototype.visibleTiles = function(view, level, result) {
   var viewSize = this._viewSize;
   var viewParams = this._viewParams;
-  var tileVertices = this._tileVertices;
-  var graphFinder = this._graphFinder;
-
-  function tileNeighbors(t) {
-    return t.neighbors();
-  }
-
-  function tileVisible(t) {
-    t.vertices(tileVertices);
-    return view.intersects(tileVertices);
-  }
+  var tileSearcher = this._tileSearcher;
 
   result = result || [];
 
@@ -682,14 +667,9 @@ CubeGeometry.prototype.visibleTiles = function(view, level, result) {
   }
 
   var startingTile = this._closestTile(view.parameters(viewParams), level);
-  if (!tileVisible(startingTile)) {
+  var count = tileSearcher.search(view, startingTile, result);
+  if (!count) {
     throw new Error('Starting tile is not visible');
-  }
-
-  var tile;
-  graphFinder.start(startingTile, tileNeighbors, tileVisible);
-  while ((tile = graphFinder.next()) != null) {
-    result.push(tile);
   }
 
   return result;
