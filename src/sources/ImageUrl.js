@@ -113,8 +113,8 @@ ImageUrlSource.prototype.loadAsset = function(stage, tile, done) {
   var delayAmount;
   var lastTime = retryMap[url];
   if (lastTime != null) {
-    var now = now();
-    var elapsed = now - lastTime;
+    var currentTime = now();
+    var elapsed = currentTime - lastTime;
     if (elapsed < retryDelay) {
       // Wait before retrying.
       delayAmount = retryDelay - elapsed;
