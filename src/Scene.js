@@ -326,14 +326,14 @@ Scene.prototype.lookTo = function(params, opts, done) {
     };
   };
 
-  var controlsEnabled = this._viewer.controls().enabled();
+  var reenableControls = this._viewer.controls().enabled();
 
   if (!controlsInterrupt) {
     this._viewer.controls().disable();
   }
 
   this.startMovement(movement, function() {
-    if (controlsEnabled && !this._viewer.controls().enabled()) {
+    if (reenableControls) {
       this._viewer.controls().enable();
     }
     done();

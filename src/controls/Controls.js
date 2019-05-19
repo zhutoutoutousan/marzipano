@@ -135,15 +135,16 @@ Controls.prototype.enableMethod = function(id) {
   if (!method) {
     throw new Error('No control method registered with id ' + id);
   }
-  if (!method.enabled) {
-    method.enabled = true;
-    if (method.active) {
-      this._incrementActiveCount();
-    }
-    this._listen(id);
-    this._updateComposer();
-    this.emit('methodEnabled', id);
+  if (method.enabled) {
+    return;
   }
+  method.enabled = true;
+  if (method.active) {
+    this._incrementActiveCount();
+  }
+  this._listen(id);
+  this._updateComposer();
+  this.emit('methodEnabled', id);
 };
 
 
@@ -155,15 +156,16 @@ Controls.prototype.disableMethod = function(id) {
   if (!method) {
     throw new Error('No control method registered with id ' + id);
   }
-  if (method.enabled) {
-    method.enabled = false;
-    if (method.active) {
-      this._decrementActiveCount();
-    }
-    this._unlisten(id);
-    this._updateComposer();
-    this.emit('methodDisabled', id);
+  if (!method.enabled) {
+    return;
   }
+  method.enabled = false;
+  if (method.active) {
+    this._decrementActiveCount();
+  }
+  this._unlisten(id);
+  this._updateComposer();
+  this.emit('methodDisabled', id);
 };
 
 
@@ -228,6 +230,9 @@ Controls.prototype.enabled = function() {
  * Enables the controls
  */
 Controls.prototype.enable = function() {
+  if (this._enabled) {
+    return;
+  }
   this._enabled = true;
   if (this._activeCount > 0) {
     this.emit('active');
@@ -241,6 +246,9 @@ Controls.prototype.enable = function() {
  * Disables the controls
  */
 Controls.prototype.disable = function() {
+  if (!this._enabled) {
+    return;
+  }
   this._enabled = false;
   if (this._activeCount > 0) {
     this.emit('inactive');
