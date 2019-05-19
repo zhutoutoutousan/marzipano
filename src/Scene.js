@@ -343,7 +343,7 @@ Scene.prototype.lookTo = function(params, opts, done) {
 
 
 /**
- * Starts a movement.
+ * Starts a movement, possibly replacing the current movement.
  *
  * @param {function} fn The movement function.
  * @param {function} done Function to be called when the movement finishes or is
@@ -379,6 +379,10 @@ Scene.prototype.startMovement = function(fn, done) {
 Scene.prototype.stopMovement = function() {
 
   var renderLoop = this._viewer.renderLoop();
+
+  if (!this._movement) {
+    return;
+  }
 
   if (this._movementCallback) {
     this._movementCallback();

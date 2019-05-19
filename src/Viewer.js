@@ -216,12 +216,12 @@ function Viewer(domElement, opts) {
   this.addEventListener('viewChange', this._resetIdleTimerHandler);
 
   // Start the idle movement when the idle timer fires.
-  this._enterIdleHandler = this._enterIdle.bind(this);
-  this._idleTimer.addEventListener('timeout', this._enterIdleHandler);
+  this._triggerIdleTimerHandler = this._triggerIdleTimer.bind(this);
+  this._idleTimer.addEventListener('timeout', this._triggerIdleTimerHandler);
 
-  // Stop movement when the controls are activated or when the
+  // Stop an ongoing movement when the controls are activated or when the
   // scene changes.
-  this._stopMovementHandler = this._stopMovement.bind(this);
+  this._stopMovementHandler = this.stopMovement.bind(this);
   this._controls.addEventListener('active', this._stopMovementHandler);
   this.addEventListener('sceneChange', this._stopMovementHandler);
 
@@ -583,21 +583,21 @@ Viewer.prototype.lookTo = function(params, opts, done) {
 
 
 /**
- * Starts a movement.
+ * Starts a movement, possibly replacing the current movement.
  *
  * This method is equivalent to calling {@link Scene#startMovement} on the
- * current scene.
+ * current scene. If there is no current scene, this is a no-op.
  *
  * @param {function} fn The movement function.
  * @param {function} done Function to be called when the movement finishes or is
  *     interrupted.
  */
-Viewer.prototype.startMovement = function(fn, cb) {
-  // TODO: is it an error to call startMovement when no scene is displayed?
+Viewer.prototype.startMovement = function(fn, done) {
   var scene = this._currentScene;
-  if (scene) {
-    scene.startMovement(fn, cb);
+  if (!scene) {
+    return;
   }
+  scene.startMovement(fn, done);
 };
 
 
@@ -605,13 +605,31 @@ Viewer.prototype.startMovement = function(fn, cb) {
  * Stops the current movement.
  *
  * This method is equivalent to calling {@link Scene#stopMovement} on the
- * current scene.
+ * current scene. If there is no current scene, this is a no-op.
  */
 Viewer.prototype.stopMovement = function() {
   var scene = this._currentScene;
-  if (scene) {
-    scene.stopMovement();
+  if (!scene) {
+    return;
   }
+  scene.stopMovement();
+};
+
+
+/**
+ * Returns the current movement.
+ *
+ * This method is equivalent to calling {@link Scene#movement} on the
+ * current scene. If there is no current scene, this is a no-op.
+ *
+ * @return {function}
+ */
+Viewer.prototype.movement = function() {
+  var scene = this._currentScene;
+  if (!scene) {
+    return;
+  }
+  return scene.movement();
 };
 
 
@@ -637,7 +655,7 @@ Viewer.prototype.setIdleMovement = function(timeout, movement) {
  * {@link Viewer#setIdleMovement}.
  */
 Viewer.prototype.breakIdleMovement = function() {
-  this._stopMovement();
+  this.stopMovement();
   this._resetIdleTimer();
 };
 
@@ -647,24 +665,12 @@ Viewer.prototype._resetIdleTimer = function() {
 };
 
 
-Viewer.prototype._enterIdle = function() {
-  var scene = this._currentScene;
+Viewer.prototype._triggerIdleTimer = function() {
   var idleMovement = this._idleMovement;
-  if (!scene || !idleMovement) {
+  if (!idleMovement) {
     return;
   }
-  scene.startMovement(idleMovement);
-};
-
-
-Viewer.prototype._stopMovement = function() {
-  var scene = this._currentScene;
-  if (!scene) {
-    return;
-  }
-  if (scene.movement()) {
-    scene.stopMovement();
-  }
+  this.startMovement(idleMovement);
 };
 
 
