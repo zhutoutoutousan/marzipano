@@ -14,6 +14,12 @@ Related GitHub issue or pull request numbers are indicated in brackets.
 
 # Upcoming release
 
+# v0.9.1 [2019-11-24]
+
+* New: provide a way to override the easing function in Scene#lookTo (#242).
+* New: allow controls to interrupt an ongoing tween.
+* Fix: crash in ImageUrlSource on retry (#264).
+
 # v0.9.0 [2019-04-15]
 
 * New: `Layer#renderComplete` event (#200).
