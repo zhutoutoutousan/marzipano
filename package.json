@@ -22,10 +22,10 @@
     "prepublishOnly": "scripts/prepublish"
   },
   "dependencies": {
-    "bowser": "^1.9.4",
-    "gl-matrix": "git://github.com/toji/gl-matrix.git#7c8d5dd",
-    "hammerjs": "git://github.com/digisfera/hammer.js.git",
-    "minimal-event-emitter": "^1.0.0"
+    "bowser": "2.7.0",
+    "gl-matrix": "3.1.0",
+    "hammerjs": "2.0.4",
+    "minimal-event-emitter": "1.0.0"
   },
   "devDependencies": {
     "browserify": "^16.2.3",
