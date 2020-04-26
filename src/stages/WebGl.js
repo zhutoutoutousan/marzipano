@@ -26,8 +26,6 @@ var setAbsolute = require('../util/dom').setAbsolute;
 var setFullSize = require('../util/dom').setFullSize;
 var clearOwnProperties = require('../util/clearOwnProperties');
 
-var debug = typeof MARZIPANODEBUG !== 'undefined' && MARZIPANODEBUG.webGl;
-
 
 // Browser-specific workarounds.
 var browserQuirks = {
@@ -47,11 +45,6 @@ function initWebGlContext(canvas, opts) {
     preserveDrawingBuffer: !!(opts && opts.preserveDrawingBuffer)
   };
 
-  if (debug && typeof WebGLDebugUtils !== 'undefined') {
-    console.log('Using WebGL lost context simulator');
-    canvas = WebGLDebugUtils.makeLostContextSimulatingCanvas(canvas);
-  }
-
   // Keep support/WebGl.js in sync with this.
   var gl = (canvas.getContext) && (canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options));
 
@@ -59,9 +52,8 @@ function initWebGlContext(canvas, opts) {
     throw new Error('Could not get WebGL context');
   }
 
-  if (debug && typeof WebGLDebugUtils !== "undefined") {
-    gl = WebGLDebugUtils.makeDebugContext(gl);
-    console.log('Using WebGL debug context');
+  if (opts.wrapContext) {
+    gl = opts.wrapContext(gl);
   }
 
   return gl;
@@ -78,6 +70,7 @@ function initWebGlContext(canvas, opts) {
  * @param {boolean} [opts.antialias=false]
  * @param {boolean} [opts.preserveDrawingBuffer=false]
  * @param {boolean} [opts.generateMipmaps=false]
+ * @param {function} [opts.wrapContext]
  *
  * The `antialias` and `preserveDrawingBuffer` options control the WebGL
  * context attributes of the same name. The `alpha` and `premultipliedAlpha`
@@ -91,6 +84,11 @@ function initWebGlContext(canvas, opts) {
  * Due to technical limitations, they are only generated for textures whose
  * dimensions are a power of two. See:
  * https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
+ *
+ * The `wrapContext` option is a function that receives and returns a
+ * WebGLRenderingContext. The stage will use its return value as the context.
+ * This is useful when used together with WebGLDebugUtils to debug WebGL issues.
+ * See https://www.khronos.org/webgl/wiki/Debugging.
  *
  * Also see the available {@link Stage} options.
  */
@@ -254,7 +252,7 @@ WebGlStage.prototype.startFrame = function() {
 WebGlStage.prototype.endFrame = function() {};
 
 
-WebGlStage.prototype.takeSnapshot = function (options) {
+WebGlStage.prototype.takeSnapshot = function(options) {
 
   // Validate passed argument
   if (typeof options !== 'object' || options == null) {
@@ -278,7 +276,7 @@ WebGlStage.prototype.takeSnapshot = function (options) {
   this.render();
 
   // Return the snapshot
-  return this._domElement.toDataURL('image/jpeg',quality/100);
+  return this._domElement.toDataURL('image/jpeg', quality / 100);
 }
 
 
