@@ -300,7 +300,7 @@ FlatTile.prototype.hash = function() {
 
 
 FlatTile.prototype.equals = function(that) {
-  return (this.geometry === that.geometry &&
+  return (this._geometry === that._geometry &&
       this.z === that.z && this.y === that.y && this.x === that.x);
 };
 

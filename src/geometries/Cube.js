@@ -413,7 +413,7 @@ CubeTile.prototype.hash = function() {
 
 
 CubeTile.prototype.equals = function(that) {
-  return (this.geometry === that.geometry &&
+  return (this._geometry === that._geometry &&
       this.face === that.face &&
       this.z === that.z &&
       this.y === that.y &&

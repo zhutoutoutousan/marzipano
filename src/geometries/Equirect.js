@@ -166,7 +166,7 @@ EquirectTile.prototype.hash = function() {
 
 
 EquirectTile.prototype.equals = function(that) {
-  return this.geometry === that.geometry && this.z === that.z;
+  return this._geometry === that._geometry && this.z === that.z;
 };
 
 
