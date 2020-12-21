@@ -16,9 +16,7 @@
 'use strict';
 
 // Create viewer.
-// WebGL support is required to showcase the transformation effects.
-var viewerOpts = { stageType: 'webgl' };
-var viewer = new Marzipano.Viewer(document.getElementById('pano'), viewerOpts);
+var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 
 // Create view.
 var limiter = Marzipano.RectilinearView.limit.traditional(2048, 120*Math.PI/180);

@@ -19,17 +19,11 @@ module.exports = {
 
   // Stages.
   WebGlStage: require('./stages/WebGl'),
-  CssStage: require('./stages/Css'),
-  FlashStage: require('./stages/Flash'),
 
   // Renderers.
   WebGlCubeRenderer: require('./renderers/WebGlCube'),
   WebGlFlatRenderer: require('./renderers/WebGlFlat'),
   WebGlEquirectRenderer: require('./renderers/WebGlEquirect'),
-  CssCubeRenderer: require('./renderers/CssCube'),
-  CssFlatRenderer: require('./renderers/CssFlat'),
-  FlashCubeRenderer: require('./renderers/FlashCube'),
-  FlashFlatRenderer: require('./renderers/FlashFlat'),
   registerDefaultRenderers: require('./renderers/registerDefaultRenderers'),
 
   // Geometries.

@@ -17,9 +17,8 @@
 set -e -v
 cd "$(dirname "$0")/.."
 
-# Deploy the Javascript and SWF files to be used by the demos.
+# Deploy the Javascript bundle to be used by the demos.
 gsutil cp dist/marzipano.js gs://www.marzipano.net/build/marzipano.js
-gsutil cp dist/marzipano.swf gs://www.marzipano.net/build/marzipano.swf
 
 # Deploy the release archive.
 gsutil cp dist/*.zip gs://www.marzipano.net/releases/

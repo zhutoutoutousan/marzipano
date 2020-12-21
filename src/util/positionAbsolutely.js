@@ -15,26 +15,15 @@
  */
 'use strict';
 
-var cssSupported = require('../support/Css');
 var setTransform = require('./dom').setTransform;
-var setPixelPosition = require('./dom').setPixelPosition;
 var decimal = require('./decimal');
-
-// This cannot belong in util/dom.js because support/Css also depends on it
-// and it would cause a circular dependency.
 
 function positionAbsolutely(element, x, y, extraTransforms) {
   extraTransforms = extraTransforms || '';
-  if (cssSupported()) {
-    // Use CSS 3D transforms when the browser supports them.
-    // A translateZ(0) transform improves performance on Chrome by creating a
-    // new layer for the element, which prevents unnecessary repaints.
-    var transform = 'translateX(' + decimal(x) + 'px) translateY(' + decimal(y) + 'px) translateZ(0) ' + extraTransforms;
-    setTransform(element, transform);
-  } else {
-    // Fall back to absolute positioning.
-    setPixelPosition(element, x, y);
-  }
+  // A translateZ(0) transform improves performance on Chrome by creating a
+  // new layer for the element, which prevents unnecessary repaints.
+  var transform = 'translateX(' + decimal(x) + 'px) translateY(' + decimal(y) + 'px) translateZ(0) ' + extraTransforms;
+  setTransform(element, transform);
 }
 
 module.exports = positionAbsolutely;

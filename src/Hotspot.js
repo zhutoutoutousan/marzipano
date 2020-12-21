@@ -16,7 +16,6 @@
 'use strict';
 
 var eventEmitter = require('minimal-event-emitter');
-var cssSupported = require('./support/Css');
 var positionAbsolutely = require('./util/positionAbsolutely');
 var setTransform = require('./util/dom').setTransform;
 var clearOwnProperties = require('./util/clearOwnProperties');
@@ -38,8 +37,7 @@ var clearOwnProperties = require('./util/clearOwnProperties');
  * There are two kinds of hotspots: regular and embedded. A regular hotspot
  * does not change size depending on the zoom level. An embedded hotspot is
  * displayed at a fixed size relative to the panorama, always covering the
- * same portion of the image. Embedded hotspots require CSS 3D transform
- * support.
+ * same portion of the image.
  *
  * Clients should call {@link HotspotContainer#createHotspot} instead of
  * invoking the constructor directly.
@@ -64,10 +62,6 @@ function Hotspot(domElement, parentDomElement, view, coords, opts) {
   opts.perspective = opts.perspective || {};
   opts.perspective.extraTransforms =
       opts.perspective.extraTransforms != null ? opts.perspective.extraTransforms : "";
-
-  if ((opts.perspective.radius || opts.perspective.extraTransforms) && !cssSupported()) {
-    throw new Error('CSS transforms on hotspots are not supported on this browser');
-  }
 
   this._domElement = domElement;
   this._parentDomElement = parentDomElement;

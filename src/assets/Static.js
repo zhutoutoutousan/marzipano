@@ -30,8 +30,7 @@ var propertyMap = {
  * @implements Asset
  * @classdesc
  *
- * An immutable {@link Asset} compatible with {@link WebGlStage} and
- * {@link CssStage}.
+ * An {@link Asset} whose pixel contents never change.
  *
  * @param {HTMLImageElement|HTMLCanvasElement|ImageBitmap} element The
  *     underlying pixel source.

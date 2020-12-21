@@ -56,9 +56,8 @@ function reverseTileCmp(t1, t2) {
  * A Stage is a container with the ability to render a stack of
  * {@link Layer layers}.
  *
- * This is a superclass containing logic that is common to all implementations;
- * it should never be instantiated directly. Instead, use one of the
- * subclasses: {@link WebGlStage}, {@link CssStage} or {@link FlashStage}.
+ * This class should never be instantiated directly. Use {@link WebGlStage}
+ * instead.
  *
  * @param {Object} opts
  * @param {boolean} [opts.progressive=false]
@@ -653,7 +652,7 @@ Stage.prototype.createTexture = function(tile, asset, done) {
  * The stage type, used to determine the appropriate renderer for a given
  * geometry and view.
  *
- * Known values are `"webgl"`, `"css"` and `"flash"`.
+ * The sole known value is `"webgl".
  *
  * See also {@link Stage#registerRenderer}.
  *

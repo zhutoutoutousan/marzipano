@@ -19,13 +19,6 @@ var StaticAsset = require('../assets/Static');
 var NetworkError = require('../NetworkError');
 var once = require('../util/once');
 
-// N.B. HtmlImageLoader is broken on IE8 for images that require resizing, due
-// to the unavailable HTML5 canvas element and the naturalWidth/naturalHeight
-// properties of image elements. This is currently not a problem because the
-// HTML-based renderers (WebGL and CSS) do not work on IE8 anyway. It could
-// become a problem in the future if we decide to support CSS rendering of flat
-// panoramas on IE8.
-
 // TODO: Move the load queue into the loader.
 
 /**
@@ -38,9 +31,6 @@ var once = require('../util/once');
  * @param {Stage} stage The stage which is going to request images to be loaded.
  */
 function HtmlImageLoader(stage) {
-  if (stage.type !== 'webgl' && stage.type !== 'css') {
-    throw new Error('Stage type incompatible with loader');
-  }
   this._stage = stage;
 }
 

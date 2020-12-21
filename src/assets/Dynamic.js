@@ -26,8 +26,7 @@ var clearOwnProperties = require('../util/clearOwnProperties');
  * @extends StaticAsset
  * @classdesc
  *
- * A mutable {@link Asset} compatible with {@link WebGlStage} and
- * {@link CssStage}.
+ * An {@link Asset} whose pixel contents may change.
  *
  * @param {HTMLImageElement|HTMLCanvasElement|ImageBitmap} element The
  *     underlying pixel source.
