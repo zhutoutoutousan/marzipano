@@ -17,9 +17,17 @@
 
 var StaticAsset = require('../assets/Static');
 var NetworkError = require('../NetworkError');
+var global = require('../util/global');
 var once = require('../util/once');
 
 // TODO: Move the load queue into the loader.
+
+// Options for createImageBitmap.
+var createImageBitmapOpts = {
+  imageOrientation: 'flipY',
+  premultiplyAlpha: 'premultiply',
+  resizeQuality: 'high'
+};
 
 /**
  * @class HtmlImageLoader
@@ -43,6 +51,8 @@ function HtmlImageLoader(stage) {
  * @return {function()} A function to cancel loading.
  */
 HtmlImageLoader.prototype.loadImage = function(url, rect, done) {
+  var self = this;
+
   var img = new Image();
 
   // Allow cross-domain image loading.
@@ -65,31 +75,11 @@ HtmlImageLoader.prototype.loadImage = function(url, rect, done) {
   done = once(done);
 
   img.onload = function() {
-    if (x === 0 && y === 0 && width === 1 && height === 1) {
-      done(null, new StaticAsset(img));
-    }
-    else {
-      x *= img.naturalWidth;
-      y *= img.naturalHeight;
-      width *= img.naturalWidth;
-      height *= img.naturalHeight;
-
-      var canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      var context = canvas.getContext('2d');
-
-      context.drawImage(img, x, y, width, height, 0, 0, width, height);
-
-      done(null, new StaticAsset(canvas));
-    }
+    self._handleLoad(img, x, y, width, height, done);
   };
 
   img.onerror = function() {
-    // TODO: is there any way to distinguish a network error from other
-    // kinds of errors? For now we always return NetworkError since this
-    // prevents images to be retried continuously while we are offline.
-    done(new NetworkError('Network error: ' + url));
+    self._handleError(url, done);
   };
 
   img.src = url;
@@ -101,6 +91,45 @@ HtmlImageLoader.prototype.loadImage = function(url, rect, done) {
   }
 
   return cancel;
+};
+
+HtmlImageLoader.prototype._handleLoad = function(img, x, y, width, height, done) {
+  if (x === 0 && y === 0 && width === 1 && height === 1) {
+    // Fast path for when cropping is not needed.
+    done(null, new StaticAsset(img));
+    return;
+  }
+
+  x *= img.naturalWidth;
+  y *= img.naturalHeight;
+  width *= img.naturalWidth;
+  height *= img.naturalHeight;
+
+  if (global.createImageBitmap) {
+    // Prefer to crop using createImageBitmap, which can potentially offload
+    // work to another thread and avoid blocking the user interface.
+    // Assume that the promise is never rejected.
+    global.createImageBitmap(img, x, y, width, height, createImageBitmapOpts)
+      .then(function(bitmap) {
+        done(null, new StaticAsset(bitmap));
+      });
+  } else {
+    // Fall back to cropping using a canvas, which can potentially block the
+    // user interface, but is the best we can do.
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    var context = canvas.getContext('2d');
+    context.drawImage(img, x, y, width, height, 0, 0, width, height);
+    done(null, new StaticAsset(canvas));
+  }
+};
+
+HtmlImageLoader.prototype._handleError = function(url, done) {
+  // TODO: is there any way to distinguish a network error from other
+  // kinds of errors? For now we always return NetworkError since this
+  // prevents images to be retried continuously while we are offline.
+  done(new NetworkError('Network error: ' + url));
 };
 
 module.exports = HtmlImageLoader;
