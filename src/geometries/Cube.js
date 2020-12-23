@@ -30,31 +30,7 @@ var vec4 = require('gl-matrix').vec4;
 
 var neighborsCacheSize = 64;
 
-// Some renderer implementations require tiles to be padded around with
-// repeated pixels to prevent the appearance of visible seams between tiles.
-//
-// In order to prevent the padding from being visible, the tiles must be
-// padded and stacked such that the padding on one of the sides, when present,
-// stacks below the neighboring tile on that side.
-//
-// The padding rules are as follows:
-// * Define a tile to be X-marginal if it contacts the X-edge of its cube face.
-// * Pad top if the tile is top-marginal and the face is F or U.
-// * Pad bottom unless the tile is bottom-marginal or the face is F or D.
-// * Pad left if the tile is left-marginal and the face is F, L, U or D.
-// * Pad right unless the tile is right-marginal or the face is F, R, U or D.
-//
-// The stacking rules are as follows:
-// * Within an image, stack smaller zoom levels below larger zoom levels.
-// * Within a level, stack tiles bottom to top in FUDLRB face order.
-// * Within a face, stack tiles bottom to top in ascending Y coordinate order.
-// * Within a row, stack tiles bottom to top in ascending X coordinate order.
-//
-// Crucially, these rules affect the implementation of the tile cmp() method,
-// which determines the stacking order, and of the pad*() tile methods, which
-// determine the amount of padding on each of the four sides of a tile.
-
-// Initials for cube faces in stacking order.
+// Initials for cube faces.
 var faceList = 'fudlrb';
 
 // Rotation of each face, relative to the front face.
@@ -160,76 +136,6 @@ CubeTile.prototype.scaleY = function() {
 };
 
 
-CubeTile.prototype.width = function() {
-  return this._level.tileWidth();
-};
-
-
-CubeTile.prototype.height = function() {
-  return this._level.tileHeight();
-};
-
-
-CubeTile.prototype.levelWidth = function() {
-  return this._level.width();
-};
-
-
-CubeTile.prototype.levelHeight = function() {
-  return this._level.height();
-};
-
-
-CubeTile.prototype.atTopLevel = function() {
-  return this.z === 0;
-};
-
-
-CubeTile.prototype.atBottomLevel = function() {
-  return this.z === this._geometry.levelList.length - 1;
-};
-
-
-CubeTile.prototype.atTopEdge = function() {
-  return this.y === 0;
-};
-
-
-CubeTile.prototype.atBottomEdge = function() {
-  return this.y === this._level.numVerticalTiles() - 1;
-};
-
-
-CubeTile.prototype.atLeftEdge = function() {
-  return this.x === 0;
-};
-
-
-CubeTile.prototype.atRightEdge = function() {
-  return this.x === this._level.numHorizontalTiles() - 1;
-};
-
-
-CubeTile.prototype.padTop = function() {
-  return this.atTopEdge() && /[fu]/.test(this.face);
-};
-
-
-CubeTile.prototype.padBottom = function() {
-  return !this.atBottomEdge() || /[fd]/.test(this.face);
-};
-
-
-CubeTile.prototype.padLeft = function() {
-  return this.atLeftEdge() && /[flud]/.test(this.face);
-};
-
-
-CubeTile.prototype.padRight = function() {
-  return !this.atRightEdge() || /[frud]/.test(this.face);
-};
-
-
 CubeTile.prototype.vertices = function(result) {
   if (!result) {
     result = [vec3.create(), vec3.create(), vec3.create(), vec3.create()];
@@ -258,7 +164,7 @@ CubeTile.prototype.vertices = function(result) {
 
 CubeTile.prototype.parent = function() {
 
-  if (this.atTopLevel()) {
+  if (this.z === 0) {
     return null;
   }
 
@@ -282,7 +188,7 @@ CubeTile.prototype.parent = function() {
 
 CubeTile.prototype.children = function(result) {
 
-  if (this.atBottomLevel()) {
+  if (this.z === this._geometry.levelList.length - 1) {
     return null;
   }
 

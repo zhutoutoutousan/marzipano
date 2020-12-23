@@ -67,78 +67,8 @@ EquirectTile.prototype.scaleY = function() {
 };
 
 
-EquirectTile.prototype.width = function() {
-  return this._level.tileWidth();
-};
-
-
-EquirectTile.prototype.height = function() {
-  return this._level.tileHeight();
-};
-
-
-EquirectTile.prototype.levelWidth = function() {
-  return this._level.width();
-};
-
-
-EquirectTile.prototype.levelHeight = function() {
-  return this._level.height();
-};
-
-
-EquirectTile.prototype.atTopLevel = function() {
-  return this.z === 0;
-};
-
-
-EquirectTile.prototype.atBottomLevel = function() {
-  return this.z === this._geometry.levelList.length - 1;
-};
-
-
-EquirectTile.prototype.atTopEdge = function() {
-  return true;
-};
-
-
-EquirectTile.prototype.atBottomEdge = function() {
-  return true;
-};
-
-
-EquirectTile.prototype.atLeftEdge = function() {
-  return true;
-};
-
-
-EquirectTile.prototype.atRightEdge = function() {
-  return true;
-};
-
-
-EquirectTile.prototype.padTop = function() {
-  return false;
-};
-
-
-EquirectTile.prototype.padBottom = function() {
-  return false;
-};
-
-
-EquirectTile.prototype.padLeft = function() {
-  return false;
-};
-
-
-EquirectTile.prototype.padRight = function() {
-  return false;
-};
-
-
 EquirectTile.prototype.parent = function() {
-  if (this.atTopLevel()) {
+  if (this.z === 0) {
     return null;
   }
   return new EquirectTile(this.z - 1, this._geometry);
@@ -146,7 +76,7 @@ EquirectTile.prototype.parent = function() {
 
 
 EquirectTile.prototype.children = function(result) {
-  if (this.atBottomLevel()) {
+  if (this.z === this._geometry.levelList.length - 1) {
     return null;
   }
   result = result || [];
