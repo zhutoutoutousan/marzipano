@@ -17,7 +17,6 @@
 
 var eventEmitter = require('minimal-event-emitter');
 var Dynamics = require('./Dynamics');
-var WheelListener = require('./WheelListener');
 var defaults = require('../util/defaults');
 var clearOwnProperties = require('../util/clearOwnProperties');
 
@@ -39,14 +38,15 @@ var defaultOptions = {
  * @param {number} [opts.zoomDelta=0.001]
  */
 function ScrollZoomControlMethod(element, opts) {
+  this._element = element;
   this._opts = defaults(opts || {}, defaultOptions);
-
   this._dynamics = new Dynamics();
-
   this._eventList = [];
 
   var fn = this._opts.frictionTime ? this.withSmoothing : this.withoutSmoothing;
-  this._wheelListener = new WheelListener(element, fn.bind(this));
+  this._wheelListener = fn.bind(this);
+  
+  element.addEventListener('wheel', this._wheelListener);
 }
 
 eventEmitter(ScrollZoomControlMethod);
@@ -55,7 +55,7 @@ eventEmitter(ScrollZoomControlMethod);
  * Destructor.
  */
 ScrollZoomControlMethod.prototype.destroy = function() {
-  this._wheelListener.destroy();
+  this._element.removeEventListener(this._wheelListener);
   clearOwnProperties(this);
 };
 
