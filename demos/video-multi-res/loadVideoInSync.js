@@ -19,8 +19,16 @@
 function loadVideoInSync(url, syncElement, cb) {
   cb = once(cb);
   var element = document.createElement('video');
+
+  // Allow using cross-domain video as a texture.
   element.crossOrigin = 'anonymous';
 
+  // This seems necessary to allow using video as a texture. See:
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=898550
+  // https://github.com/pixijs/pixi.js/issues/5996
+  element.preload = 'auto';
+
+  // Start playing automatically.
   element.autoplay = true;
   element.loop = true;
 
