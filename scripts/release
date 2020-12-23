@@ -32,8 +32,12 @@ browserify \
   -o dist/marzipano.js \
   src/index.js
 
-uglifyjs dist/marzipano.js -o dist/marzipano.js \
-  -m -c warnings=false --support-ie8 --preamble "$PREAMBLE"
+uglifyjs \
+  --compress --mangle \
+  -o dist/marzipano.js \
+  dist/marzipano.js
+
+echo -ne "$PREAMBLE\n$(cat dist/marzipano.js)" > dist/marzipano.js
 
 jsdoc -c jsdoc-conf.json
 

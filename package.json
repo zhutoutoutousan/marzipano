@@ -28,14 +28,14 @@
     "minimal-event-emitter": "1.0.0"
   },
   "devDependencies": {
-    "browserify": "^16.5.0",
+    "browserify": "^17.0.0",
     "chai": "^4.2.0",
-    "jsdoc": "^3.6.3",
+    "jsdoc": "^3.6.6",
     "lr-http-server": "^0.1.5",
-    "mocha": "^6.2.2",
-    "sinon": "^7.5.0",
-    "testem": "^2.16.0",
-    "uglify-js": "^2.8.29",
+    "mocha": "^8.2.1",
+    "sinon": "^9.2.2",
+    "testem": "^3.2.0",
+    "uglify-js": "^3.12.3",
     "watchify": "^3.11.1"
   }
 }
