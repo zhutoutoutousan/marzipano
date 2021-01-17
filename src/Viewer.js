@@ -106,16 +106,6 @@ function Viewer(domElement, opts) {
     });
   }
 
-
-  // Old IE does not detect mouse events on elements without background
-  // Add a child element to the controls with full width, a background color
-  // and opacity 0
-  var controlCapture = document.createElement('div');
-  setAbsolute(controlCapture);
-  setFullSize(controlCapture);
-  setBlocking(controlCapture);
-
-  this._controlContainer.appendChild(controlCapture);
   domElement.appendChild(this._controlContainer);
 
   // Respond to window size changes.
