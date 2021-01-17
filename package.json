@@ -22,7 +22,7 @@
     "prepublishOnly": "scripts/prepublish"
   },
   "dependencies": {
-    "bowser": "2.11.0",
+    "bowser": "1.9.4",
     "gl-matrix": "3.3.0",
     "hammerjs": "2.0.4",
     "minimal-event-emitter": "1.0.0"
