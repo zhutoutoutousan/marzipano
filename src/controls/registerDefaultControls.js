@@ -23,7 +23,8 @@ var PinchZoomControlMethod = require('./PinchZoom');
 var KeyControlMethod = require('./Key');
 
 var defaultOptions = {
-  mouseViewMode: 'drag'
+  mouseViewMode: 'drag',
+  dragMode: 'pan'
 };
 
 /**
@@ -42,12 +43,11 @@ var defaultOptions = {
  * @param {Controls} controls Where to register the instances.
  * @param {Element} element Element to listen for events.
  * @param {'drag'|'qtvr'} opts.mouseViewMode
+ * @param {'pan'|'pinch'} opts.dragMode
  * @param {boolean} opts.scrollZoom
- * @param {'pinch'|'pan'} opts.dragMode
  */
 function registerDefaultControls(controls, element, opts) {
   opts = defaults(opts || {}, defaultOptions);
-
 
   var controlMethods = {
     mouseViewDrag: new DragControlMethod(element, 'mouse'),
@@ -70,7 +70,7 @@ function registerDefaultControls(controls, element, opts) {
 
   var enabledControls = ['scrollZoom', 'touchView', 'pinch' ];
 
-  if(opts.scrollZoom !== false) {
+  if (opts.scrollZoom !== false) {
     controlMethods.scrollZoom = new ScrollZoomControlMethod(element); //{ frictionTime: 0 }
   }
 
