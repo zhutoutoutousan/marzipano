@@ -16,9 +16,7 @@
 'use strict';
 
 // Create viewer.
-// Video requires WebGL support.
-var viewerOpts = { stageType: 'webgl' };
-var viewer = new Marzipano.Viewer(document.getElementById('pano'), viewerOpts);
+var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 
 // Create asset and source.
 var asset = new VideoAsset();

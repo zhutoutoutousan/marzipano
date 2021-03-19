@@ -17,16 +17,21 @@
 
 var StaticAsset = require('../assets/Static');
 var NetworkError = require('../NetworkError');
+var browser = require('bowser');
+var global = require('../util/global');
 var once = require('../util/once');
 
-// N.B. HtmlImageLoader is broken on IE8 for images that require resizing, due
-// to the unavailable HTML5 canvas element and the naturalWidth/naturalHeight
-// properties of image elements. This is currently not a problem because the
-// HTML-based renderers (WebGL and CSS) do not work on IE8 anyway. It could
-// become a problem in the future if we decide to support CSS rendering of flat
-// panoramas on IE8.
-
 // TODO: Move the load queue into the loader.
+
+// Whether to use createImageBitmap instead of a canvas for cropping.
+// See https://caniuse.com/?search=createimagebitmap
+var useCreateImageBitmap = !!global.createImageBitmap && !browser.firefox;
+
+// Options for createImageBitmap.
+var createImageBitmapOpts = {
+  imageOrientation: 'flipY',
+  premultiplyAlpha: 'premultiply'
+};
 
 /**
  * @class HtmlImageLoader
@@ -38,9 +43,6 @@ var once = require('../util/once');
  * @param {Stage} stage The stage which is going to request images to be loaded.
  */
 function HtmlImageLoader(stage) {
-  if (stage.type !== 'webgl' && stage.type !== 'css') {
-    throw new Error('Stage type incompatible with loader');
-  }
   this._stage = stage;
 }
 
@@ -53,6 +55,8 @@ function HtmlImageLoader(stage) {
  * @return {function()} A function to cancel loading.
  */
 HtmlImageLoader.prototype.loadImage = function(url, rect, done) {
+  var self = this;
+
   var img = new Image();
 
   // Allow cross-domain image loading.
@@ -75,31 +79,11 @@ HtmlImageLoader.prototype.loadImage = function(url, rect, done) {
   done = once(done);
 
   img.onload = function() {
-    if (x === 0 && y === 0 && width === 1 && height === 1) {
-      done(null, new StaticAsset(img));
-    }
-    else {
-      x *= img.naturalWidth;
-      y *= img.naturalHeight;
-      width *= img.naturalWidth;
-      height *= img.naturalHeight;
-
-      var canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      var context = canvas.getContext('2d');
-
-      context.drawImage(img, x, y, width, height, 0, 0, width, height);
-
-      done(null, new StaticAsset(canvas));
-    }
+    self._handleLoad(img, x, y, width, height, done);
   };
 
   img.onerror = function() {
-    // TODO: is there any way to distinguish a network error from other
-    // kinds of errors? For now we always return NetworkError since this
-    // prevents images to be retried continuously while we are offline.
-    done(new NetworkError('Network error: ' + url));
+    self._handleError(url, done);
   };
 
   img.src = url;
@@ -111,6 +95,45 @@ HtmlImageLoader.prototype.loadImage = function(url, rect, done) {
   }
 
   return cancel;
+};
+
+HtmlImageLoader.prototype._handleLoad = function(img, x, y, width, height, done) {
+  if (x === 0 && y === 0 && width === 1 && height === 1) {
+    // Fast path for when cropping is not needed.
+    done(null, new StaticAsset(img));
+    return;
+  }
+
+  x *= img.naturalWidth;
+  y *= img.naturalHeight;
+  width *= img.naturalWidth;
+  height *= img.naturalHeight;
+
+  if (useCreateImageBitmap) {
+    // Prefer to crop using createImageBitmap, which can potentially offload
+    // work to another thread and avoid blocking the user interface.
+    // Assume that the promise is never rejected.
+    global.createImageBitmap(img, x, y, width, height, createImageBitmapOpts)
+      .then(function(bitmap) {
+        done(null, new StaticAsset(bitmap));
+      });
+  } else {
+    // Fall back to cropping using a canvas, which can potentially block the
+    // user interface, but is the best we can do.
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    var context = canvas.getContext('2d');
+    context.drawImage(img, x, y, width, height, 0, 0, width, height);
+    done(null, new StaticAsset(canvas));
+  }
+};
+
+HtmlImageLoader.prototype._handleError = function(url, done) {
+  // TODO: is there any way to distinguish a network error from other
+  // kinds of errors? For now we always return NetworkError since this
+  // prevents images to be retried continuously while we are offline.
+  done(new NetworkError('Network error: ' + url));
 };
 
 module.exports = HtmlImageLoader;

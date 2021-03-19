@@ -14,6 +14,22 @@ Related GitHub issue or pull request numbers are indicated in brackets.
 
 # Upcoming release
 
+# v0.10.2 [2021-03-18]
+
+# New: implement a pinch drag mode.
+# Fix: prevent infinite loop when movement callback starts new movement (#364).
+# Fix: buggy image cropping on Firefox (#369).
+
+# v0.10.1 [2020-12-23]
+
+* Fix: broken release script (#362).
+
+# v0.10.0 [2020-12-23]
+
+* New: add a `wrapContext` debug option to WebGlStage.
+* Fix: pass tile instead of asset to `networkError` callback (#342).
+* Breaking: delete Flash and CSS renderers (#350).
+
 # v0.9.1 [2019-11-24]
 
 * New: provide a way to override the easing function in Scene#lookTo (#242).

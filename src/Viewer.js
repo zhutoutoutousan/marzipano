@@ -15,7 +15,6 @@
  */
 'use strict';
 
-var browser = require('bowser');
 var eventEmitter = require('minimal-event-emitter');
 
 var RenderLoop = require('./RenderLoop');
@@ -24,8 +23,6 @@ var Scene = require('./Scene');
 var Timer = require('./Timer');
 
 var WebGlStage = require('./stages/WebGl');
-var CssStage = require('./stages/Css');
-var FlashStage = require('./stages/Flash');
 
 var ControlCursor = require('./controls/ControlCursor');
 var HammerGestures = require('./controls/HammerGestures');
@@ -36,23 +33,10 @@ var registerDefaultRenderers = require('./renderers/registerDefaultRenderers');
 var setOverflowHidden = require('./util/dom').setOverflowHidden;
 var setAbsolute = require('./util/dom').setAbsolute;
 var setFullSize = require('./util/dom').setFullSize;
-var setBlocking = require('./util/dom').setBlocking;
 
 var tween = require('./util/tween');
 var noop = require('./util/noop');
 var clearOwnProperties = require('./util/clearOwnProperties');
-
-var stageMap = {
-  webgl: WebGlStage,
-  css: CssStage,
-  flash: FlashStage
-};
-
-var stagePrefList = [
-  WebGlStage,
-  CssStage,
-  FlashStage
-];
 
 /**
  * Signals that the current scene has changed.
@@ -78,9 +62,6 @@ var stagePrefList = [
  *
  * @param {Element} domElement The DOM element to contain the stage.
  * @param {Object} opts Viewer creation options.
- * @param {(null|'webgl'|'css'|'flash')} [opts.stageType=null] The type of stage
- *     to create. The default is to choose the most appropriate type depending
- *     on the browser capabilities.
  * @param {Object} opts.controls Options to be passed to
  *     {@link registerDefaultControls}.
  * @param {Object} opts.stage Options to be passed to the {@link Stage}
@@ -97,32 +78,8 @@ function Viewer(domElement, opts) {
   // Add `overflow: hidden` to the domElement.
   setOverflowHidden(domElement);
 
-  // Select the stage type to use.
-  var Stage;
-  if (opts.stageType) {
-    // If a specific stage type was specified, use that one.
-    Stage = stageMap[opts.stageType];
-    if (!Stage) {
-      throw new Error('Unknown stage type: ' + opts.stageType);
-    }
-  } else {
-    // Choose the best supported stage according to the default preference
-    // order. Note that this may yield an unsupported stage for some
-    // geometry/view combinations. Client code is expected to pass in a
-    // specific stage type in those cases.
-    for (var i = 0; i < stagePrefList.length; i++) {
-      if (stagePrefList[i].supported()) {
-        Stage = stagePrefList[i];
-        break;
-      }
-    }
-    if (!Stage) {
-      throw new Error('None of the stage types are supported');
-    }
-  }
-
   // Create stage.
-  this._stage = new Stage(opts.stage);
+  this._stage = new WebGlStage(opts.stage);
 
   // Register the default renderers for the selected stage.
   registerDefaultRenderers(this._stage);
@@ -138,25 +95,6 @@ function Viewer(domElement, opts) {
   this._controlContainer = document.createElement('div');
   setAbsolute(this._controlContainer);
   setFullSize(this._controlContainer);
-
-  // Prevent bounce scroll effect on iOS.
-  // Applied only for iOS, as Android's events must have the default action to allow interaction with hotspots.
-  if (browser.ios) {
-    this._controlContainer.addEventListener('touchmove', function(event) {
-      event.preventDefault();
-    });
-  }
-
-
-  // Old IE does not detect mouse events on elements without background
-  // Add a child element to the controls with full width, a background color
-  // and opacity 0
-  var controlCapture = document.createElement('div');
-  setAbsolute(controlCapture);
-  setFullSize(controlCapture);
-  setBlocking(controlCapture);
-
-  this._controlContainer.appendChild(controlCapture);
   domElement.appendChild(this._controlContainer);
 
   // Respond to window size changes.
@@ -257,8 +195,6 @@ Viewer.prototype.destroy = function() {
     this.destroyScene(this._scenes[0]);
   }
 
-  // The Flash renderer must be torn down before the element is removed from
-  // the DOM, so all scenes must have been destroyed before this point.
   this._domElement.removeChild(this._stage.domElement());
 
   this._stage.destroy();

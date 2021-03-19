@@ -98,7 +98,7 @@ ImageUrlSource.prototype.loadAsset = function(stage, tile, done) {
         if (err instanceof NetworkError) {
           // If a network error occurred, wait before retrying.
           retryMap[url] = now();
-          self.emit('networkError', asset, err);
+          self.emit('networkError', err, tile);
         }
         done(err, tile);
       } else {

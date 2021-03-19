@@ -15,9 +15,8 @@
  */
 'use strict';
 
-// Create viewer. WebGL support is required to set the projection center.
-var viewerOpts = { stageType: 'webgl' };
-var viewer = new Marzipano.Viewer(document.getElementById('pano'), viewerOpts);
+// Create viewer.
+var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 
 // Create left and right layers
 var geometry = new Marzipano.CubeGeometry([

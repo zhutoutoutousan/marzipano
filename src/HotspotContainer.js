@@ -18,7 +18,6 @@
 var eventEmitter = require('minimal-event-emitter');
 var Hotspot = require('./Hotspot');
 var calcRect = require('./util/calcRect');
-var cssPointerEventsSupported = require('./support/cssPointerEvents');
 var positionAbsolutely = require('./util/positionAbsolutely');
 var setAbsolute = require('./util/dom').setAbsolute;
 var setOverflowHidden = require('./util/dom').setOverflowHidden;
@@ -62,8 +61,6 @@ function HotspotContainer(parentDomElement, stage, view, renderLoop, opts) {
   this._hotspots = [];
 
   // Whether the hotspot container should be visible.
-  // It may still be hidden if a rect effect is set on a browser without
-  // pointer-events support.
   this._visible = true;
 
   // The current rect.
@@ -81,9 +78,7 @@ function HotspotContainer(parentDomElement, stage, view, renderLoop, opts) {
 
   // Wrapper element. When the rect effect is set, the wrapper will have nonzero
   // dimensions and `pointer-events: none` so that hotspots outside the rect are
-  // hidden, but no mouse events are hijacked. The exception is browsers without
-  // pointer-events support, where we refuse to show the hotspots when a rect is
-  // set as it would prevent the controls from receiving mouse events.
+  // hidden, but no mouse events are hijacked.
   this._hotspotContainerWrapper = document.createElement('div');
   setAbsolute(this._hotspotContainerWrapper);
   setPointerEvents(this._hotspotContainerWrapper, 'none');
@@ -133,11 +128,6 @@ HotspotContainer.prototype.domElement = function() {
  * @param {Rect} rect
  */
 HotspotContainer.prototype.setRect = function(rect) {
-  if (rect && !cssPointerEventsSupported() && typeof console !== 'undefined') {
-    console.warn(
-        "Using a rect effect is not fully supported on this browser. " +
-        "Hotspots may not be shown.")
-  }
   this._rect = rect;
   this._visibilityOrRectChanged = true;
 };
@@ -245,7 +235,7 @@ HotspotContainer.prototype._update = function() {
   // Avoid updating the wrapper DOM unless necessary.
   if (this._visibilityOrRectChanged ||
       (this._rect && (width !== this._stageWidth || height !== this._stageHeight))) {
-    var visible = this._visible && !(this._rect && !cssPointerEventsSupported());
+    var visible = this._visible;
     wrapper.style.display = visible ? 'block' : 'none';
 
     if (visible) {

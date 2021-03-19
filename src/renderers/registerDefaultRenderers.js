@@ -19,12 +19,6 @@ var WebGlCube = require('./WebGlCube');
 var WebGlFlat = require('./WebGlFlat');
 var WebGlEquirect = require('./WebGlEquirect');
 
-var CssCube = require('./CssCube');
-var CssFlat = require('./CssFlat');
-
-var FlashCube = require('./FlashCube');
-var FlashFlat = require('./FlashFlat');
-
 /**
  * Registers all known renderers for the given stage type into that stage.
  * Most users will not need to register renderers, as {@link Viewer} does it for
@@ -39,14 +33,6 @@ function registerDefaultRenderers(stage) {
       stage.registerRenderer('flat', 'flat', WebGlFlat);
       stage.registerRenderer('cube', 'rectilinear', WebGlCube);
       stage.registerRenderer('equirect', 'rectilinear', WebGlEquirect);
-      break;
-    case 'css':
-      stage.registerRenderer('flat', 'flat', CssFlat);
-      stage.registerRenderer('cube', 'rectilinear', CssCube);
-      break;
-    case 'flash':
-      stage.registerRenderer('flat', 'flat', FlashFlat);
-      stage.registerRenderer('cube', 'rectilinear', FlashCube);
       break;
     default:
       throw new Error('Unknown stage type: ' + stage.type);

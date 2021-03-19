@@ -22,8 +22,6 @@ PATH=scripts:node_modules/.bin:$PATH
 rm -rf build
 mkdir -p build
 
-make-swf build/marzipano.swf dev
-
 watchify -v -d \
   --noparse=node_modules/**/*.js \
   -s Marzipano \

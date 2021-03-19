@@ -11,4 +11,3 @@ npm-debug.log
 
 # Publish build to npm.
 !/dist/marzipano.js
-!/dist/marzipano.swf

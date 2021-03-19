@@ -22,8 +22,7 @@
 var useCanvasHack = Marzipano.dependencies.bowser.msie;
 
 // Create viewer.
-var viewerOpts = { stageType: 'webgl' };
-var viewer = new Marzipano.Viewer(document.querySelector('#pano'), viewerOpts);
+var viewer = new Marzipano.Viewer(document.querySelector('#pano'));
 
 // Create layer.
 var asset = new VideoAsset();

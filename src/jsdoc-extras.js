@@ -121,6 +121,13 @@
  */
 
 /**
+ * Signals that an error occurred while loading an asset.
+ * @event Source#networkError
+ * @param {Error} err The error.
+ * @param {Tile} tile The tile for which the asset was loaded.
+ */
+
+/**
  * Loads an {@link Asset} from the source.
  * @function
  * @name Source.prototype.loadAsset

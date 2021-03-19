@@ -17,7 +17,6 @@
 
 var Stage = require('./Stage');
 var HtmlImageLoader = require('../loaders/HtmlImage');
-var webGlSupported = require('../support/WebGl');
 var browser = require('bowser');
 var inherits = require('../util/inherits');
 var pixelRatio = require('../util/pixelRatio');
@@ -26,6 +25,7 @@ var setAbsolute = require('../util/dom').setAbsolute;
 var setFullSize = require('../util/dom').setFullSize;
 var clearOwnProperties = require('../util/clearOwnProperties');
 
+// TODO(tjgq): Unify Stage and WebGlStage.
 
 // Browser-specific workarounds.
 var browserQuirks = {
@@ -45,7 +45,6 @@ function initWebGlContext(canvas, opts) {
     preserveDrawingBuffer: !!(opts && opts.preserveDrawingBuffer)
   };
 
-  // Keep support/WebGl.js in sync with this.
   var gl = (canvas.getContext) && (canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options));
 
   if (!gl) {
@@ -135,11 +134,6 @@ WebGlStage.prototype.destroy = function() {
   this._domElement.removeEventListener('webglcontextlost', this._handleContextLoss);
   // Delegate clearing own properties to the Stage destructor.
   this.constructor.super_.prototype.destroy.call(this);
-};
-
-
-WebGlStage.supported = function() {
-  return webGlSupported();
 };
 
 

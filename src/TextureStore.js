@@ -285,8 +285,8 @@ eventEmitter(TextureStoreItem);
  *
  * Multiple layers belonging to the same underlying {@link WebGlStage} may
  * share the same TextureStore. Layers belonging to distinct {@link WebGlStage}
- * instances, or belonging to a {@link CssStage} or a {@link FlashStage},
- * may not do so due to restrictions on the use of textures across stages.
+ * instances may not do so due to restrictions on the use of textures across
+ * stages.
  *
  * @param {Source} source The underlying source.
  * @param {Stage} stage The underlying stage.

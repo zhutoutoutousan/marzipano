@@ -15,44 +15,8 @@
  */
 'use strict';
 
-// Get DOM elements.
-var dropdownElement = document.getElementById('dropdown');
-var reloadElement = document.getElementById('reload');
-var statusElement = document.getElementById('status');
-
-// Reload for the specified stage type when button is clicked.
-reloadElement.addEventListener('click', function() {
-  var type = dropdownElement.value;
-  var url = window.location.href.replace(/^[^ \?]*(\?.*)?$/, '?' + type);
-  window.location.href = url;
-});
-
-// Map each stage type into the corresponding stage class.
-var stageMap = {
-  webgl: Marzipano.WebGlStage,
-  css: Marzipano.CssStage,
-  flash: Marzipano.FlashStage
-};
-
-// Get the stage type under test from the query string.
-var stageType = window.location.search.replace('?', '') || 'webgl';
-
-// Get the stage class for the specified stage type.
-var StageClass = stageMap[stageType] || WebGlStage;
-
-// Warn user if the selected stage type is unsupported.
-if (!StageClass.supported()) {
-  statusElement.innerHTML = "Unsupported stage type.";
-}
-
-// Select the type under test on the dropdown list.
-dropdownElement.value = stageType;
-
-// Let the user know the test is loading.
-statusElement.innerHTML = "Loading, please wait...";
-
-// Create a stage of the specified type and register the default renderers.
-var stage = new StageClass();
+// Create a stage and register the default renderers.
+var stage = new Marzipano.WebGlStage();
 Marzipano.registerDefaultRenderers(stage);
 
 // Set up view.
@@ -138,7 +102,6 @@ var checkInterval = 200;
 setTimeout(function check() {
   if (ready()) {
     stage.render();
-    statusElement.innerHTML = "";
   } else {
     setTimeout(check, checkInterval);
   }

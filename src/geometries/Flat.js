@@ -31,21 +31,6 @@ var vec4 = require('gl-matrix').vec4;
 
 var neighborsCacheSize = 64;
 
-// Some renderer implementations require tiles to be padded around with
-// repeated pixels to prevent the appearance of visible seams between tiles.
-//
-// In order to prevent the padding from being visible, the tiles must be
-// padded and stacked such that the padding on one of the sides, when present,
-// stacks below the neighboring tile on that side.
-//
-// Padding rules:
-// * Pad tiles on the right and on the bottom.
-//
-// Stacking rules:
-// * Within an image, stack smaller zoom levels below larger zoom levels.
-// * Within a level, stack tiles bottom to top in ascending Y coordinate order.
-// * Within a row, stack tiles bottom to top in ascending X coordinate order.
-
 // Offsets to apply to the (x,y) coordinates of a tile to get its neighbors.
 var neighborOffsets = [
   [  0,  1 ], // top
@@ -110,7 +95,7 @@ FlatTile.prototype.scaleY = function() {
 FlatTile.prototype.width = function() {
   var levelWidth = this._level.width();
   var tileWidth = this._level.tileWidth();
-  if (this.atRightEdge()) {
+  if (this.x === this._level.numHorizontalTiles() - 1) {
     var widthRemainder = mod(levelWidth, tileWidth);
     return widthRemainder || tileWidth;
   } else {
@@ -122,7 +107,7 @@ FlatTile.prototype.width = function() {
 FlatTile.prototype.height = function() {
   var levelHeight = this._level.height();
   var tileHeight = this._level.tileHeight();
-  if (this.atBottomEdge()) {
+  if (this.y === this._level.numVerticalTiles() - 1) {
     var heightRemainder = mod(levelHeight, tileHeight);
     return heightRemainder || tileHeight;
   } else {
@@ -138,56 +123,6 @@ FlatTile.prototype.levelWidth = function() {
 
 FlatTile.prototype.levelHeight = function() {
   return this._level.height();
-};
-
-
-FlatTile.prototype.atTopLevel = function() {
-  return this.z === 0;
-};
-
-
-FlatTile.prototype.atBottomLevel = function() {
-  return this.z === this._geometry.levelList.length - 1;
-};
-
-
-FlatTile.prototype.atTopEdge = function() {
-  return this.y === 0;
-};
-
-
-FlatTile.prototype.atBottomEdge = function() {
-  return this.y === this._level.numVerticalTiles() - 1;
-};
-
-
-FlatTile.prototype.atLeftEdge = function() {
-  return this.x === 0;
-};
-
-
-FlatTile.prototype.atRightEdge = function() {
-  return this.x === this._level.numHorizontalTiles() - 1;
-};
-
-
-FlatTile.prototype.padTop = function() {
-  return false;
-};
-
-
-FlatTile.prototype.padBottom = function() {
-  return !this.atBottomEdge();
-};
-
-
-FlatTile.prototype.padLeft = function() {
-  return false;
-};
-
-
-FlatTile.prototype.padRight = function() {
-  return !this.atRightEdge();
 };
 
 
@@ -213,7 +148,7 @@ FlatTile.prototype.vertices = function(result) {
 FlatTile.prototype.parent = function() {
 
 
-  if (this.atTopLevel()) {
+  if (this.z === 0) {
     return null;
   }
 
@@ -231,7 +166,7 @@ FlatTile.prototype.parent = function() {
 
 
 FlatTile.prototype.children = function(result) {
-  if (this.atBottomLevel()) {
+  if (this.z === this._geometry.levelList.length - 1) {
     return null;
   }
 

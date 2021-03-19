@@ -16,9 +16,7 @@
 'use strict';
 
 // Create viewer.
-// Anaglyphs are only supported on WebGl.
-var viewerOpts = { stageType: 'webgl' };
-var viewer = new Marzipano.Viewer(document.getElementById('pano'), viewerOpts);
+var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 
 // Create geometry.
 var geometry = new Marzipano.CubeGeometry([

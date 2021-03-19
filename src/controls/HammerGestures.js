@@ -16,7 +16,6 @@
 'use strict';
 
 var Hammer = require('hammerjs');
-var browser = require('bowser');
 
 var nextId = 1;
 var idProperty = 'MarzipanoHammerElementId';
@@ -64,11 +63,7 @@ HammerGestures.prototype._createManager = function(element, type) {
     // On touch one wants to have both panning and pinching. The panning
     // recognizer needs a threshold to allow the pinch to be recognized.
     manager.add(new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 20, pointers: 1 }));
-    if (!(browser.msie && parseFloat(browser.version) < 10)) {
-      // Do not add pinch to IE8-9 to prevent focus issues which prevent wheel scrolling from
-      // working.
-      manager.add(new Hammer.Pinch());
-    }
+    manager.add(new Hammer.Pinch());
   }
 
   return manager;
